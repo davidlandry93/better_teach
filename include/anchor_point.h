@@ -3,47 +3,46 @@
 #define ANCHOR_POINT_H
 
 #include <iostream>
+#include <fstream>
 #include <string>
 
-#include <ros/ros.h>
-#include <geometry_msgs/Pose.h>
-#include <sensor_msgs/PointCloud2.h>
-
+#include <Eigen/Geometry>
 #include <pointmatcher/PointMatcher.h>
 #include <pointmatcher/IO.h>
-#include <pointmatcher_ros/point_cloud.h>
 
-#include "husky_trainer/GeoUtil.h"
+#include "pose.h"
 
-class Pose {
- public:
-  Pose();
-  Pose(
-
+namespace TeachRepeat
+{
 class AnchorPoint {
+
+    typedef PointMatcher<float> PM;
+    typedef PM::DataPoints DP;
+    typedef PM::Parameters Parameters;
+  
 private:
     const static std::string POINT_CLOUD_FRAME;
 
     std::string mAnchorPointName;
-    sensor_msgs::PointCloud2 mPointCloud;
-    geometry_msgs::Pose mPosition;
+    DP mPointCloud;
+    Pose mPosition;
 
 public:
-    AnchorPoint(std::string& anchorPointName, geometry_msgs::Pose position);
-    AnchorPoint(std::string& anchorPointName, geometry_msgs::Pose position, sensor_msgs::PointCloud2 cloud);
+    AnchorPoint(std::string& anchorPointName, Pose position);
+    AnchorPoint(std::string& anchorPointName, Pose position, DP cloud);
     AnchorPoint(std::string& anchorPointEntry);
     AnchorPoint();
     ~AnchorPoint();
 
-    sensor_msgs::PointCloud2 getCloud() const;
-    void loadFromDisk();
-    void saveToDisk();
-
+    DP getCloud() const;
+    void loadFromDisk(std::string directory="");
+    void saveToDisk(std::string directory="");
 
     friend std::ostream& operator<<(std::ostream& out, AnchorPoint& ap);
 
     std::string name() const;
-    geometry_msgs::Pose getPosition() const;
+    Pose getPosition() const;
 };
 
+} // namespace TeachRepeat
 #endif

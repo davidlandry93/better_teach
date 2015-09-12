@@ -1,26 +1,26 @@
 
+#include <boost/filesystem.hpp>
+
 #include "anchor_point.h"
 
-#define SCAN_RADIUS_BALLPARK 10.0
-
-const std::string AnchorPoint::POINT_CLOUD_FRAME = "/odom";
-
-AnchorPoint::AnchorPoint() : mPointCloud()
-{ }
-
-AnchorPoint::AnchorPoint(std::string& anchorPointName, geometry_msgs::Pose position) :
-    mAnchorPointName(anchorPointName), mPointCloud(), mPosition(position)
-{ }
-
-AnchorPoint::AnchorPoint(std::string& anchorPointName, 
-        geometry_msgs::Pose position, sensor_msgs::PointCloud2 cloud) :
-    mAnchorPointName(anchorPointName), mPointCloud(cloud), mPosition(position)
-{ }
-
-
-// Builds an anchor point from a string, as in the format outputted by the << operator.
-AnchorPoint::AnchorPoint(std::string& anchorPointEntry)
+namespace TeachRepeat
 {
+
+  AnchorPoint::AnchorPoint() : mPointCloud()
+  { }
+
+  AnchorPoint::AnchorPoint(std::string& anchorPointName, Pose position) :
+    mAnchorPointName(anchorPointName), mPointCloud(), mPosition(position)
+  { }
+
+  AnchorPoint::AnchorPoint(std::string& anchorPointName, Pose position, DP cloud) :
+    mAnchorPointName(anchorPointName), mPointCloud(cloud), mPosition(position)
+  { }
+
+
+  // Builds an anchor point from a string, as in the format outputted by the << operator.
+  AnchorPoint::AnchorPoint(std::string& anchorPointEntry)
+  {
     std::stringstream ss(anchorPointEntry);
     std::string buffer;
     
@@ -29,53 +29,57 @@ AnchorPoint::AnchorPoint(std::string& anchorPointEntry)
 
     std::getline(ss,buffer);
 
-    geometry_msgs::Pose pose = geo_util::stringToPose(buffer);
+    Pose pose(buffer);
 
     mAnchorPointName = filename;
     mPosition = pose;
-    pose = getPosition();
-}
+  }
 
-AnchorPoint::~AnchorPoint()
-{
+  AnchorPoint::~AnchorPoint()
+  {
 
-}
+  }
 
-sensor_msgs::PointCloud2 AnchorPoint::getCloud() const
-{
+  PointMatcher<float>::DataPoints AnchorPoint::getCloud() const
+  {
     return mPointCloud;
-}
+  }
 
 
-void AnchorPoint::loadFromDisk()
-{
-    PointMatcher<float>::DataPoints pointCloudBuffer = PointMatcherIO<float>::loadVTK(mAnchorPointName);
-    mPointCloud = PointMatcher_ros::pointMatcherCloudToRosMsg<float>(pointCloudBuffer, POINT_CLOUD_FRAME, ros::Time(0));
-}
+  void AnchorPoint::loadFromDisk(std::string directory)
+  {
+    std::string filename = directory == "" ?
+      mAnchorPointName :
+      (boost::filesystem::path(directory) / mAnchorPointName).string();
+      
+      mPointCloud = PointMatcherIO<float>::loadVTK(filename);
+  }
 
-void AnchorPoint::saveToDisk()
-{
-    PointMatcher<float>::DataPoints pointCloudBuffer = PointMatcher_ros::rosMsgToPointMatcherCloud<float>(mPointCloud);
-    pointCloudBuffer.save(mAnchorPointName);
-}
+  void AnchorPoint::saveToDisk(std::string directory)
+  {
 
-std::ostream& operator<<(std::ostream& out, AnchorPoint& ap)
-{
-    geometry_msgs::Pose pose = ap.getPosition();
-    out << ap.mAnchorPointName << "," << geo_util::poseToString(pose);
+    std::string filename = directory == "" ?
+      mAnchorPointName :
+      (boost::filesystem::path(directory) / mAnchorPointName).string();
+      
+      mPointCloud.save(filename);
+  }
+
+  std::ostream& operator<<(std::ostream& out, AnchorPoint& ap)
+  {
+    out << ap.mAnchorPointName << "," << ap.mPosition;
     return out;
-}
+  }
 
 
-std::string AnchorPoint::name() const
-{
+  std::string AnchorPoint::name() const
+  {
     return mAnchorPointName;
-}
+  }
 
-geometry_msgs::Pose AnchorPoint::getPosition() const
-{
+  Pose AnchorPoint::getPosition() const
+  {
     return mPosition;
-}
+  }
 
-
-
+} // namespace TeachRepeat
