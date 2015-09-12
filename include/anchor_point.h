@@ -36,7 +36,7 @@ public:
 
     DP getCloud() const;
     void loadFromDisk(std::string directory="");
-    void saveToDisk(std::string directory="");
+    void saveToDisk(std::string directory="") const;
 
     friend std::ostream& operator<<(std::ostream& out, AnchorPoint& ap);
 

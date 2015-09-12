@@ -15,13 +15,13 @@ namespace TeachRepeat
 
     locationOnDisk = directory;
 
-    std::ifstream commandFile((base /= "speeds.sl").string().c_str());
+    std::ifstream commandFile((base / "speeds.sl").string().c_str());
     loadCommands(commandFile);
 
-    std::ifstream poseFile((base /= "positions.pl").string().c_str());
+    std::ifstream poseFile((base / "positions.pl").string().c_str());
     loadPositions(poseFile);
 
-    std::ifstream anchorPointsFile((base /= "anchorPoints.apd").string().c_str());
+    std::ifstream anchorPointsFile((base / "anchorPoints.apd").string().c_str());
     loadAnchorPoints(anchorPointsFile);
   }
 

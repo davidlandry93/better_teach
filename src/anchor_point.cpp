@@ -55,7 +55,7 @@ namespace TeachRepeat
       mPointCloud = PointMatcherIO<float>::loadVTK(filename);
   }
 
-  void AnchorPoint::saveToDisk(std::string directory)
+  void AnchorPoint::saveToDisk(std::string directory) const
   {
 
     std::string filename = directory == "" ?
