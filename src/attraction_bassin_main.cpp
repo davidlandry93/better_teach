@@ -28,7 +28,8 @@ int main(int argc, char** argv)
   desc.add_options()
     ("map,m", po::value< std::string >(),
      "The location of the Teach Repeat map to handle")
-    ("help,h", "Produce a help message");
+    ("help,h", "Produce a help message")
+    ("output,o", po::value< std::string >(), "Where to save the convergence map.");
    
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -67,19 +68,31 @@ int main(int argc, char** argv)
 
 
   AttractionBassinBuilder builder(anchorPoint, reading);
-  float convergenceMapFromX = reading.getPosition().getVector()(0) - 2.0;
-  float convergenceMapToX = reading.getPosition().getVector()(0) + 2.0;
-  float convergenceMapFromY = reading.getPosition().getVector()(1) - 2.0;
-  float convergenceMapToY = reading.getPosition().getVector()(1) + 2.0;
+  float convergenceMapFromX = reading.getPosition().getVector()(0) - 5.0;
+  float convergenceMapToX = reading.getPosition().getVector()(0) + 5.0;
+  float convergenceMapFromY = reading.getPosition().getVector()(1) - 3.0;
+  float convergenceMapToY = reading.getPosition().getVector()(1) + 3.0;
   
   Eigen::MatrixXf convergenceData = builder.build(convergenceMapFromX,
                                                   convergenceMapToX,
                                                   convergenceMapFromY,
                                                   convergenceMapToY,
-                                                  10,
-                                                  10);
-  std::ofstream outputFile("output.csv");
-  outputFile << convergenceData;
+                                                  30,
+                                                  30);
+  std::string filename;
+  if(vm.count("output"))
+    {
+      filename = vm["output"].as< std::string >();
+    }
+  else
+    {
+      filename = "output.csv";
+    }
+
+  Eigen::IOFormat CsvFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n", "", "", "", "");
+
+  std::ofstream outputFile(filename.c_str());
+  outputFile << convergenceData.format(CsvFormat);
   outputFile.close();
 
   return 0;

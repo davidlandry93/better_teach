@@ -45,7 +45,7 @@ namespace TeachRepeat
   {
     // To make the map more intuitive to read, the columns represent x coordinates,
     // the rows represent y coordinates.
-    Eigen::MatrixXf attractionMap(resY, resX);
+    Eigen::MatrixXf attractionMap(resX, resY);
 
     float deltaX = (toX - fromX) / resX;
     float deltaY = (toY - fromY) / resY;
@@ -69,7 +69,7 @@ namespace TeachRepeat
 
             Eigen::Vector3f icpConvergenceLocation = gridPointPosition - icpResult.translationPart();
             
-            attractionMap(j,i) = (icpConvergenceLocation - preciseReadingLocation).squaredNorm();
+            attractionMap(i,j) = (icpConvergenceLocation - preciseReadingLocation).squaredNorm();
           }
       }
 
