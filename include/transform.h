@@ -25,11 +25,12 @@ namespace TeachRepeat
     PointMatcher<float>::TransformationParameters pmTransform();
     Eigen::Quaternionf rotationPart();
     Eigen::Vector3f translationPart();
+    Transform inverse();
 
     static std::string quatToString(Eigen::Quaternionf quat);
     friend std::ostream& operator<<(std::ostream& out, Transform& t);
 
-    friend Transform operator*(const Transform& lhs, const Transform& rhs);
+    friend Transform operator*(Transform lhs, const Transform& rhs);
 
   private:
     Eigen::Affine3f mTransform;

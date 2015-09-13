@@ -81,9 +81,14 @@ namespace TeachRepeat
     return pmTransform;
   }
 
-  Transform operator*(const Transform& lhs, const Transform& rhs)
+  Transform operator*(Transform lhs, const Transform& rhs)
   {
     return Transform(lhs.mTransform * rhs.mTransform);
+  }
+
+  Transform Transform::inverse()
+  {
+    return Transform(mTransform.inverse());
   }
 
 } // Namespace TeachRepeat.

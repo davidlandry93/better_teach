@@ -21,7 +21,9 @@ add_library(teachrepeat
   src/transform.cpp
   include/transform.h
   src/localised_point_cloud.cpp
-  include/localised_point_cloud.h)
+  include/localised_point_cloud.h
+  src/attraction_bassin_builder.cpp
+  include/attraction_bassin_builder.h)
 
 add_executable(BetterTeach src/attraction_bassin_main.cpp)
 target_link_libraries(BetterTeach teachrepeat pointmatcher ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})

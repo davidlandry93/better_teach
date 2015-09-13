@@ -70,8 +70,10 @@ namespace TeachRepeat
   
     Eigen::Quaternionf rotationQuaternion =
       mRotation * otherPose.getRotation().conjugate();
+
+    Transform returnValue(translationVector);
     
-    return Transform(translationVector, rotationQuaternion);
+    return returnValue;
   }
 
 

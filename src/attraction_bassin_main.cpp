@@ -1,4 +1,5 @@
 
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -12,59 +13,11 @@
 #include "localised_point_cloud.h"
 #include "transform.h"
 #include "teach_repeat_map.h"
+#include "attraction_bassin_builder.h"
 
 using namespace TeachRepeat;
 typedef PointMatcher<float> PM;
 typedef PM::DataPoints DP;
-
-Transform do_icp(DP& reading, DP& anchorPoint, Transform T)
-{
-  PM::ICP icp;
-  icp.setDefault();
-
-  PM::Transformation* rigidTrans;
-  rigidTrans = PM::get().REG(Transformation).create("RigidTransformation");
-
-  if (!rigidTrans->checkParameters(T.pmTransform())) {
-    std::cout << "WARNING: T does not represent a valid rigid transformation\nProjecting onto an orthogonal basis"
-              << std::endl;
-  }
-
-  DP transformedAnchorPoint = rigidTrans->compute(anchorPoint, T.pmTransform());
-
-  PM::TransformationParameters icpResult = icp(reading, transformedAnchorPoint);
-
-  return Transform(icpResult);
-}
-
-Transform transformFromApToAp(const LocalisedPointCloud& anchorPoint,
-                              const LocalisedPointCloud& reading)
-{
-  Transform roughEstimate =
-    reading.getPosition().transFromPose(anchorPoint.getPosition());
-
-  DP readingPointCloud = reading.getCloud();
-  DP anchorPointCloud = anchorPoint.getCloud();
-
-  Transform icpResult =
-    do_icp(readingPointCloud, anchorPointCloud, roughEstimate);
-
-  std::cout << icpResult << std::endl;
-
-  // This is the best estimate we have of the actual movement the robot
-  // would have to do to go from the anchor point to the reading.
-  Transform evenBetterEstimate = icpResult * roughEstimate;
-  return evenBetterEstimate;
-}
-
-void convergenceBassin(const LocalisedPointCloud& anchorPoint,
-		       const LocalisedPointCloud& reading,
-		       int gridLength,
-		       float delta,
-		       Eigen::MatrixXf& output)
-{
-  Transform referenceTransform = transformFromApToAp(anchorPoint, reading);
-}
 
 
 int main(int argc, char** argv)
@@ -112,8 +65,22 @@ int main(int argc, char** argv)
 
   LocalisedPointCloud reading = *cursor;
 
-  Eigen::MatrixXf convergenceData;
-  convergenceBassin(anchorPoint, reading, 5.0, 0.2, convergenceData);
+
+  AttractionBassinBuilder builder(anchorPoint, reading);
+  float convergenceMapFromX = reading.getPosition().getVector()(0) - 2.0;
+  float convergenceMapToX = reading.getPosition().getVector()(0) + 2.0;
+  float convergenceMapFromY = reading.getPosition().getVector()(1) - 2.0;
+  float convergenceMapToY = reading.getPosition().getVector()(1) + 2.0;
   
+  Eigen::MatrixXf convergenceData = builder.build(convergenceMapFromX,
+                                                  convergenceMapToX,
+                                                  convergenceMapFromY,
+                                                  convergenceMapToY,
+                                                  10,
+                                                  10);
+  std::ofstream outputFile("output.csv");
+  outputFile << convergenceData;
+  outputFile.close();
+
   return 0;
 }
