@@ -1,25 +1,25 @@
 
 #include <boost/filesystem.hpp>
 
-#include "anchor_point.h"
+#include "localised_point_cloud.h"
 
 namespace TeachRepeat
 {
 
-  AnchorPoint::AnchorPoint() : mPointCloud()
+  LocalisedPointCloud::LocalisedPointCloud() : mPointCloud()
   { }
 
-  AnchorPoint::AnchorPoint(std::string& anchorPointName, Pose position) :
+  LocalisedPointCloud::LocalisedPointCloud(std::string& anchorPointName, Pose position) :
     mAnchorPointName(anchorPointName), mPointCloud(), mPosition(position)
   { }
 
-  AnchorPoint::AnchorPoint(std::string& anchorPointName, Pose position, DP cloud) :
+  LocalisedPointCloud::LocalisedPointCloud(std::string& anchorPointName, Pose position, DP cloud) :
     mAnchorPointName(anchorPointName), mPointCloud(cloud), mPosition(position)
   { }
 
 
   // Builds an anchor point from a string, as in the format outputted by the << operator.
-  AnchorPoint::AnchorPoint(std::string& anchorPointEntry)
+  LocalisedPointCloud::LocalisedPointCloud(std::string& anchorPointEntry)
   {
     std::stringstream ss(anchorPointEntry);
     std::string buffer;
@@ -35,18 +35,18 @@ namespace TeachRepeat
     mPosition = pose;
   }
 
-  AnchorPoint::~AnchorPoint()
+  LocalisedPointCloud::~LocalisedPointCloud()
   {
 
   }
 
-  PointMatcher<float>::DataPoints AnchorPoint::getCloud() const
+  PointMatcher<float>::DataPoints LocalisedPointCloud::getCloud() const
   {
     return mPointCloud;
   }
 
 
-  void AnchorPoint::loadFromDisk(std::string directory)
+  void LocalisedPointCloud::loadFromDisk(std::string directory)
   {
     std::string filename = directory == "" ?
       mAnchorPointName :
@@ -55,7 +55,7 @@ namespace TeachRepeat
       mPointCloud = PointMatcherIO<float>::loadVTK(filename);
   }
 
-  void AnchorPoint::saveToDisk(std::string directory) const
+  void LocalisedPointCloud::saveToDisk(std::string directory) const
   {
 
     std::string filename = directory == "" ?
@@ -65,19 +65,19 @@ namespace TeachRepeat
       mPointCloud.save(filename);
   }
 
-  std::ostream& operator<<(std::ostream& out, AnchorPoint& ap)
+  std::ostream& operator<<(std::ostream& out, LocalisedPointCloud& ap)
   {
     out << ap.mAnchorPointName << "," << ap.mPosition;
     return out;
   }
 
 
-  std::string AnchorPoint::name() const
+  std::string LocalisedPointCloud::name() const
   {
     return mAnchorPointName;
   }
 
-  Pose AnchorPoint::getPosition() const
+  Pose LocalisedPointCloud::getPosition() const
   {
     return mPosition;
   }

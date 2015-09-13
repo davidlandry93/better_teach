@@ -12,16 +12,16 @@ include_directories(include/ "${libpointmatcher_INCLUDE_DIRS}" ${Boost_INCLUDE_D
 link_directories({$libpointmatcher_LIB})
 
 add_library(teachrepeat
-  src/anchor_point.cpp
   src/teach_repeat_map.cpp
-  include/anchor_point.h
   include/teach_repeat_map.h
   src/pose.cpp
   include/pose.h
   src/command.cpp
   include/command.h
   src/transform.cpp
-  include/transform.h)
+  include/transform.h
+  src/localised_point_cloud.cpp
+  include/localised_point_cloud.h)
 
 add_executable(BetterTeach src/attraction_bassin_main.cpp)
 target_link_libraries(BetterTeach teachrepeat pointmatcher ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})

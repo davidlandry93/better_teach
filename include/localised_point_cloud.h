@@ -14,7 +14,7 @@
 
 namespace TeachRepeat
 {
-class AnchorPoint {
+class LocalisedPointCloud {
 
     typedef PointMatcher<float> PM;
     typedef PM::DataPoints DP;
@@ -28,17 +28,17 @@ private:
     Pose mPosition;
 
 public:
-    AnchorPoint(std::string& anchorPointName, Pose position);
-    AnchorPoint(std::string& anchorPointName, Pose position, DP cloud);
-    AnchorPoint(std::string& anchorPointEntry);
-    AnchorPoint();
-    ~AnchorPoint();
+    LocalisedPointCloud(std::string& anchorPointName, Pose position);
+    LocalisedPointCloud(std::string& anchorPointName, Pose position, DP cloud);
+    LocalisedPointCloud(std::string& anchorPointEntry);
+    LocalisedPointCloud();
+    ~LocalisedPointCloud();
 
     PointMatcher<float>::DataPoints getCloud() const;
     void loadFromDisk(std::string directory="");
     void saveToDisk(std::string directory="") const;
 
-    friend std::ostream& operator<<(std::ostream& out, AnchorPoint& ap);
+    friend std::ostream& operator<<(std::ostream& out, LocalisedPointCloud& ap);
 
     std::string name() const;
     Pose getPosition() const;

@@ -25,12 +25,12 @@ namespace TeachRepeat
     loadAnchorPoints(anchorPointsFile);
   }
 
-  std::vector<AnchorPoint>::iterator Map::begin()
+  std::vector<LocalisedPointCloud>::iterator Map::begin()
   {
     return anchorPoints.begin();
   }
 
-  std::vector<AnchorPoint>::iterator Map::end()
+  std::vector<LocalisedPointCloud>::iterator Map::end()
   {
     return anchorPoints.end();
   }
@@ -64,7 +64,7 @@ namespace TeachRepeat
     std::string lineBuffer;
     while(std::getline(input, lineBuffer))
       {
-	anchorPoints.push_back(AnchorPoint(lineBuffer));
+	anchorPoints.push_back(LocalisedPointCloud(lineBuffer));
 	anchorPoints.back().loadFromDisk(locationOnDisk);
       }
   }

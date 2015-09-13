@@ -9,67 +9,13 @@
 
 #include "pointmatcher/PointMatcher.h"
 
-#include "anchor_point.h"
+#include "localised_point_cloud.h"
 #include "transform.h"
 #include "teach_repeat_map.h"
 
 using namespace TeachRepeat;
 typedef PointMatcher<float> PM;
 typedef PM::DataPoints DP;
-
-std::string quatToString(Eigen::Quaternionf quat)
-{
-  std::stringstream ss;
-  ss << "[x: " << quat.x() << ", y: " << quat.y() << ", z: " << quat.z() << ", w: " << quat.w() << "]" << std::endl;
-  return ss.str();
-}
-
-void printHumanReadableTransform(const Eigen::Affine3f transform)
-{
-  Eigen::Affine3f::ConstTranslationPart translationPart = transform.translation();
-  Eigen::Affine3f::LinearMatrixType rotationPart = transform.rotation();
-
-  Eigen::Quaternionf quat(rotationPart);
-  quat.normalize();
-
-  std::cout << "Translation." << std::endl << translationPart << std::endl;
-  std::cout << "Rotation." << std::endl << quatToString(quat) << std::endl;
-}
-
-PM::TransformationParameters eigenMatrixToDim(const PM::TransformationParameters& matrix, int dimp1)
-{
-  typedef PM::TransformationParameters M;
-  assert(matrix.rows() == matrix.cols());
-  assert((matrix.rows() == 3) || (matrix.rows() == 4));
-  assert((dimp1 == 3) || (dimp1 == 4));
-		
-  if (matrix.rows() == dimp1)
-    return matrix;
-		
-  M out(M::Identity(dimp1,dimp1));
-  out.topLeftCorner(2,2) = matrix.topLeftCorner(2,2);
-  out.topRightCorner(2,1) = matrix.topRightCorner(2,1);
-  return out;
-}
-
-Eigen::Affine3f eigenTransormOfPmTransform(const PM::TransformationParameters pmTransform)
-{
-  Eigen::Affine3f eigenMat(Eigen::Matrix4f(pmTransform.template cast<float>()));
-  return eigenMat;
-}
-
-void pmTransformOfEigenTransform(const Eigen::Transform<float,3,Eigen::Affine>& eigenTransform, PM::TransformationParameters& pmTransform)
-{
-  pmTransform = PM::TransformationParameters::Identity(4,4);
-
-  for(int i=0; i < 4; i++)
-    {
-      for(int j=0; j < 4; j++)
-	{
-	  pmTransform(i,j) = eigenTransform(i,j);
-	}
-    }
-}
 
 Transform do_icp(DP& reading, DP& anchorPoint, Transform T)
 {
@@ -91,8 +37,8 @@ Transform do_icp(DP& reading, DP& anchorPoint, Transform T)
   return Transform(icpResult);
 }
 
-Transform transformFromApToAp(const AnchorPoint& anchorPoint,
-                              const AnchorPoint& reading)
+Transform transformFromApToAp(const LocalisedPointCloud& anchorPoint,
+                              const LocalisedPointCloud& reading)
 {
   Transform roughEstimate =
     reading.getPosition().transFromPose(anchorPoint.getPosition());
@@ -111,8 +57,8 @@ Transform transformFromApToAp(const AnchorPoint& anchorPoint,
   return evenBetterEstimate;
 }
 
-void convergenceBassin(const AnchorPoint& anchorPoint,
-		       const AnchorPoint& reading,
+void convergenceBassin(const LocalisedPointCloud& anchorPoint,
+		       const LocalisedPointCloud& reading,
 		       int gridLength,
 		       float delta,
 		       Eigen::MatrixXf& output)
@@ -150,21 +96,21 @@ int main(int argc, char** argv)
   std::cout << "Loading map in memory..." << std::endl;
   Map map(vm["map"].as< std::string >());
 
-  std::vector<AnchorPoint>::iterator cursor = map.begin();
+  std::vector<LocalisedPointCloud>::iterator cursor = map.begin();
 
   for(int i = 0; i < 5; i++)
     {
       cursor++;
     }
 
-  AnchorPoint anchorPoint = *cursor;
+  LocalisedPointCloud anchorPoint = *cursor;
 
   for(int i=0; i < 5; i++)
     {
       cursor++;
     }
 
-  AnchorPoint reading = *cursor;
+  LocalisedPointCloud reading = *cursor;
 
   Eigen::MatrixXf convergenceData;
   convergenceBassin(anchorPoint, reading, 5.0, 0.2, convergenceData);
