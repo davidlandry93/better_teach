@@ -63,16 +63,15 @@ namespace TeachRepeat
   }
 
   
-  Eigen::Transform<float,3,Eigen::Affine> Pose::transFromPose(const Pose& otherPose) const
+  Transform Pose::transFromPose(const Pose& otherPose) const
   {
     Eigen::Vector3f translationVector =
       mVector - otherPose.getVector();
-    Eigen::Translation<float,3> translation(translationVector);
   
     Eigen::Quaternionf rotationQuaternion =
       mRotation * otherPose.getRotation().conjugate();
-
-    return rotationQuaternion * translation;
+    
+    return Transform(translationVector, rotationQuaternion);
   }
 
 

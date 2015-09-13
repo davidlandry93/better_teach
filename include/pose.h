@@ -5,6 +5,8 @@
 #include <iostream>
 #include <Eigen/Geometry>
 
+#include "transform.h"
+
 namespace TeachRepeat
 {
 
@@ -13,7 +15,7 @@ class Pose {
   Pose();
   Pose(Eigen::Vector3f, Eigen::Quaternionf);
   Pose(std::string input);
-  Eigen::Transform<float,3,Eigen::Affine> transFromPose(const Pose& otherPose) const;
+  Transform transFromPose(const Pose& otherPose) const;
   friend std::ostream& operator<<(std::ostream& out, Pose& pose);
 
   void setVector(Eigen::Vector3f vector);

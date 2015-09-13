@@ -5,15 +5,36 @@
 #include <boost/program_options.hpp>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include <Eigen/SVD>
 
 #include "pointmatcher/PointMatcher.h"
 
 #include "anchor_point.h"
+#include "transform.h"
 #include "teach_repeat_map.h"
 
 using namespace TeachRepeat;
 typedef PointMatcher<float> PM;
 typedef PM::DataPoints DP;
+
+std::string quatToString(Eigen::Quaternionf quat)
+{
+  std::stringstream ss;
+  ss << "[x: " << quat.x() << ", y: " << quat.y() << ", z: " << quat.z() << ", w: " << quat.w() << "]" << std::endl;
+  return ss.str();
+}
+
+void printHumanReadableTransform(const Eigen::Affine3f transform)
+{
+  Eigen::Affine3f::ConstTranslationPart translationPart = transform.translation();
+  Eigen::Affine3f::LinearMatrixType rotationPart = transform.rotation();
+
+  Eigen::Quaternionf quat(rotationPart);
+  quat.normalize();
+
+  std::cout << "Translation." << std::endl << translationPart << std::endl;
+  std::cout << "Rotation." << std::endl << quatToString(quat) << std::endl;
+}
 
 PM::TransformationParameters eigenMatrixToDim(const PM::TransformationParameters& matrix, int dimp1)
 {
@@ -50,26 +71,44 @@ void pmTransformOfEigenTransform(const Eigen::Transform<float,3,Eigen::Affine>& 
     }
 }
 
-PM::TransformationParameters do_icp(DP& reading, DP& anchorPoint,
-                                    PM::TransformationParameters T)
+Transform do_icp(DP& reading, DP& anchorPoint, Transform T)
 {
   PM::ICP icp;
   icp.setDefault();
 
-  std::cout << "Test" << std::endl;
-
   PM::Transformation* rigidTrans;
   rigidTrans = PM::get().REG(Transformation).create("RigidTransformation");
 
-   if (!rigidTrans->checkParameters(T)) {
-        std::cout << "WARNING: T does not represent a valid rigid transformation\nProjecting onto an orthogonal basis"
-                << std::endl;
-        T = rigidTrans->correctParameters(T);
-    }
+  if (!rigidTrans->checkParameters(T.pmTransform())) {
+    std::cout << "WARNING: T does not represent a valid rigid transformation\nProjecting onto an orthogonal basis"
+              << std::endl;
+  }
 
-   DP transformedAnchorPoint = rigidTrans->compute(anchorPoint, T);
+  DP transformedAnchorPoint = rigidTrans->compute(anchorPoint, T.pmTransform());
 
-   return icp(reading, transformedAnchorPoint);
+  PM::TransformationParameters icpResult = icp(reading, transformedAnchorPoint);
+
+  return Transform(icpResult);
+}
+
+Transform transformFromApToAp(const AnchorPoint& anchorPoint,
+                              const AnchorPoint& reading)
+{
+  Transform roughEstimate =
+    reading.getPosition().transFromPose(anchorPoint.getPosition());
+
+  DP readingPointCloud = reading.getCloud();
+  DP anchorPointCloud = anchorPoint.getCloud();
+
+  Transform icpResult =
+    do_icp(readingPointCloud, anchorPointCloud, roughEstimate);
+
+  std::cout << icpResult << std::endl;
+
+  // This is the best estimate we have of the actual movement the robot
+  // would have to do to go from the anchor point to the reading.
+  Transform evenBetterEstimate = icpResult * roughEstimate;
+  return evenBetterEstimate;
 }
 
 void convergenceBassin(const AnchorPoint& anchorPoint,
@@ -78,23 +117,7 @@ void convergenceBassin(const AnchorPoint& anchorPoint,
 		       float delta,
 		       Eigen::MatrixXf& output)
 {
-  Eigen::Affine3f bestEstimate =
-    reading.getPosition().transFromPose(anchorPoint.getPosition());
-
-  std::cout << bestEstimate.matrix() << std::endl;
-
-  DP readingPointCloud = reading.getCloud();
-  DP anchorPointCloud = anchorPoint.getCloud();
-  PM::TransformationParameters pmTransform;
-  pmTransformOfEigenTransform(bestEstimate, pmTransform);
-
-  PM::TransformationParameters transFromApToReading = do_icp(readingPointCloud, anchorPointCloud, pmTransform);
-
-  Eigen::Affine3f affineResult(Eigen::Matrix4f(transFromApToReading.matrix()));
-
-  // This is the best estimate we have of the actual movement the robot
-  // would have to do to go from the anchor point to the reading.
-  Eigen::Affine3f evenBetterEstimate = affineResult * bestEstimate;
+  Transform referenceTransform = transformFromApToAp(anchorPoint, reading);
 }
 
 

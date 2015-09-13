@@ -19,7 +19,9 @@ add_library(teachrepeat
   src/pose.cpp
   include/pose.h
   src/command.cpp
-  include/command.h)
+  include/command.h
+  src/transform.cpp
+  include/transform.h)
 
 add_executable(BetterTeach src/attraction_bassin_main.cpp)
 target_link_libraries(BetterTeach teachrepeat pointmatcher ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
