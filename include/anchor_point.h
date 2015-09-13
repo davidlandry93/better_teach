@@ -34,7 +34,7 @@ public:
     AnchorPoint();
     ~AnchorPoint();
 
-    DP getCloud() const;
+    PointMatcher<float>::DataPoints getCloud() const;
     void loadFromDisk(std::string directory="");
     void saveToDisk(std::string directory="") const;
 
