@@ -7,6 +7,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(libpointmatcher REQUIRED)
+find_package(YAMLCPP REQUIRED)
 
 include_directories(include/ "${libpointmatcher_INCLUDE_DIRS}" ${Boost_INCLUDE_DIR})
 link_directories({$libpointmatcher_LIB})

@@ -8,6 +8,8 @@
 #include <Eigen/Geometry>
 #include <Eigen/SVD>
 
+#include <yaml-cpp/yaml.h>
+
 #include "pointmatcher/PointMatcher.h"
 
 #include "localised_point_cloud.h"
@@ -19,17 +21,14 @@ using namespace TeachRepeat;
 typedef PointMatcher<float> PM;
 typedef PM::DataPoints DP;
 
-
 int main(int argc, char** argv)
 {
   namespace po = boost::program_options;
   po::options_description desc("Options");
 
   desc.add_options()
-    ("map,m", po::value< std::string >(),
-     "The location of the Teach Repeat map to handle")
-    ("help,h", "Produce a help message")
-    ("output,o", po::value< std::string >(), "Where to save the convergence map.");
+    ("config,c", po::value< std::string >(), "The config file to use")
+    ("help,h", "Produce a help message");
    
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -40,15 +39,20 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  if(!vm.count("map")) {
-    std::cout << "No teach and repeat map was given" << std::endl;
-    return 1;
-  }
-
-  std::cout << "Using map " << vm["map"].as< std::string >() << std::endl;
+  std::string configFile;
+  if(!vm.count("config"))
+    {
+      std::cout << "No config file specified" << std::endl;
+      return 1;
+    }
+  else
+    {
+      configFile = vm["config"].as< std::string >();
+    }
+  YAML::Node config = YAML::LoadFile(configFile.c_str());
 
   std::cout << "Loading map in memory..." << std::endl;
-  Map map(vm["map"].as< std::string >());
+  Map map(config["map"].as< std::string >());
 
   std::vector<LocalisedPointCloud>::iterator cursor = map.begin();
 
@@ -66,7 +70,6 @@ int main(int argc, char** argv)
 
   LocalisedPointCloud reading = *cursor;
 
-
   AttractionBassinBuilder builder(anchorPoint, reading);
   float convergenceMapFromX = reading.getPosition().getVector()(0) - 5.0;
   float convergenceMapToX = reading.getPosition().getVector()(0) + 5.0;
@@ -79,19 +82,10 @@ int main(int argc, char** argv)
                                                   convergenceMapToY,
                                                   30,
                                                   30);
-  std::string filename;
-  if(vm.count("output"))
-    {
-      filename = vm["output"].as< std::string >();
-    }
-  else
-    {
-      filename = "output.csv";
-    }
 
   Eigen::IOFormat CsvFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n", "", "", "", "");
 
-  std::ofstream outputFile(filename.c_str());
+  std::ofstream outputFile(config["output"].as< std::string >().c_str());
   outputFile << convergenceData.format(CsvFormat);
   outputFile.close();
 
