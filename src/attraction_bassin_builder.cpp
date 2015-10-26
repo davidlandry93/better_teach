@@ -46,11 +46,8 @@ namespace TeachRepeat
 
     if(ifs) {
       mIcpEngine.loadFromYaml(ifs);
-
-      std::cout << "Using " << icpConfigFilename << " as icp config file." << std::endl;
     } else {
       std::cout << "Could not load the specified icp config file" << std::endl;
-      mIcpEngine.setDefault();
     }
   }
   
