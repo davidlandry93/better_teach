@@ -2,6 +2,9 @@
 #ifndef ATTRACTION_BASSIN_BUILDER_H
 #define ATTRACTION_BASSIN_BUILDER_H
 
+#include <fstream>
+#include <exception>
+
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
@@ -15,6 +18,7 @@ namespace TeachRepeat
   public:
     AttractionBassinBuilder(const LocalisedPointCloud& reference, const LocalisedPointCloud& reading);
     void setReading(const LocalisedPointCloud& newReading);
+    void setIcpConfigFile(const std::string icpConfigFilename);
     Eigen::MatrixXf build(float fromX, float toX, float fromY, float toY, int resX, int resY);
 
   private:

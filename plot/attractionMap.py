@@ -6,7 +6,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 
-FILENAME = '/home/david/desktop/largerConvergenceMap.csv'
+FILENAME = '/home/david/dat/BetterTeach/2015-08-19-foret/convergenceMap.csv'
 
 attractionMap = []
 with open(FILENAME, 'r') as csvfile:

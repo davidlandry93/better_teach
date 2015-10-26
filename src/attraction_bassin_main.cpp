@@ -71,6 +71,10 @@ int main(int argc, char** argv)
   LocalisedPointCloud reading = *cursor;
 
   AttractionBassinBuilder builder(anchorPoint, reading);
+  if(config["icp_config"]) {
+    builder.setIcpConfigFile(config["icp_config"].as< std::string >());
+  } 
+  
   float convergenceMapFromX = reading.getPosition().getVector()(0) - 5.0;
   float convergenceMapToX = reading.getPosition().getVector()(0) + 5.0;
   float convergenceMapFromY = reading.getPosition().getVector()(1) - 3.0;

@@ -40,6 +40,19 @@ namespace TeachRepeat
   {
     mReading = newReading;
   }
+
+  void AttractionBassinBuilder::setIcpConfigFile(const std::string icpConfigFilename) {
+    std::ifstream ifs(icpConfigFilename.c_str());
+
+    if(ifs) {
+      mIcpEngine.loadFromYaml(ifs);
+
+      std::cout << "Using " << icpConfigFilename << " as icp config file." << std::endl;
+    } else {
+      std::cout << "Could not load the specified icp config file" << std::endl;
+      mIcpEngine.setDefault();
+    }
+  }
   
   Eigen::MatrixXf AttractionBassinBuilder::build(float fromX, float toX, float fromY, float toY, int resX, int resY)
   {
