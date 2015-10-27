@@ -22,7 +22,7 @@ namespace TeachRepeat
     Transform(const PointMatcher<float>::TransformationParameters pmTransform); 
     Transform(const Eigen::Affine3f eigenTransform);
 
-    PointMatcher<float>::TransformationParameters pmTransform();
+    PointMatcher<float>::TransformationParameters pmTransform() const;
     Eigen::Quaternionf rotationPart();
     Eigen::Vector3f translationPart();
     Transform inverse();

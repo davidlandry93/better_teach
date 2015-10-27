@@ -27,5 +27,5 @@ add_library(teachrepeat
         src/attraction_bassin_builder.cpp
         include/attraction_bassin_builder.h src/ellipse.cpp include/ellipse.h)
 
-add_executable(BetterTeach src/attraction_bassin_main.cpp)
-target_link_libraries(BetterTeach teachrepeat pointmatcher yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
+add_executable(BetterTeach src/attraction_bassin_main.cpp src/convergence_distance_function.cpp include/convergence_distance_function.h)
+target_link_libraries(BetterTeach pointmatcher teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})

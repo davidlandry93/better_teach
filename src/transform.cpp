@@ -65,7 +65,7 @@ namespace TeachRepeat
     return ss.str();
   }
 
-  PointMatcher<float>::TransformationParameters Transform::pmTransform()
+  PointMatcher<float>::TransformationParameters Transform::pmTransform() const
   {
     PointMatcher<float>::TransformationParameters pmTransform =
       PointMatcher<float>::TransformationParameters::Identity(4,4);
