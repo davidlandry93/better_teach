@@ -5,11 +5,11 @@ namespace TeachRepeat {
     template <class T>
     ConvergenceDistanceFunction<T>::ConvergenceDistanceFunction(LocalisedPointCloud reference,
                                                              LocalisedPointCloud reading,
-                                                             Transform tFromRefToReading,
                                                              Transform preciseReadingPosition, ICP icpEngine) :
-        reference(reference), reading(reading), tFromRefToReading(tFromRefToReading),
+        reference(reference), reading(reading),
         preciseReadingPosition(preciseReadingPosition), icpEngine(icpEngine) {
 
+        tFromRefToReading = Transform(reading.getPosition().getVector() - reference.getPosition().getVector());
     }
 
     template <class T>

@@ -27,5 +27,8 @@ add_library(teachrepeat
         src/attraction_bassin_builder.cpp
         include/attraction_bassin_builder.h src/ellipse.cpp include/ellipse.h)
 
-add_executable(BetterTeach src/attraction_bassin_main.cpp src/convergence_distance_function.cpp include/convergence_distance_function.h)
+add_executable(BetterTeach src/attraction_bassin_main.cpp src/convergence_distance_function.cpp include/convergence_distance_function.h src/tolerance_ellipse_calculator.cpp include/tolerance_ellipse_calculator.h)
 target_link_libraries(BetterTeach pointmatcher teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
+
+add_executable(ToleranceEllipse src/tolerance_ellipse_main.cpp include/tolerance_ellipse_calculator.h src/convergence_distance_function.cpp include/convergence_distance_function.h)
+target_link_libraries(ToleranceEllipse teachrepeat pointmatcher yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})

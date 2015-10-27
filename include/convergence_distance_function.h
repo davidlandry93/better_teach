@@ -18,7 +18,7 @@ namespace TeachRepeat {
         typedef typename PointMatcher<T>::Transformation Transformation;
 
     public:
-        ConvergenceDistanceFunction(LocalisedPointCloud reference, LocalisedPointCloud reading, Transform tFromRefToReading, Transform preciseReadingPosition, ICP icpEngine);
+        ConvergenceDistanceFunction(LocalisedPointCloud reference, LocalisedPointCloud reading,  Transform preciseReadingPosition, ICP icpEngine);
         T operator()(Transform inducedError);
 
     private:
