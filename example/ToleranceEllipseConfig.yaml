@@ -1,0 +1,3 @@
+map: /home/david/dataset/couloirdroit/
+output: /home/david/dataset/couloirdroit/convergenceMap.csv
+icp_config: /home/david/repos/better_teach/example/IcpConfig.yaml

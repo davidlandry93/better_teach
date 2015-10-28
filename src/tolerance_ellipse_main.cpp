@@ -2,12 +2,15 @@
 #include <boost/program_options.hpp>
 #include <yaml-cpp/yaml.h>
 
+#include "pointmatcher/PointMatcher.h"
+
 #include "teach_repeat_map.h"
-#include "tolerance_ellipse_calculator.h"
+#include "tolerance_ellipse_calculator.hpp"
 
 using namespace TeachRepeat;
 
 int main(int argc, char** argv) {
+    const float MAX_ERROR_TO_CONVERGE = 0.01;
 
     namespace po = boost::program_options;
     po::options_description desc("Options");
@@ -55,6 +58,9 @@ int main(int argc, char** argv) {
     }
 
     LocalisedPointCloud reading = *cursor;
+
+    ToleranceEllipseCalculator<float> calculator(MAX_ERROR_TO_CONVERGE, config["icp_config"].as< std::string >());
+    Ellipse<float> toleranceEllipse = calculator.calculate(anchorPoint, reading);
 
     return 0;
 }
