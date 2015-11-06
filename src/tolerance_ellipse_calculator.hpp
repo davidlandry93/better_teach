@@ -42,8 +42,7 @@ namespace TeachRepeat {
         float delta = 2 * M_PI / N_SEGMENTS;
         std::vector<T> convergenceDistances();
         for(int i = 0; i < N_SEGMENTS; i++) {
-            Eigen::Matrix<T,2,1> pointOnEllipse = currentEllipse.curve(i*delta);
-            Eigen::Matrix<T,3,1> pointInSpace(pointOnEllipse(0), pointOnEllipse(1), 0.0);
+            Point<T> pointOnEllipse = currentEllipse.curve(i*delta);
 
             Transform inducedError(pointInSpace);
             T convergenceDistance = f(inducedError);

@@ -27,7 +27,7 @@ namespace TeachRepeat {
     private:
         Transform do_icp(const DP& reading, const DP& ref, const Transform preTransform);
 
-        const T ELLIPSE_SAMPLE_STEP = 0.05;
+        static const T ELLIPSE_SAMPLE_STEP = 0.05;
 
         LocalisedPointCloud reference;
         LocalisedPointCloud reading;
