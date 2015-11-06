@@ -1,10 +1,12 @@
 #ifndef BETTERTEACH_CONVERGENCE_DISTANCE_FUNCTION_H
 #define BETTERTEACH_CONVERGENCE_DISTANCE_FUNCTION_H
 
+#include <vector>
 #include <Eigen/Geometry>
 
 #include "pointmatcher/PointMatcher.h"
 #include "localised_point_cloud.h"
+#include "point.hpp"
 #include "transform.h"
 
 namespace TeachRepeat {
@@ -20,9 +22,12 @@ namespace TeachRepeat {
     public:
         ConvergenceDistanceFunction(LocalisedPointCloud reference, LocalisedPointCloud reading, std::string icpConfigFilename);
         T operator()(Transform inducedError);
+        bool ellipseWithinConvergenceBassin(Ellipse<T> ellipse, T maxConvergenceDistance);
 
     private:
         Transform do_icp(const DP& reading, const DP& ref, const Transform preTransform);
+
+        const T ELLIPSE_SAMPLE_STEP = 0.05;
 
         LocalisedPointCloud reference;
         LocalisedPointCloud reading;
@@ -46,6 +51,15 @@ namespace TeachRepeat {
 
         Transform tFromRoughEstimateToLocalisation = do_icp(reference.getCloud(), reading.getCloud(), tFromRefToReading);
         preciseReadingPosition = tFromRoughEstimateToLocalisation * tFromRefToReading;
+    }
+
+    template <class T>
+    bool ConvergenceDistanceFunction<T>::ellipseWithinConvergenceBassin(Ellipse<T> ellipse, T maxConvergenceDistance) {
+        std::vector< Point<T> > samplePoints;
+
+        for(T theta = 0.0; theta < (T) M_PI; theta += ELLIPSE_SAMPLE_STEP) {
+            Point<T> pointOnEllipse = ellipse.curve(theta);
+        }
     }
 
     template <class T>

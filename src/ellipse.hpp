@@ -3,6 +3,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include "point.hpp"
 
 namespace TeachRepeat {
 
@@ -11,7 +12,7 @@ namespace TeachRepeat {
     public:
         Ellipse(T a, T b);
         void rescale(T factor);
-        Eigen::Matrix<T,2,1> curve(T theta);
+        Point<T> curve(T theta);
 
     private:
         T a;
@@ -32,10 +33,8 @@ namespace TeachRepeat {
     }
 
     template <class T>
-    Eigen::Matrix<T,2,1> Ellipse<T>::curve(T theta) {
-        Eigen::Matrix<T,2,1> m;
-        m << a*std::cos(theta), b*std::sin(theta);
-        return m;
+    Point<T> Ellipse<T>::curve(T theta) {
+        return Point<T>(a*std::cos(theta), b*std::sin(theta));
     };
 }
 
