@@ -1,94 +1,76 @@
-
 #include "transform.h"
 
-namespace TeachRepeat
-{
+namespace TeachRepeat {
 
-  typedef PointMatcher<float> PM;
+    typedef PointMatcher<float> PM;
 
-  Transform::Transform() : mTransform(Eigen::Affine3f::Identity())
-  {
+    Transform::Transform() : mTransform(Eigen::Affine3f::Identity()) {
 
-  }
-  
-  Transform::Transform(Eigen::Quaternionf rotation) :
-    mTransform(Eigen::Affine3f(rotation))
-  {
-  }
+    }
 
-  Transform::Transform(Eigen::Vector3f translation) :
-    mTransform(Eigen::Affine3f(Eigen::Translation3f(translation)))
-  {
-  }
+    Transform::Transform(Eigen::Quaternionf rotation) :
+            mTransform(Eigen::Affine3f(rotation)) {
+    }
 
-  
-  Transform::Transform(Eigen::Vector3f translation, Eigen::Quaternionf rotation)
-  {
-    Transform();
+    Transform::Transform(Eigen::Vector3f translation) :
+            mTransform(Eigen::Affine3f(Eigen::Translation3f(translation))) {
+    }
 
-    mTransform.translate(translation);
-    mTransform.rotate(rotation);
-  }
+    Transform::Transform(Eigen::Vector3f translation, Eigen::Quaternionf rotation) {
+        Transform();
 
-  Transform::Transform(const PM::TransformationParameters pmTransform) :
-    mTransform(Eigen::Affine3f(Eigen::Matrix4f(pmTransform.template cast<float>())))
-  {
-  }
+        mTransform.translate(translation);
+        mTransform.rotate(rotation);
+    }
 
-  Transform::Transform(const Eigen::Affine3f eigenTransform) :
-    mTransform(eigenTransform)
-  {
-  }
+    Transform::Transform(const PM::TransformationParameters pmTransform) :
+            mTransform(Eigen::Affine3f(Eigen::Matrix4f(pmTransform.template cast<float>()))) {
+    }
 
-  Eigen::Quaternionf Transform::rotationPart()
-  {
-    return Eigen::Quaternionf(mTransform.rotation());
-  }
-  
-  Eigen::Vector3f Transform::translationPart()
-  {
-    return Eigen::Vector3f(mTransform.translation());
-  }
-  
-  std::ostream& operator<<(std::ostream& out, Transform& t)
-  {
-    out << "Translation." << std::endl << t.translationPart() << std::endl;
-    out << "Rotation." << std::endl << Transform::quatToString(t.rotationPart()) << std::endl;
-    return out;
-  }
+    Transform::Transform(const Eigen::Affine3f eigenTransform) :
+            mTransform(eigenTransform) {
+    }
 
-  std::string Transform::quatToString(Eigen::Quaternionf quat)
-  {
-    std::stringstream ss;
-    ss << "[x: " << quat.x() << ", y: " << quat.y() << ", z: " << quat.z()
-       << ", w: " << quat.w() << "]" << std::endl;
-    return ss.str();
-  }
+    Eigen::Quaternionf Transform::rotationPart() {
+        return Eigen::Quaternionf(mTransform.rotation());
+    }
 
-  PointMatcher<float>::TransformationParameters Transform::pmTransform() const
-  {
-    PointMatcher<float>::TransformationParameters pmTransform =
-      PointMatcher<float>::TransformationParameters::Identity(4,4);
+    Eigen::Vector3f Transform::translationPart() {
+        return Eigen::Vector3f(mTransform.translation());
+    }
 
-    for(int i=0; i < 4; i++)
-      {
-        for(int j=0; j < 4; j++)
-          {
-            pmTransform(i,j) = mTransform(i,j);
-          }
-      }
+    std::ostream &operator<<(std::ostream &out, Transform &t) {
+        out << "Translation." << std::endl << t.translationPart() << std::endl;
+        out << "Rotation." << std::endl << Transform::quatToString(t.rotationPart()) << std::endl;
+        return out;
+    }
 
-    return pmTransform;
-  }
+    std::string Transform::quatToString(Eigen::Quaternionf quat) {
+        std::stringstream ss;
+        ss << "[x: " << quat.x() << ", y: " << quat.y() << ", z: " << quat.z()
+        << ", w: " << quat.w() << "]" << std::endl;
+        return ss.str();
+    }
 
-  Transform operator*(Transform lhs, const Transform& rhs)
-  {
-    return Transform(lhs.mTransform * rhs.mTransform);
-  }
+    PointMatcher<float>::TransformationParameters Transform::pmTransform() const {
+        PointMatcher<float>::TransformationParameters pmTransform =
+                PointMatcher<float>::TransformationParameters::Identity(4, 4);
 
-  Transform Transform::inverse()
-  {
-    return Transform(mTransform.inverse());
-  }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                pmTransform(i, j) = mTransform(i, j);
+            }
+        }
+
+        return pmTransform;
+    }
+
+    Transform operator*(Transform lhs, const Transform &rhs) {
+        return Transform(lhs.mTransform * rhs.mTransform);
+    }
+
+    Transform Transform::inverse() {
+        return Transform(mTransform.inverse());
+    }
 
 } // Namespace TeachRepeat.

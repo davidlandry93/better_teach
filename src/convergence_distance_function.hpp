@@ -1,6 +1,8 @@
 #ifndef BETTERTEACH_CONVERGENCE_DISTANCE_FUNCTION_H
 #define BETTERTEACH_CONVERGENCE_DISTANCE_FUNCTION_H
 
+#include <exception>
+#include <string>
 #include <vector>
 #include <Eigen/Geometry>
 
@@ -8,6 +10,7 @@
 #include "localised_point_cloud.h"
 #include "point.hpp"
 #include "transform.h"
+#include "tolerance_ellipse_calculator.hpp"
 
 namespace TeachRepeat {
 
@@ -18,6 +21,7 @@ namespace TeachRepeat {
         typedef typename PointMatcher<T>::TransformationParameters TP;
         typedef typename PointMatcher<T>::ICP ICP;
         typedef typename PointMatcher<T>::Transformation Transformation;
+        typedef typename PointMatcher<T>::ConvergenceError ConvergenceError;
 
     public:
         ConvergenceDistanceFunction(LocalisedPointCloud reference, LocalisedPointCloud reading, std::string icpConfigFilename);
@@ -26,6 +30,7 @@ namespace TeachRepeat {
 
     private:
         Transform do_icp(const DP& reading, const DP& ref, const Transform preTransform);
+
 
         static const T ELLIPSE_SAMPLE_STEP = 0.05;
 
@@ -36,6 +41,9 @@ namespace TeachRepeat {
         ICP icpEngine;
     };
 
+    class IcpException : public std::exception {
+
+    };
 
     template <class T>
     ConvergenceDistanceFunction<T>::ConvergenceDistanceFunction(LocalisedPointCloud reference,
@@ -65,10 +73,12 @@ namespace TeachRepeat {
     template <class T>
     T ConvergenceDistanceFunction<T>::operator()(Transform inducedError) {
         Transform preTransform = tFromRefToReading * inducedError;
+
         Transform icpResult = do_icp(reading.getCloud(), reference.getCloud(), preTransform);
 
-        Transform computedPositionOfReading = tFromRefToReading * icpResult;
+        std::cout << icpResult << std::endl;
 
+        Transform computedPositionOfReading = tFromRefToReading * icpResult;
 
         return (computedPositionOfReading.translationPart() - preciseReadingPosition.translationPart()).squaredNorm();
     }
@@ -90,7 +100,13 @@ namespace TeachRepeat {
 
         DP transformedReference = rigidTrans->compute(reference, pmTransform);
 
-        TP icpResult = icpEngine(reading, transformedReference);
+        TP icpResult;
+        try {
+            icpResult = icpEngine(reading, transformedReference);
+        } catch (ConvergenceError e) {
+            std::cout << e.what() << std::endl;
+            throw IcpException();
+        }
 
         return Transform(icpResult);
     }

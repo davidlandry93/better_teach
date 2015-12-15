@@ -1,6 +1,3 @@
-//
-// Created by david on 06/11/15.
-//
 
 #ifndef BETTERTEACH_POINT_H
 #define BETTERTEACH_POINT_H
@@ -15,9 +12,10 @@ public:
     T getX();
     T getY();
     T getZ();
+    Eigen::Vector3f toVector();
 
 private:
-    Eigen::Matrix<T, 3, 1>  pointRepresentation;
+    Eigen::Matrix<T, 4, 1>  pointRepresentation;
 
     void normalize();
 };
@@ -28,32 +26,42 @@ Point<T>::Point(T x, T y) {
 }
 
 template <class T>
-Point::Point(T x, T y, T z) {
+Point<T>::Point(T x, T y, T z) {
     pointRepresentation << x, y, z, 1.0;
 }
 
 template <class T>
 T Point<T>::getX() {
     normalize();
-    return pointRepresentation(1,1);
+    return pointRepresentation(0,0);
 }
 
 template <class T>
 T Point<T>::getY() {
     normalize();
-    return pointRepresentation(1,2);
+    return pointRepresentation(1,0);
 }
 
 template <class T>
 T Point<T>::getZ() {
     normalize();
-    return pointRepresentation(1,3);
+    return pointRepresentation(2,0);
 }
 
 template <class T>
 void Point<T>::normalize() {
-    pointRepresentation = pointRepresentation / pointRepresentation(4,1);
+    pointRepresentation = pointRepresentation / pointRepresentation(3,0);
 }
 
-#endif //BETTERTEACH_POINT_H
+template <class T>
+Eigen::Vector3f Point<T>::toVector() {
+    normalize();
 
+    Eigen::Vector3f vector;
+    vector << pointRepresentation[0], pointRepresentation[1], pointRepresentation[2];
+
+    return vector;
+}
+
+
+#endif //BETTERTEACH_POINT_H

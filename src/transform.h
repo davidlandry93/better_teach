@@ -1,4 +1,3 @@
-
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
@@ -9,32 +8,29 @@
 
 #include "pointmatcher/PointMatcher.h"
 
-namespace TeachRepeat
-{
-  
-  class Transform
-  {
-  public:
-    Transform();
-    Transform(Eigen::Quaternionf rotation);
-    Transform(Eigen::Vector3f translation);
-    Transform(Eigen::Vector3f translation, Eigen::Quaternionf rotation);
-    Transform(const PointMatcher<float>::TransformationParameters pmTransform); 
-    Transform(const Eigen::Affine3f eigenTransform);
+namespace TeachRepeat {
 
-    PointMatcher<float>::TransformationParameters pmTransform() const;
-    Eigen::Quaternionf rotationPart();
-    Eigen::Vector3f translationPart();
-    Transform inverse();
+    class Transform {
+    public:
+        Transform();
+        Transform(Eigen::Quaternionf rotation);
+        Transform(Eigen::Vector3f translation);
+        Transform(Eigen::Vector3f translation, Eigen::Quaternionf rotation);
+        Transform(Eigen::Vector4f translation);
+        Transform(const PointMatcher<float>::TransformationParameters pmTransform);
+        Transform(const Eigen::Affine3f eigenTransform);
 
-    static std::string quatToString(Eigen::Quaternionf quat);
-    friend std::ostream& operator<<(std::ostream& out, Transform& t);
+        PointMatcher<float>::TransformationParameters pmTransform() const;
+        Eigen::Quaternionf rotationPart();
+        Eigen::Vector3f translationPart();
+        Transform inverse();
+        static std::string quatToString(Eigen::Quaternionf quat);
+        friend std::ostream &operator<<(std::ostream &out, Transform &t);
+        friend Transform operator*(Transform lhs, const Transform &rhs);
 
-    friend Transform operator*(Transform lhs, const Transform& rhs);
-
-  private:
-    Eigen::Affine3f mTransform;
-  };
+    private:
+        Eigen::Affine3f mTransform;
+    };
 } // Namespace TeachRepeat.
 
 #endif

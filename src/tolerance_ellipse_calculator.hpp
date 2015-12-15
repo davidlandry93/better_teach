@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <string>
+#include <exception>
 
 #include "pointmatcher/PointMatcher.h"
 #include "localised_point_cloud.h"
@@ -24,7 +25,10 @@ namespace TeachRepeat {
 
         T maxConvergenceError;
         std::string icpConfigFilename;
+
+        void printErrors(std::vector<T> errors);
     };
+
 
 
     template <class T>
@@ -37,22 +41,30 @@ namespace TeachRepeat {
     Ellipse <T> ToleranceEllipseCalculator<T>::calculate(LocalisedPointCloud reference, LocalisedPointCloud reading) {
         ConvergenceDistanceFunction<T> f(reference, reading, icpConfigFilename);
 
-        Ellipse<float> currentEllipse(1.0, 2.0);
+        Ellipse<float> currentEllipse(0.5, 1.0);
 
         float delta = 2 * M_PI / N_SEGMENTS;
-        std::vector<T> convergenceDistances();
+        std::vector<T> convergenceDistances;
         for(int i = 0; i < N_SEGMENTS; i++) {
             Point<T> pointOnEllipse = currentEllipse.curve(i*delta);
 
-            Transform inducedError(pointInSpace);
-            T convergenceDistance = f(inducedError);
+            Transform inducedError(pointOnEllipse.toVector());
 
-            // TODO: Actually compute something with the convergenceDistance
+            T convergenceDistance = f(inducedError);
+            convergenceDistances.push_back(convergenceDistance);
         }
+
+        printErrors(convergenceDistances);
 
         return currentEllipse;
     }
 
+    template <class T>
+    void ToleranceEllipseCalculator<T>::printErrors(std::vector<T> errors) {
+        for(int i = 0; i < errors.size(); i++) {
+            std::cout << errors.at(i) << std::endl;
+        }
+    }
 }
 
 #endif //BETTERTEACH_CONVERGENCEBASSINCALCULATOR_H
