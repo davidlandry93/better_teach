@@ -45,14 +45,14 @@ int main(int argc, char** argv) {
 
     std::vector<LocalisedPointCloud>::iterator cursor = map.begin();
 
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < 1; i++)
     {
         cursor++;
     }
 
     LocalisedPointCloud anchorPoint = *cursor;
 
-    for(int i=0; i < 5; i++)
+    for(int i=0; i < 1; i++)
     {
         cursor++;
     }

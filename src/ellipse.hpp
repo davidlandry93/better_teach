@@ -21,9 +21,8 @@ namespace TeachRepeat {
 
 
     template <class T>
-    Ellipse<T>::Ellipse(T a, T b) {
-        a = a;
-        b = b;
+    Ellipse<T>::Ellipse(T a, T b) :
+        a(a), b(b) {
     }
 
     template <class T>

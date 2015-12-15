@@ -73,12 +73,16 @@ namespace TeachRepeat {
     template <class T>
     T ConvergenceDistanceFunction<T>::operator()(Transform inducedError) {
         Transform preTransform = tFromRefToReading * inducedError;
+        std::cout << "InducedError" << std::endl;
+        std::cout << inducedError << std::endl;
 
         Transform icpResult = do_icp(reading.getCloud(), reference.getCloud(), preTransform);
-
+        std::cout << "IcpResult" << std::endl;
         std::cout << icpResult << std::endl;
 
-        Transform computedPositionOfReading = tFromRefToReading * icpResult;
+        std::cout << "---" << std::endl;
+
+        Transform computedPositionOfReading = preTransform * icpResult;
 
         return (computedPositionOfReading.translationPart() - preciseReadingPosition.translationPart()).squaredNorm();
     }
@@ -86,7 +90,6 @@ namespace TeachRepeat {
 
     template <class T>
     Transform ConvergenceDistanceFunction<T>::do_icp(const DP& reading, const DP& reference, const Transform preTransform) {
-
         Transformation* rigidTrans;
         rigidTrans = PointMatcher<T>::get().REG(Transformation).create("RigidTransformation");
 
