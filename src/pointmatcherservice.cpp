@@ -48,5 +48,4 @@ namespace TeachRepeat {
                                              const std::string destination) const {
 
     }
-
 }
