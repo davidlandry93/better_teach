@@ -44,5 +44,5 @@ add_executable(ToleranceEllipse
         src/point.hpp
         src/convergence_distance_function.hpp
         )
-target_link_libraries(ToleranceEllipse pointmatcherservice teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
+target_link_libraries(ToleranceEllipse teachrepeat pointmatcherservice yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
 set_property(TARGET ToleranceEllipse PROPERTY CXX_STANDARD 11)

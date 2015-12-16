@@ -54,7 +54,7 @@ namespace TeachRepeat {
     void LocalisedPointCloud::saveToDisk(std::string directory, std::string filename) const {
         boost::filesystem::path basepath(directory), filepath(filename), fullpath;
 
-        fullpath = directory.empty() ? filepath / basepath : filepath;
+        fullpath = directory.empty() ? filepath : basepath / filepath;
 
         mPointCloud.save(fullpath.generic_string());
     }
