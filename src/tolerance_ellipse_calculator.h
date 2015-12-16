@@ -7,8 +7,8 @@
 
 #include "pointmatcher/PointMatcher.h"
 #include "localised_point_cloud.h"
-#include "ellipse.hpp"
-#include "convergence_distance_function.hpp"
+#include "ellipse.h"
+#include "convergence_distance_function.h"
 
 namespace TeachRepeat {
 

@@ -5,7 +5,7 @@
 #include "pointmatcher/PointMatcher.h"
 
 #include "teach_repeat_map.h"
-#include "tolerance_ellipse_calculator.hpp"
+#include "tolerance_ellipse_calculator.h"
 
 using namespace TeachRepeat;
 

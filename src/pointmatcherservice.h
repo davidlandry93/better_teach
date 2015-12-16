@@ -32,4 +32,6 @@ class IcpException : public std::exception {
 
 }
 
+#include "pointmatcherservice.hpp"
+
 #endif

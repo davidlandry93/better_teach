@@ -1,3 +1,7 @@
+
+#ifndef TEACH_REPEAT_MAP
+#define TEACH_REPEAT_MAP
+
 #include <iostream>
 #include <vector>
 
@@ -14,6 +18,7 @@ namespace TeachRepeat {
         Map(std::string directory);
         std::vector<LocalisedPointCloud>::iterator begin();
         std::vector<LocalisedPointCloud>::iterator end();
+        void correctPositions(PointMatcherService<float> pointMatcherService);
 
     private:
         void loadCommands(std::istream &input);
@@ -26,3 +31,5 @@ namespace TeachRepeat {
     };
 
 }
+
+#endif

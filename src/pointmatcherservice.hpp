@@ -1,6 +1,4 @@
 
-#include "pointmatcherservice.h"
-
 namespace TeachRepeat {
 
     template <typename T>

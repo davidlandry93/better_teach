@@ -3,7 +3,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#include "point.hpp"
+#include "point.h"
 
 namespace TeachRepeat {
 

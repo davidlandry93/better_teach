@@ -8,10 +8,10 @@
 
 #include "pointmatcher/PointMatcher.h"
 #include "localised_point_cloud.h"
-#include "point.hpp"
+#include "point.h"
 #include "transform.h"
-#include "tolerance_ellipse_calculator.hpp"
-#include "pointmatcherservice.hpp"
+#include "tolerance_ellipse_calculator.h"
+#include "pointmatcherservice.h"
 
 namespace TeachRepeat {
 
