@@ -58,4 +58,24 @@ namespace TeachRepeat {
         }
     }
 
+    void Map::correctPositions(PointMatcherService<float> pointMatcherService) {
+        std::vector<Pose> correctedPoses;
+        correctedPoses.push_back(Pose::origin());
+
+        for(auto it = anchorPoints.begin() + 1; it != anchorPoints.end() - 1; it++) {
+            Pose odometryEstimateOfPrevious = (it-1)->getPosition();
+            Pose odometryEstimateOfCurrent = it->getPosition();
+
+            Transform odometryEstimate = odometryEstimateOfCurrent.transFromPose(odometryEstimateOfPrevious);
+
+            Transform icpResult = pointMatcherService.icp(*it, *(it - 1), odometryEstimate);
+
+            Transform tFromOriginToCurrent = icpResult * odometryEstimate;
+
+            Pose poseOfCurrent = Pose::origin();
+            poseOfCurrent.transform(tFromOriginToCurrent);
+            correctedPoses.push_back(poseOfCurrent);
+        }
+    }
+
 } //namespace TeachRepeat
