@@ -56,9 +56,9 @@ namespace TeachRepeat {
 
         Transform computedPositionOfReading = preTransform * icpResult;
 
-        reference.saveToDisk("/home/david/dat/Debug/ref", std::to_string(nCalls) + ".vtk");
+        reference.saveToDisk("Debug/ref", std::to_string(nCalls) + ".vtk");
         reading.transform(computedPositionOfReading.inverse());
-        reading.saveToDisk("/home/david/dat/Debug/result", std::to_string(nCalls++) + ".vtk");
+        reading.saveToDisk("Debug/result", std::to_string(nCalls++) + ".vtk");
         reading.transform(computedPositionOfReading);
 
         return (computedPositionOfReading.translationPart() - preciseReadingPosition.translationPart()).squaredNorm();

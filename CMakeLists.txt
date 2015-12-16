@@ -26,11 +26,6 @@ add_library(teachrepeat STATIC
         )
 target_link_libraries(teachrepeat pointmatcherservice)
 
-add_executable(BetterTeach src/attraction_bassin_main.cpp
-        src/attraction_bassin_builder.cpp
-        src/attraction_bassin_builder.h)
-target_link_libraries(BetterTeach teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
-
 add_executable(ToleranceEllipse
         src/tolerance_ellipse_main.cpp)
 target_link_libraries(ToleranceEllipse teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
