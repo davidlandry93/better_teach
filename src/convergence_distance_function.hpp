@@ -11,23 +11,16 @@
 #include "point.hpp"
 #include "transform.h"
 #include "tolerance_ellipse_calculator.hpp"
-#include "pointmatcherservice.h"
+#include "pointmatcherservice.hpp"
 
 namespace TeachRepeat {
 
-    template <class T>
+    template <typename T>
     class ConvergenceDistanceFunction {
-        typedef PointMatcher<T> PM;
-        typedef typename PointMatcher<T>::DataPoints DP;
-        typedef typename PointMatcher<T>::TransformationParameters TP;
-        typedef typename PointMatcher<T>::ICP ICP;
-        typedef typename PointMatcher<T>::Transformation Transformation;
-        typedef typename PointMatcher<T>::ConvergenceError ConvergenceError;
 
     public:
-        ConvergenceDistanceFunction(LocalisedPointCloud reference, LocalisedPointCloud reading, const PointMatcherService<float>& pointMatcherService);
-        T operator()(Transform inducedError);
-        bool ellipseWithinConvergenceBassin(Ellipse<T> ellipse, T maxConvergenceDistance);
+        ConvergenceDistanceFunction(LocalisedPointCloud reference, LocalisedPointCloud reading, PointMatcherService<T>& pointMatcherService);
+        float operator()(Transform inducedError);
 
     private:
         static const T ELLIPSE_SAMPLE_STEP = 0.05;
@@ -36,12 +29,13 @@ namespace TeachRepeat {
         LocalisedPointCloud reading;
         Transform tFromRefToReading;
         Transform preciseReadingPosition;
-        PointMatcherService<float> pointMatcherService;
+        PointMatcherService<T> pointMatcherService;
     };
 
-    template <class T>
+    template <typename T>
     ConvergenceDistanceFunction<T>::ConvergenceDistanceFunction(LocalisedPointCloud reference,
-                                                                LocalisedPointCloud reading, const PointMatcherService<float>& pointMatcherService) :
+                                                             LocalisedPointCloud reading,
+                                                             PointMatcherService<T>& pointMatcherService) :
         reference(reference), reading(reading) {
         this->pointMatcherService = pointMatcherService;
 
@@ -52,17 +46,8 @@ namespace TeachRepeat {
         preciseReadingPosition = tFromRoughEstimateToLocalisation * tFromRefToReading;
     }
 
-    template <class T>
-    bool ConvergenceDistanceFunction<T>::ellipseWithinConvergenceBassin(Ellipse<T> ellipse, T maxConvergenceDistance) {
-        std::vector< Point<T> > samplePoints;
-
-        for(T theta = 0.0; theta < (T) M_PI; theta += ELLIPSE_SAMPLE_STEP) {
-            Point<T> pointOnEllipse = ellipse.curve(theta);
-        }
-    }
-
-    template <class T>
-    T ConvergenceDistanceFunction<T>::operator()(Transform inducedError) {
+    template <typename T>
+    float ConvergenceDistanceFunction<T>::operator()(Transform inducedError) {
         Transform preTransform = tFromRefToReading * inducedError;
         std::cout << "InducedError" << std::endl;
         std::cout << inducedError << std::endl;

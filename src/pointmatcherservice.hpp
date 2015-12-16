@@ -3,24 +3,22 @@
 
 namespace TeachRepeat {
 
-    template<typename T>
+    template <typename T>
     PointMatcherService<T>::PointMatcherService() {
-        icpEngine = typename PointMatcher<T>::ICP();
+        icpEngine = PointMatcher<float>::ICP();
     }
 
-    template<typename T>
+    template <typename T>
     void PointMatcherService<T>::loadConfigFile(std::string pathToConfig) {
         std::ifstream ifs(pathToConfig.c_str());
 
         icpEngine.loadFromYaml(ifs);
     }
 
-    template<typename T>
-    Transform PointMatcherService<T>::icp(const LocalisedPointCloud &reading,
-                                          const LocalisedPointCloud &reference,
-                                          const Transform preTransform) const {
+    template <typename T>
+    Transform PointMatcherService<T>::icp(const LocalisedPointCloud &reading, const LocalisedPointCloud &reference, const Transform preTransform) {
         Transformation *rigidTrans;
-        rigidTrans = PointMatcher<T>::get().REG(Transformation).create("RigidTransformation");
+        rigidTrans = PointMatcher<float>::get().REG(Transformation).create("RigidTransformation");
 
         TP pmTransform = preTransform.pmTransform();
         if (!rigidTrans->checkParameters(pmTransform)) {
@@ -43,7 +41,7 @@ namespace TeachRepeat {
         return Transform(icpResult);
     }
 
-    template<typename T>
+    template <typename T>
     void PointMatcherService<T>::savePointCloud(const TeachRepeat::LocalisedPointCloud &pointCloud,
                                              const std::string destination) const {
 

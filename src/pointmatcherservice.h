@@ -7,7 +7,7 @@
 
 namespace TeachRepeat {
 
-template <typename T>
+    template <typename T>
 class PointMatcherService {
     typedef PointMatcher<T> PM;
     typedef typename PointMatcher<T>::DataPoints DP;
@@ -20,11 +20,11 @@ class PointMatcherService {
 public:
     PointMatcherService();
     void loadConfigFile(std::string pathToConfig);
-    Transform icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform) const;
+    Transform icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform);
     void savePointCloud(const LocalisedPointCloud& pointCloud, const std::string destination) const;
 
 private:
-    typename PointMatcher<T>::ICP icpEngine;
+    typename PointMatcher<float>::ICP icpEngine;
 };
 
 class IcpException : public std::exception {

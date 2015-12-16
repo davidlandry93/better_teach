@@ -18,7 +18,7 @@ add_library(pointmatcherservice STATIC
         src/transform.h
         src/localised_point_cloud.cpp
         src/localised_point_cloud.h
-        src/pointmatcherservice.cpp
+        src/pointmatcherservice.hpp
         src/pointmatcherservice.h
         )
 target_link_libraries(pointmatcherservice pointmatcher)
