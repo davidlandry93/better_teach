@@ -44,7 +44,7 @@ namespace TeachRepeat {
         return mRotation;
     }
 
-    std::ostream &operator<<(std::ostream &out, Pose &pose) {
+    std::ostream& operator<<(std::ostream &out, Pose &pose) {
         out << pose.mVector << "[" << pose.mRotation.x() << "," <<
         pose.mRotation.y() << "," << pose.mRotation.z() << "," <<
         pose.mRotation.w() << "]" << std::endl;

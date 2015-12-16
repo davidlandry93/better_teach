@@ -73,6 +73,10 @@ namespace TeachRepeat {
         return mPosition;
     }
 
+    void LocalisedPointCloud::setPosition(Pose const& pose) {
+        mPosition = pose;
+    }
+
     void LocalisedPointCloud::transform(const Transform t) {
         Transformation *rigidTrans;
         rigidTrans = PointMatcher<float>::get().REG(Transformation).create("RigidTransformation");

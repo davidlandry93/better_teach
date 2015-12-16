@@ -4,7 +4,9 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
+#include "pointmatcherservice.h"
 #include "localised_point_cloud.h"
 #include "command.h"
 #include "pose.h"
@@ -16,9 +18,10 @@ namespace TeachRepeat {
     public:
         Map();
         Map(std::string directory);
+        Map(std::string directory, PointMatcherService<float>& service);
         std::vector<LocalisedPointCloud>::iterator begin();
         std::vector<LocalisedPointCloud>::iterator end();
-        void correctPositions(PointMatcherService<float> pointMatcherService);
+        void correctPositions(PointMatcherService<float>& pointMatcherService);
 
     private:
         void loadCommands(std::istream &input);

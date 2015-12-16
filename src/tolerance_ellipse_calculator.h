@@ -17,7 +17,7 @@ namespace TeachRepeat {
         typedef typename PointMatcher<T>::ICP ICP;
 
     public:
-        ToleranceEllipseCalculator(T maxConvergenceError, std::string icpConfigFilename);
+        ToleranceEllipseCalculator(T maxConvergenceError, PointMatcherService<T> const& pointMatcherService);
         Ellipse<T> calculate(LocalisedPointCloud reference, LocalisedPointCloud reading);
 
     private:
@@ -25,6 +25,7 @@ namespace TeachRepeat {
 
         T maxConvergenceError;
         std::string icpConfigFilename;
+        PointMatcherService<T> pointMatcherService;
 
         void printErrors(std::vector<T> errors);
     };
@@ -32,17 +33,14 @@ namespace TeachRepeat {
 
 
     template <class T>
-    ToleranceEllipseCalculator<T>::ToleranceEllipseCalculator(T maxConvergenceError, std::string icpConfigFilename) :
+    ToleranceEllipseCalculator<T>::ToleranceEllipseCalculator(T maxConvergenceError, PointMatcherService<T> const& pointMatcherService) :
             maxConvergenceError(maxConvergenceError), icpConfigFilename(icpConfigFilename) {
-
+        this->pointMatcherService = pointMatcherService;
     }
 
     template <class T>
     Ellipse <T> ToleranceEllipseCalculator<T>::calculate(LocalisedPointCloud reference, LocalisedPointCloud reading) {
-        PointMatcherService<float> pmService;
-        pmService.loadConfigFile(icpConfigFilename);
-
-        ConvergenceDistanceFunction<T> f(reference, reading, pmService);
+        ConvergenceDistanceFunction<T> f(reference, reading, pointMatcherService);
 
         Ellipse<float> currentEllipse(0.5, 1.0);
 

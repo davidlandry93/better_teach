@@ -41,7 +41,11 @@ int main(int argc, char** argv) {
     YAML::Node config = YAML::LoadFile(configFile.c_str());
 
     std::cout << "Loading map in memory..." << std::endl;
-    Map map(config["map"].as< std::string >());
+
+    PointMatcherService<float> pmService;
+    pmService.loadConfigFile(config["icp_config"].as< std::string >());
+
+    Map map(config["map"].as< std::string >(), pmService);
 
     std::vector<LocalisedPointCloud>::iterator cursor = map.begin();
 
@@ -59,7 +63,7 @@ int main(int argc, char** argv) {
 
     LocalisedPointCloud reading = *cursor;
 
-    ToleranceEllipseCalculator<float> calculator(MAX_ERROR_TO_CONVERGE, config["icp_config"].as< std::string >());
+    ToleranceEllipseCalculator<float> calculator(MAX_ERROR_TO_CONVERGE, pmService);
     Ellipse<float> toleranceEllipse = calculator.calculate(anchorPoint, reading);
 
     return 0;

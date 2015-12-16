@@ -44,6 +44,7 @@ public:
 
     std::string name() const;
     Pose getPosition() const;
+    void setPosition(Pose const& pose);
 
     void transform(const Transform t);
 };

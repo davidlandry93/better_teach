@@ -1,11 +1,17 @@
 #include <istream>
 #include <boost/filesystem.hpp>
+#include <bits/basic_string.h>
 
 #include "teach_repeat_map.h"
 
 namespace TeachRepeat {
 
     Map::Map() { }
+
+    Map::Map(std::string directory, PointMatcherService<float> & service)
+    : Map(directory) {
+        correctPositions(service);
+    }
 
     Map::Map(std::string directory) {
         boost::filesystem::path base(directory);
@@ -58,24 +64,40 @@ namespace TeachRepeat {
         }
     }
 
-    void Map::correctPositions(PointMatcherService<float> pointMatcherService) {
+    void Map::correctPositions(PointMatcherService<float> & pointMatcherService) {
         std::vector<Pose> correctedPoses;
         correctedPoses.push_back(Pose::origin());
 
-        for(auto it = anchorPoints.begin() + 1; it != anchorPoints.end() - 1; it++) {
-            Pose odometryEstimateOfPrevious = (it-1)->getPosition();
-            Pose odometryEstimateOfCurrent = it->getPosition();
+        for(int i = 1; i < anchorPoints.size(); ++i) {
+            auto it = anchorPoints.begin() + i;
 
-            Transform odometryEstimate = odometryEstimateOfCurrent.transFromPose(odometryEstimateOfPrevious);
+            Transform originToPreviousPose = correctedPoses[i-1].transFromPose(Pose::origin());
 
-            Transform icpResult = pointMatcherService.icp(*it, *(it - 1), odometryEstimate);
+            Transform icpResult = pointMatcherService.icp(*it, *(it - 1));
+            
+            (it - 1)->saveToDisk("", std::to_string(i) + "ref.vtk");
 
-            Transform tFromOriginToCurrent = icpResult * odometryEstimate;
+            Transform tFromOriginToCurrent = icpResult * originToPreviousPose;
+
+            it->transform(icpResult);
+            it->saveToDisk("", std::to_string(i) + "res.vtk");
+            it->transform(icpResult.inverse());
 
             Pose poseOfCurrent = Pose::origin();
             poseOfCurrent.transform(tFromOriginToCurrent);
             correctedPoses.push_back(poseOfCurrent);
         }
+
+        for(auto anchor : anchorPoints)
+            std::cout << anchor.getPosition().getVector() << std::endl << std::endl;
+
+        for(auto pose : correctedPoses)
+            std::cout << pose.getVector() << std::endl << std::endl;
+
+        for(int i = 0; i < anchorPoints.size(); ++i) {
+            anchorPoints[i].setPosition(correctedPoses[i]);
+        }
+
     }
 
 } //namespace TeachRepeat

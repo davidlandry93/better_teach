@@ -28,6 +28,8 @@ namespace TeachRepeat {
         friend std::ostream &operator<<(std::ostream &out, Transform &t);
         friend Transform operator*(Transform lhs, const Transform &rhs);
 
+        static Transform identity();
+
     private:
         Eigen::Affine3f mTransform;
     };

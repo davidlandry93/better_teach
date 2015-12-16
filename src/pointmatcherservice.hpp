@@ -14,6 +14,19 @@ namespace TeachRepeat {
     }
 
     template <typename T>
+    Transform PointMatcherService<T>::icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference) {
+        TP icpResult;
+        try {
+            icpResult = icpEngine(reading.getCloud(), reference.getCloud());
+        } catch (ConvergenceError e) {
+            std::cout << e.what() << std::endl;
+            throw IcpException();
+        }
+
+        return Transform(icpResult);
+    }
+
+    template <typename T>
     Transform PointMatcherService<T>::icp(const LocalisedPointCloud &reading, const LocalisedPointCloud &reference, const Transform preTransform) {
         TP icpResult;
         try {

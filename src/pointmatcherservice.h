@@ -20,6 +20,7 @@ class PointMatcherService {
 public:
     PointMatcherService();
     void loadConfigFile(std::string pathToConfig);
+    Transform icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference);
     Transform icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform);
 
 private:
