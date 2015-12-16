@@ -39,7 +39,10 @@ namespace TeachRepeat {
 
     template <class T>
     Ellipse <T> ToleranceEllipseCalculator<T>::calculate(LocalisedPointCloud reference, LocalisedPointCloud reading) {
-        ConvergenceDistanceFunction<T> f(reference, reading, icpConfigFilename);
+        PointMatcherService<float> pmService;
+        pmService.loadConfigFile(icpConfigFilename);
+
+        ConvergenceDistanceFunction<T> f(reference, reading, pmService);
 
         Ellipse<float> currentEllipse(0.5, 1.0);
 

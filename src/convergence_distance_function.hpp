@@ -11,6 +11,7 @@
 #include "point.hpp"
 #include "transform.h"
 #include "tolerance_ellipse_calculator.hpp"
+#include "pointmatcherservice.h"
 
 namespace TeachRepeat {
 
@@ -24,40 +25,30 @@ namespace TeachRepeat {
         typedef typename PointMatcher<T>::ConvergenceError ConvergenceError;
 
     public:
-        ConvergenceDistanceFunction(LocalisedPointCloud reference, LocalisedPointCloud reading, std::string icpConfigFilename);
+        ConvergenceDistanceFunction(LocalisedPointCloud reference, LocalisedPointCloud reading, const PointMatcherService<float>& pointMatcherService);
         T operator()(Transform inducedError);
         bool ellipseWithinConvergenceBassin(Ellipse<T> ellipse, T maxConvergenceDistance);
 
     private:
-        Transform do_icp(const DP& reading, const DP& ref, const Transform preTransform);
-
-
         static const T ELLIPSE_SAMPLE_STEP = 0.05;
 
         LocalisedPointCloud reference;
         LocalisedPointCloud reading;
         Transform tFromRefToReading;
         Transform preciseReadingPosition;
-        ICP icpEngine;
-    };
-
-    class IcpException : public std::exception {
-
+        PointMatcherService<float> pointMatcherService;
     };
 
     template <class T>
     ConvergenceDistanceFunction<T>::ConvergenceDistanceFunction(LocalisedPointCloud reference,
-                                                             LocalisedPointCloud reading, std::string icpConfigFilename) :
+                                                                LocalisedPointCloud reading, const PointMatcherService<float>& pointMatcherService) :
         reference(reference), reading(reading) {
-        std::ifstream ifs(icpConfigFilename.c_str());
-
-        icpEngine = typename PointMatcher<T>::ICP();
-        icpEngine.loadFromYaml(ifs);
+        this->pointMatcherService = pointMatcherService;
 
         Eigen::Matrix<T,3,1> vectorFromRefToReading = reading.getPosition().getVector() - reference.getPosition().getVector();
         tFromRefToReading = Transform(vectorFromRefToReading);
 
-        Transform tFromRoughEstimateToLocalisation = do_icp(reference.getCloud(), reading.getCloud(), tFromRefToReading);
+        Transform tFromRoughEstimateToLocalisation = pointMatcherService.icp(reference, reading, tFromRefToReading);
         preciseReadingPosition = tFromRoughEstimateToLocalisation * tFromRefToReading;
     }
 
@@ -76,7 +67,8 @@ namespace TeachRepeat {
         std::cout << "InducedError" << std::endl;
         std::cout << inducedError << std::endl;
 
-        Transform icpResult = do_icp(reading.getCloud(), reference.getCloud(), preTransform);
+        Transform icpResult = pointMatcherService.icp(reading, reference, preTransform);
+
         std::cout << "IcpResult" << std::endl;
         std::cout << icpResult << std::endl;
 
@@ -85,33 +77,6 @@ namespace TeachRepeat {
         Transform computedPositionOfReading = preTransform * icpResult;
 
         return (computedPositionOfReading.translationPart() - preciseReadingPosition.translationPart()).squaredNorm();
-    }
-
-
-    template <class T>
-    Transform ConvergenceDistanceFunction<T>::do_icp(const DP& reading, const DP& reference, const Transform preTransform) {
-        Transformation* rigidTrans;
-        rigidTrans = PointMatcher<T>::get().REG(Transformation).create("RigidTransformation");
-
-        TP pmTransform = preTransform.pmTransform();
-        if (!rigidTrans->checkParameters(pmTransform)) {
-            std::cout <<
-            "WARNING: T does not represent a valid rigid transformation\nProjecting onto an orthogonal basis"
-            << std::endl;
-            rigidTrans->correctParameters(pmTransform);
-        }
-
-        DP transformedReference = rigidTrans->compute(reference, pmTransform);
-
-        TP icpResult;
-        try {
-            icpResult = icpEngine(reading, transformedReference);
-        } catch (ConvergenceError e) {
-            std::cout << e.what() << std::endl;
-            throw IcpException();
-        }
-
-        return Transform(icpResult);
     }
 }
 

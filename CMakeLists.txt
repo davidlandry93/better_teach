@@ -26,15 +26,18 @@ add_library(teachrepeat
         src/localised_point_cloud.h
         src/attraction_bassin_builder.cpp
         src/attraction_bassin_builder.h
-        src/ellipse.hpp)
+        src/ellipse.hpp src/pointmatcherservice.h)
 
 add_library(mapoptimization
         src/attraction_bassin_builder.cpp
         src/attraction_bassin_builder.h
         src/ellipse.hpp
         src/point.hpp
+        src/pointmatcherservice.cpp
+        src/pointmatcherservice.h
         src/convergence_distance_function.hpp
-        src/tolerance_ellipse_calculator.hpp)
+        src/tolerance_ellipse_calculator.hpp
+)
 
 add_executable(BetterTeach
         src/attraction_bassin_main.cpp)
@@ -43,4 +46,4 @@ target_link_libraries(BetterTeach pointmatcher mapoptimization teachrepeat yaml-
 add_executable(ToleranceEllipse
         src/tolerance_ellipse_main.cpp
         )
-target_link_libraries(ToleranceEllipse teachrepeat mapoptimization pointmatcher yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
+target_link_libraries(ToleranceEllipse mapoptimization teachrepeat  pointmatcher yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
