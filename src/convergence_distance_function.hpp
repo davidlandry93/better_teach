@@ -23,7 +23,7 @@ namespace TeachRepeat {
         float operator()(Transform inducedError);
 
     private:
-        static const T ELLIPSE_SAMPLE_STEP = 0.05;
+        static int nCalls;
 
         LocalisedPointCloud reference;
         LocalisedPointCloud reading;
@@ -31,6 +31,9 @@ namespace TeachRepeat {
         Transform preciseReadingPosition;
         PointMatcherService<T> pointMatcherService;
     };
+
+    template <typename T>
+    int ConvergenceDistanceFunction<T>::nCalls = 0;
 
     template <typename T>
     ConvergenceDistanceFunction<T>::ConvergenceDistanceFunction(LocalisedPointCloud reference,
@@ -49,17 +52,14 @@ namespace TeachRepeat {
     template <typename T>
     float ConvergenceDistanceFunction<T>::operator()(Transform inducedError) {
         Transform preTransform = tFromRefToReading * inducedError;
-        std::cout << "InducedError" << std::endl;
-        std::cout << inducedError << std::endl;
-
         Transform icpResult = pointMatcherService.icp(reading, reference, preTransform);
 
-        std::cout << "IcpResult" << std::endl;
-        std::cout << icpResult << std::endl;
-
-        std::cout << "---" << std::endl;
-
         Transform computedPositionOfReading = preTransform * icpResult;
+
+        reference.saveToDisk("/home/david/dat/Debug/ref", std::to_string(nCalls) + ".vtk");
+        reading.transform(computedPositionOfReading);
+        reading.saveToDisk("/home/david/dat/Debug/result", std::to_string(nCalls++) + ".vtk");
+        reading.transform(computedPositionOfReading.inverse());
 
         return (computedPositionOfReading.translationPart() - preciseReadingPosition.translationPart()).squaredNorm();
     }

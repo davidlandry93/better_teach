@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0015 OLD)
 
 project(BetterTeach)
@@ -45,3 +45,4 @@ add_executable(ToleranceEllipse
         src/convergence_distance_function.hpp
         )
 target_link_libraries(ToleranceEllipse pointmatcherservice teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
+set_property(TARGET ToleranceEllipse PROPERTY CXX_STANDARD 11)

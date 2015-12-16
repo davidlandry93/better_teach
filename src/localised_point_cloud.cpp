@@ -48,12 +48,15 @@ namespace TeachRepeat {
     }
 
     void LocalisedPointCloud::saveToDisk(std::string directory) const {
+        saveToDisk(directory, mAnchorPointName);
+    }
 
-        std::string filename = directory == "" ?
-                               mAnchorPointName :
-                               (boost::filesystem::path(directory) / mAnchorPointName).string();
+    void LocalisedPointCloud::saveToDisk(std::string directory, std::string filename) const {
+        boost::filesystem::path basepath(directory), filepath(filename), fullpath;
 
-        mPointCloud.save(filename);
+        fullpath = directory.empty() ? filepath / basepath : filepath;
+
+        mPointCloud.save(fullpath.generic_string());
     }
 
     std::ostream &operator<<(std::ostream &out, LocalisedPointCloud &ap) {
@@ -70,4 +73,17 @@ namespace TeachRepeat {
         return mPosition;
     }
 
+    void LocalisedPointCloud::transform(const Transform t) {
+        Transformation *rigidTrans;
+        rigidTrans = PointMatcher<float>::get().REG(Transformation).create("RigidTransformation");
+
+        if (!rigidTrans->checkParameters(t.pmTransform())) {
+            std::cout <<
+            "WARNING: T does not represent a valid rigid transformation\nProjecting onto an orthogonal basis"
+            << std::endl;
+            rigidTrans->correctParameters(t.pmTransform());
+        }
+
+        mPointCloud = rigidTrans->compute(mPointCloud, t.pmTransform());
+    }
 } // namespace TeachRepeat

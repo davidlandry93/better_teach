@@ -19,6 +19,7 @@ class LocalisedPointCloud {
     typedef PointMatcher<float> PM;
     typedef PM::DataPoints DP;
     typedef PM::Parameters Parameters;
+    typedef PM::Transformation Transformation;
   
 private:
     const static std::string POINT_CLOUD_FRAME;
@@ -37,11 +38,14 @@ public:
     PointMatcher<float>::DataPoints getCloud() const;
     void loadFromDisk(std::string directory="");
     void saveToDisk(std::string directory="") const;
+    void saveToDisk(std::string directory, std::string filename) const;
 
     friend std::ostream& operator<<(std::ostream& out, LocalisedPointCloud& ap);
 
     std::string name() const;
     Pose getPosition() const;
+
+    void transform(const Transform t);
 };
 
 } // namespace TeachRepeat
