@@ -15,7 +15,7 @@ TEST(pointMatcherServiceTest, initialTransformationTest) {
     PointMatcherService<float> service;
 
     Eigen::Vector3f translation;
-    translation << 1.0, 0.0, 0.0;
+    translation << 0.5, 0.0, 0.0;
     Transform preTransform = Transform(translation);
     Transform icpResult = service.icp(reading, reference, preTransform);
 
