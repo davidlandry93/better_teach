@@ -22,6 +22,8 @@ namespace TeachRepeat {
         std::vector<LocalisedPointCloud>::iterator begin();
         std::vector<LocalisedPointCloud>::iterator end();
         void correctPositions(PointMatcherService<float>& pointMatcherService);
+        Transform tFromCloudToCloud(int firstCloudIndex, int secondCloudIndex);
+        void writeMapListToStream(std::ostream& stream) const;
 
     private:
         void loadCommands(std::istream &input);

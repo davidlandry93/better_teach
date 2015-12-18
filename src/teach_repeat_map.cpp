@@ -72,6 +72,7 @@ namespace TeachRepeat {
             auto it = anchorPoints.begin() + i;
 
             Transform originToPreviousPose = correctedPoses[i-1].transFromPose(Pose::origin());
+            Transform originToCurrentPose = it->getPosition().transFromPose(Pose::origin());
 
             Transform icpResult = pointMatcherService.icp(*it, *(it - 1));
             
@@ -97,7 +98,16 @@ namespace TeachRepeat {
         for(int i = 0; i < anchorPoints.size(); ++i) {
             anchorPoints[i].setPosition(correctedPoses[i]);
         }
+    }
 
+    Transform Map::tFromCloudToCloud(int firstCloudIndex, int secondCloudIndex) {
+        return anchorPoints[secondCloudIndex].getPosition().transFromPose(anchorPoints[firstCloudIndex].getPosition());
+    }
+
+    void Map::writeMapListToStream(std::ostream& stream) const {
+        for(auto anchorPoint : anchorPoints) {
+            stream << anchorPoint <<  std::endl;
+        }
     }
 
 } //namespace TeachRepeat

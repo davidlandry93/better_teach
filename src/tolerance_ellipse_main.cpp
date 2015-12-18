@@ -9,6 +9,14 @@
 
 using namespace TeachRepeat;
 
+void writeAnchorPointsDatabaseToFile(Map map) {
+    std::ofstream anchorPointsFile;
+    anchorPointsFile.open("correctedAnchorPoints.csv");
+    map.writeMapListToStream(anchorPointsFile);
+
+    anchorPointsFile.close();
+}
+
 int main(int argc, char** argv) {
     const float MAX_ERROR_TO_CONVERGE = 0.01;
 
@@ -49,6 +57,9 @@ int main(int argc, char** argv) {
 
     std::vector<LocalisedPointCloud>::iterator cursor = map.begin();
 
+    writeAnchorPointsDatabaseToFile(map);
+
+    cursor = map.begin();
     for(int i = 0; i < 1; i++)
     {
         cursor++;

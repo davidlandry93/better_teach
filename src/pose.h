@@ -15,14 +15,13 @@ namespace TeachRepeat {
         Pose(std::string input);
         Transform transFromPose(const Pose &otherPose) const;
         void transform(Transform transform);
-        friend std::ostream &operator<<(std::ostream &out, Pose &pose);
         void setVector(Eigen::Vector3f vector);
         Eigen::Vector3f getVector() const;
         void setRotation(Eigen::Quaternionf quaternion);
         Eigen::Quaternionf getRotation() const;
-
         static Pose origin();
 
+        friend std::ostream &operator<<(std::ostream &out, const Pose &pose);
     private:
         Eigen::Vector3f mVector;
         Eigen::Quaternionf mRotation;
