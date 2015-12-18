@@ -6,16 +6,16 @@ namespace TeachRepeat {
 
     LocalisedPointCloud::LocalisedPointCloud() : mPointCloud() { }
 
-    LocalisedPointCloud::LocalisedPointCloud(std::string &anchorPointName, Pose position) :
+    LocalisedPointCloud::LocalisedPointCloud(std::string anchorPointName, Pose position) :
             mAnchorPointName(anchorPointName), mPointCloud(), mPosition(position) { }
 
-    LocalisedPointCloud::LocalisedPointCloud(std::string &anchorPointName, Pose position, DP cloud)
+    LocalisedPointCloud::LocalisedPointCloud(std::string anchorPointName, Pose position, DP cloud)
             :
             mAnchorPointName(anchorPointName), mPointCloud(cloud), mPosition(position) { }
 
 
     // Builds an anchor point from a string, as in the format outputted by the << operator.
-    LocalisedPointCloud::LocalisedPointCloud(std::string &anchorPointEntry) {
+    LocalisedPointCloud::LocalisedPointCloud(std::string anchorPointEntry) {
         std::stringstream ss(anchorPointEntry);
         std::string buffer;
 

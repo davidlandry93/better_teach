@@ -4,6 +4,7 @@ namespace TeachRepeat {
     template <typename T>
     PointMatcherService<T>::PointMatcherService() {
         icpEngine = PointMatcher<float>::ICP();
+        icpEngine.setDefault();
     }
 
     template <typename T>

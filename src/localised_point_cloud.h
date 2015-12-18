@@ -29,9 +29,9 @@ private:
     Pose mPosition;
 
 public:
-    LocalisedPointCloud(std::string& anchorPointName, Pose position);
-    LocalisedPointCloud(std::string& anchorPointName, Pose position, DP cloud);
-    LocalisedPointCloud(std::string& anchorPointEntry);
+    LocalisedPointCloud(std::string anchorPointName, Pose position);
+    LocalisedPointCloud(std::string anchorPointName, Pose position, DP cloud);
+    LocalisedPointCloud(std::string anchorPointEntry);
     LocalisedPointCloud();
     ~LocalisedPointCloud();
 

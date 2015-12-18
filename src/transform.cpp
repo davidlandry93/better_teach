@@ -77,5 +77,7 @@ namespace TeachRepeat {
         return Transform(mTransform.inverse());
     }
 
-
+    bool Transform::isApproxEqual(const Transform otherTransform, float epsilon) const {
+        return mTransform.isApprox(otherTransform.mTransform, epsilon);
+    }
 } // Namespace TeachRepeat.

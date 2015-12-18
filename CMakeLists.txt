@@ -64,7 +64,7 @@ endif()
 # Now simply link your own targets against gtest, gmock,
 # etc. as appropriate
 
-add_executable(unitTests tests/unitTests.cpp)
-target_link_libraries(unitTests gtest gtest_main pointmatcherservice ${Boost_SYSTEM_LIBRARY})
+add_executable(unitTests tests/pointMatcherServiceTests.cpp)
+target_link_libraries(unitTests gtest gtest_main teachrepeat pointmatcherservice ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
 
 add_test( runUnitTests runUnitTests )
