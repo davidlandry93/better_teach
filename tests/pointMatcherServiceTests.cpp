@@ -5,19 +5,37 @@
 
 using namespace TeachRepeat;
 
-TEST(pointMatcherServiceTest, initialTransformationTest) {
-    LocalisedPointCloud reading = LocalisedPointCloud("aPointCloud.vtk", Pose::origin());
-    reading.loadFromDisk("res/");
-
-    LocalisedPointCloud reference = LocalisedPointCloud("aPointCloud.vtk", Pose::origin());
-    reading.loadFromDisk("res/");
+class PointMatcherServiceTest : public ::testing::Test {
+protected:
+    LocalisedPointCloud cloud1 = LocalisedPointCloud("aPointCloud.vtk", Pose::origin());
+    LocalisedPointCloud cloud2 = LocalisedPointCloud("aPointCloud.vtk", Pose::origin());
 
     PointMatcherService<float> service;
 
-    Eigen::Vector3f translation;
-    translation << 0.5, 0.0, 0.0;
-    Transform preTransform = Transform(translation);
-    Transform icpResult = service.icp(reading, reference, preTransform);
+    virtual void SetUp() {
+        cloud1.loadFromDisk("res/");
+        cloud2.loadFromDisk("res/");
+    }
 
-    ASSERT_TRUE(icpResult.isApproxEqual(preTransform.inverse(), 0.01));
+    virtual void TearDown() {
+
+    }
+};
+
+TEST_F(PointMatcherServiceTest, sameCloudTest) {
+    Transform icpResult = service.icp(cloud1, cloud2);
+
+    ASSERT_TRUE(icpResult.isApproxEqual(Transform::identity(), 0.01));
+}
+
+TEST_F(PointMatcherServiceTest, initialGuessTest) {
+    Eigen::Vector3f translation;
+    translation << 1.0, 0.0, 0.0;
+    Transform transform = Transform(translation);
+
+    cloud2.transform(transform);
+
+    Transform icpResult = service.icp(cloud2, cloud1, transform.inverse());
+
+    ASSERT_TRUE(icpResult.isApproxEqual(transform.inverse(), 0.01));
 }
