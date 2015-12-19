@@ -47,6 +47,11 @@ int main(int argc, char** argv) {
 
     Map map(config["map"].as< std::string >(), pmService);
 
+    std::ofstream ofs;
+    ofs.open("correctedAnchorPointsPositions.apd");
+    map.outputAnchorPointsMetadata(ofs);
+    ofs.close();
+
     std::vector<LocalisedPointCloud>::iterator cursor = map.begin();
 
     for(int i = 0; i < 1; i++)

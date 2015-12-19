@@ -33,9 +33,9 @@ TEST_F(PointMatcherServiceTest, initialGuessTest) {
     translation << 1.0, 0.0, 0.0;
     Transform transform = Transform(translation);
 
-    cloud2.transform(transform);
+    cloud1.transform(transform);
 
-    Transform icpResult = service.icp(cloud2, cloud1, transform.inverse());
+    Transform icpResult = service.icp(cloud2, cloud1, transform);
 
-    ASSERT_TRUE(icpResult.isApproxEqual(transform.inverse(), 0.01));
+    ASSERT_TRUE(icpResult.isApproxEqual(transform, 0.01));
 }

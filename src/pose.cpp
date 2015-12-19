@@ -45,12 +45,15 @@ namespace TeachRepeat {
     }
 
     std::ostream& operator<<(std::ostream &out, Pose &pose) {
-        out << pose.mVector << "[" << pose.mRotation.x() << "," <<
-        pose.mRotation.y() << "," << pose.mRotation.z() << "," <<
-        pose.mRotation.w() << "]" << std::endl;
+        out << pose.mVector[0] << ","
+            << pose.mVector[1] << ","
+            << pose.mVector[2] << ","
+            << pose.mRotation.x() << ","
+            << pose.mRotation.y() << ","
+            << pose.mRotation.z() << ","
+            << pose.mRotation.w();
         return out;
     }
-
 
     Transform Pose::transFromPose(const Pose &otherPose) const {
         Eigen::Vector3f translationVector =

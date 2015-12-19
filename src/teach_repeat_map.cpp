@@ -71,12 +71,15 @@ namespace TeachRepeat {
         for(int i = 1; i < anchorPoints.size(); ++i) {
             auto it = anchorPoints.begin() + i;
 
-            Transform originToPreviousPose = correctedPoses[i-1].transFromPose(Pose::origin());
+            Pose previousOdometryEstimate = (it - 1)->getPosition();
+            Pose currentOdometryEstimate = it->getPosition();
+            Transform initialGuess = currentOdometryEstimate.transFromPose(previousOdometryEstimate);
 
-            Transform icpResult = pointMatcherService.icp(*it, *(it - 1));
+            Transform icpResult = pointMatcherService.icp(*it, *(it - 1), initialGuess);
             
             (it - 1)->saveToDisk("", std::to_string(i) + "ref.vtk");
 
+            Transform originToPreviousPose = correctedPoses[i-1].transFromPose(Pose::origin());
             Transform tFromOriginToCurrent = icpResult * originToPreviousPose;
 
             it->transform(icpResult);
@@ -88,16 +91,17 @@ namespace TeachRepeat {
             correctedPoses.push_back(poseOfCurrent);
         }
 
-        for(auto anchor : anchorPoints)
-            std::cout << anchor.getPosition().getVector() << std::endl << std::endl;
-
-        for(auto pose : correctedPoses)
-            std::cout << pose.getVector() << std::endl << std::endl;
-
         for(int i = 0; i < anchorPoints.size(); ++i) {
             anchorPoints[i].setPosition(correctedPoses[i]);
         }
 
     }
+
+    void Map::outputAnchorPointsMetadata(std::ostream &ostream) {
+        for(auto anchorPoint : anchorPoints) {
+            ostream << anchorPoint << std::endl;
+        }
+    }
+
 
 } //namespace TeachRepeat

@@ -22,6 +22,7 @@ namespace TeachRepeat {
         std::vector<LocalisedPointCloud>::iterator begin();
         std::vector<LocalisedPointCloud>::iterator end();
         void correctPositions(PointMatcherService<float>& pointMatcherService);
+        void outputAnchorPointsMetadata(std::ostream &ostream);
 
     private:
         void loadCommands(std::istream &input);
