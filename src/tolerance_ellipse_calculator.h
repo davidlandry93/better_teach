@@ -17,14 +17,14 @@ namespace TeachRepeat {
         typedef typename PointMatcher<T>::ICP ICP;
 
     public:
-        ToleranceEllipseCalculator(T maxConvergenceError, PointMatcherService<T> const& pointMatcherService);
-        Ellipse<T> calculate(LocalisedPointCloud reference, LocalisedPointCloud reading);
+        ToleranceEllipseCalculator(Ellipse<T> ellipse, T maxConvergenceError, PointMatcherService<T> const& pointMatcherService);
+        bool readingCanBeLocalizedByAnchorPoint(LocalisedPointCloud& reading, LocalisedPointCloud& anchorPoint);
 
     private:
-        static const int N_SEGMENTS = 100;
+        static const int N_SEGMENTS = 30;
 
+        Ellipse<T> toleranceEllipse;
         T maxConvergenceError;
-        std::string icpConfigFilename;
         PointMatcherService<T> pointMatcherService;
 
         void printErrors(std::vector<T> errors);
@@ -33,31 +33,32 @@ namespace TeachRepeat {
 
 
     template <class T>
-    ToleranceEllipseCalculator<T>::ToleranceEllipseCalculator(T maxConvergenceError, PointMatcherService<T> const& pointMatcherService) :
-            maxConvergenceError(maxConvergenceError), icpConfigFilename(icpConfigFilename) {
+    ToleranceEllipseCalculator<T>::ToleranceEllipseCalculator(Ellipse<T> ellipse, T maxConvergenceError, PointMatcherService<T> const& pointMatcherService) :
+            toleranceEllipse(ellipse), maxConvergenceError(maxConvergenceError), pointMatcherService(pointMatcherService) {
         this->pointMatcherService = pointMatcherService;
     }
 
     template <class T>
-    Ellipse <T> ToleranceEllipseCalculator<T>::calculate(LocalisedPointCloud reference, LocalisedPointCloud reading) {
-        ConvergenceDistanceFunction<T> f(reference, reading, pointMatcherService);
-
-        Ellipse<float> currentEllipse(0.5, 1.0);
+    bool ToleranceEllipseCalculator<T>::readingCanBeLocalizedByAnchorPoint(LocalisedPointCloud& reading, LocalisedPointCloud& anchorPoint) {
+        ConvergenceDistanceFunction<T> f(reading, anchorPoint, pointMatcherService);
 
         float delta = 2 * M_PI / N_SEGMENTS;
         std::vector<T> convergenceDistances;
         for(int i = 0; i < N_SEGMENTS; i++) {
-            Point<T> pointOnEllipse = currentEllipse.curve(i*delta);
+            Point<T> pointOnEllipse = toleranceEllipse.curve(i*delta);
 
             Transform inducedError(pointOnEllipse.toVector());
 
             T convergenceDistance = f(inducedError);
+            std::cout << convergenceDistance << std::endl;
             convergenceDistances.push_back(convergenceDistance);
         }
 
-        printErrors(convergenceDistances);
+        for(auto distance : convergenceDistances) {
+            if (distance > maxConvergenceError) return false;
+        }
 
-        return currentEllipse;
+        return true;
     }
 
     template <class T>

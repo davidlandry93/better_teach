@@ -19,7 +19,7 @@ namespace TeachRepeat {
     class ConvergenceDistanceFunction {
 
     public:
-        ConvergenceDistanceFunction(LocalisedPointCloud reference, LocalisedPointCloud reading, PointMatcherService<T>& pointMatcherService);
+        ConvergenceDistanceFunction(LocalisedPointCloud &reading, LocalisedPointCloud &reference, PointMatcherService<T>& pointMatcherService);
         float operator()(Transform inducedError);
 
     private:
@@ -27,8 +27,7 @@ namespace TeachRepeat {
 
         LocalisedPointCloud reference;
         LocalisedPointCloud reading;
-        Transform tFromRefToReading;
-        Transform preciseReadingPosition;
+        Transform tFromReadingToRef;
         PointMatcherService<T> pointMatcherService;
     };
 
@@ -36,32 +35,26 @@ namespace TeachRepeat {
     int ConvergenceDistanceFunction<T>::nCalls = 0;
 
     template <typename T>
-    ConvergenceDistanceFunction<T>::ConvergenceDistanceFunction(LocalisedPointCloud reference,
-                                                             LocalisedPointCloud reading,
-                                                             PointMatcherService<T>& pointMatcherService) :
-        reference(reference), reading(reading) {
-        this->pointMatcherService = pointMatcherService;
+    ConvergenceDistanceFunction<T>::ConvergenceDistanceFunction(LocalisedPointCloud& reading,
+                                                                LocalisedPointCloud& reference,
+                                                                PointMatcherService<T>& pointMatcherService) :
+        reading(reading), reference(reference), pointMatcherService(pointMatcherService) {
+        tFromReadingToRef = reading.getPosition().transFromPose(reference.getPosition());
 
-        Eigen::Matrix<T,3,1> vectorFromRefToReading = reading.getPosition().getVector() - reference.getPosition().getVector();
-        tFromRefToReading = Transform(vectorFromRefToReading);
-
-        Transform tFromRoughEstimateToLocalisation = pointMatcherService.icp(reference, reading, tFromRefToReading);
-        preciseReadingPosition = tFromRoughEstimateToLocalisation * tFromRefToReading;
+        Transform tFromRoughEstimateToLocalisation = pointMatcherService.icp(reading, reference, tFromReadingToRef);
     }
 
     template <typename T>
     float ConvergenceDistanceFunction<T>::operator()(Transform inducedError) {
-        Transform preTransform = tFromRefToReading * inducedError;
+        Transform preTransform = inducedError * tFromReadingToRef;
         Transform icpResult = pointMatcherService.icp(reading, reference, preTransform);
 
-        Transform computedPositionOfReading = preTransform * icpResult;
-
         reference.saveToDisk("", "ref" + std::to_string(nCalls) + ".vtk");
-        reading.transform(computedPositionOfReading.inverse());
+        reading.transform(icpResult);
         reading.saveToDisk("", "res" + std::to_string(nCalls++) + ".vtk");
-        reading.transform(computedPositionOfReading);
+        reading.transform(icpResult.inverse());
 
-        return (computedPositionOfReading.translationPart() - preciseReadingPosition.translationPart()).squaredNorm();
+        return (icpResult.translationPart() - tFromReadingToRef.translationPart()).squaredNorm();
     }
 }
 

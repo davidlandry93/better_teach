@@ -12,7 +12,7 @@ namespace TeachRepeat {
     public:
         Ellipse(T a, T b);
         void rescale(T factor);
-        Point<T> curve(T theta);
+        Point<T> curve(T theta) const;
 
     private:
         T a;
@@ -32,7 +32,7 @@ namespace TeachRepeat {
     }
 
     template <class T>
-    Point<T> Ellipse<T>::curve(T theta) {
+    Point<T> Ellipse<T>::curve(T theta) const {
         return Point<T>(a*std::cos(theta), b*std::sin(theta));
     };
 }
