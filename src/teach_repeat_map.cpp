@@ -77,14 +77,8 @@ namespace TeachRepeat {
 
             Transform icpResult = pointMatcherService.icp(*it, *(it - 1), initialGuess);
             
-            (it - 1)->saveToDisk("", std::to_string(i) + "ref.vtk");
-
             Transform originToPreviousPose = correctedPoses[i-1].transFromPose(Pose::origin());
             Transform tFromOriginToCurrent = icpResult * originToPreviousPose;
-
-            it->transform(icpResult);
-            it->saveToDisk("", std::to_string(i) + "res.vtk");
-            it->transform(icpResult.inverse());
 
             Pose poseOfCurrent = Pose::origin();
             poseOfCurrent.transform(tFromOriginToCurrent);

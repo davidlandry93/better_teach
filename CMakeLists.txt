@@ -5,6 +5,7 @@ project(BetterTeach)
 
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations" )
 
 find_package(Boost COMPONENTS system filesystem program_options REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -28,7 +29,7 @@ add_library(teachrepeat STATIC
 target_link_libraries(teachrepeat pointmatcherservice)
 
 add_executable(ToleranceEllipse
-        src/tolerance_ellipse_main.cpp)
+        src/tolerance_ellipse_main.cpp src/teachrepeat_map_optimizer.cpp src/teachrepeat_map_optimizer.h)
 target_link_libraries(ToleranceEllipse teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
 
 include(CheckCXXCompilerFlag)

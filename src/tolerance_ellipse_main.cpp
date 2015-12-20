@@ -6,11 +6,12 @@
 
 #include "teach_repeat_map.h"
 #include "tolerance_ellipse_calculator.h"
+#include "teachrepeat_map_optimizer.h"
 
 using namespace TeachRepeat;
 
 int main(int argc, char** argv) {
-    const float MAX_ERROR_TO_CONVERGE = 0.01;
+    const float MAX_ERROR_TO_CONVERGE = 0.05;
 
     namespace po = boost::program_options;
     po::options_description desc("Options");
@@ -68,9 +69,13 @@ int main(int argc, char** argv) {
 
     LocalisedPointCloud reading = *cursor;
 
-    Ellipse<float> toleranceEllipse = Ellipse<float>(0.5, 0.5);
-    ToleranceEllipseCalculator<float> calculator(toleranceEllipse, MAX_ERROR_TO_CONVERGE, pmService);
-    calculator.readingCanBeLocalizedByAnchorPoint(reading, anchorPoint);
+    Ellipse<float> toleranceEllipse = Ellipse<float>(0.3, 0.3);
+
+
+    ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipse, MAX_ERROR_TO_CONVERGE, pmService);
+    MapOptimizer optimizer(toleranceEllipseCalculator);
+
+    Map optimizedMap = optimizer.optimize(map);
 
     return 0;
 }
