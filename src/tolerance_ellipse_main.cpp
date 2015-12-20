@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 
     LocalisedPointCloud reading = *cursor;
 
-    Ellipse<float> toleranceEllipse = Ellipse<float>(1.0, 0.5);
+    Ellipse<float> toleranceEllipse = Ellipse<float>(0.5, 0.5);
     ToleranceEllipseCalculator<float> calculator(toleranceEllipse, MAX_ERROR_TO_CONVERGE, pmService);
     calculator.readingCanBeLocalizedByAnchorPoint(reading, anchorPoint);
 
