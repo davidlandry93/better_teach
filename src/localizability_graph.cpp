@@ -7,7 +7,7 @@ TeachRepeat::LocalizabilityGraph::LocalizabilityGraph(int nOfPoints) :
 
 void TeachRepeat::LocalizabilityGraph::anchorPointLocalisesPoint(int anchorPointIndex,
                                                                  int pointIndex) {
-
+    boost::add_edge(anchorPointIndex, pointIndex, graph);
 }
 
 std::vector<int> TeachRepeat::LocalizabilityGraph::optimalSetOfAnchorPoints() const {

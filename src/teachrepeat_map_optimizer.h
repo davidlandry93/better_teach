@@ -16,7 +16,7 @@ namespace TeachRepeat {
     private:
         ToleranceEllipseCalculator<float> toleranceEllipseCalculator;
 
-        std::vector< LocalisedPointCloud> cloudsLocalizedByAnchorPoint(Map& map, int anchorPointIndex);
+        std::vector<int> cloudsLocalizedByAnchorPoint(Map& map, int anchorPointIndex);
     };
 }
 
