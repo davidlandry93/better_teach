@@ -97,5 +97,10 @@ namespace TeachRepeat {
         }
     }
 
+    int Map::size() const {
+        return anchorPoints.size();
+    }
+
+
 
 } //namespace TeachRepeat

@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
     LocalisedPointCloud reading = *cursor;
 
-    Ellipse<float> toleranceEllipse = Ellipse<float>(0.3, 0.3);
+    Ellipse<float> toleranceEllipse = Ellipse<float>(0.4, 0.4);
 
 
     ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipse, MAX_ERROR_TO_CONVERGE, pmService);

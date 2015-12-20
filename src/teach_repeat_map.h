@@ -21,6 +21,7 @@ namespace TeachRepeat {
         Map(std::string directory, PointMatcherService<float>& service);
         std::vector<LocalisedPointCloud>::iterator begin();
         std::vector<LocalisedPointCloud>::iterator end();
+        int size() const;
         void correctPositions(PointMatcherService<float>& pointMatcherService);
         void outputAnchorPointsMetadata(std::ostream &ostream);
 

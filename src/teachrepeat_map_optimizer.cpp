@@ -9,8 +9,10 @@ namespace TeachRepeat {
     Map MapOptimizer::optimize(Map& map) {
         Map optimizedMap;
 
-        std::vector<LocalisedPointCloud> localizablePointClouds = cloudsLocalizedByAnchorPoint(map, 0);
-        std::cout << localizablePointClouds.size();
+        for(int i = 0; i < map.size(); i++) {
+            std::vector<LocalisedPointCloud> localizablePointClouds = cloudsLocalizedByAnchorPoint(map, i);
+            std::cout << "Point no " << i << ": " << localizablePointClouds.size() << std::endl;
+        }
 
         return optimizedMap;
     }
@@ -29,4 +31,3 @@ namespace TeachRepeat {
         return cloudsThatCanBeLocalized;
     }
 }
-
