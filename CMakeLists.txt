@@ -17,19 +17,21 @@ link_directories({$libpointmatcher_LIB})
 
 add_library(pointmatcherservice STATIC
         src/transform.cpp
-        src/localised_point_cloud.cpp
-        )
+        src/localised_point_cloud.cpp)
 target_link_libraries(pointmatcherservice pointmatcher)
 
 add_library(teachrepeat STATIC
         src/teach_repeat_map.cpp
         src/pose.cpp
-        src/command.cpp
-        )
+        src/command.cpp)
 target_link_libraries(teachrepeat pointmatcherservice)
 
 add_executable(ToleranceEllipse
-        src/tolerance_ellipse_main.cpp src/teachrepeat_map_optimizer.cpp src/teachrepeat_map_optimizer.h)
+        src/tolerance_ellipse_main.cpp
+        src/teachrepeat_map_optimizer.cpp
+        src/teachrepeat_map_optimizer.h
+        src/localizability_graph.cpp
+        src/localizability_graph.h)
 target_link_libraries(ToleranceEllipse teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
 
 include(CheckCXXCompilerFlag)
