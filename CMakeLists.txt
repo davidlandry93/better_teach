@@ -26,13 +26,16 @@ add_library(teachrepeat STATIC
         src/command.cpp)
 target_link_libraries(teachrepeat pointmatcherservice)
 
-add_executable(ToleranceEllipse
-        src/tolerance_ellipse_main.cpp
+add_library(optimizeteachrepeat STATIC
         src/teachrepeat_map_optimizer.cpp
         src/teachrepeat_map_optimizer.h
         src/localizability_graph.cpp
         src/localizability_graph.h)
-target_link_libraries(ToleranceEllipse teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
+target_link_libraries(optimizeteachrepeat teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
+
+add_executable(optimizeteachrepeatmain
+        src/tolerance_ellipse_main.cpp)
+target_link_libraries(optimizeteachrepeatmain optimizeteachrepeat)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -67,7 +70,10 @@ endif()
 # Now simply link your own targets against gtest, gmock,
 # etc. as appropriate
 
-add_executable(unitTests tests/pointMatcherServiceTests.cpp)
-target_link_libraries(unitTests gtest gtest_main teachrepeat pointmatcherservice ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
+add_executable(runalltests tests/pointMatcherServiceTests.cpp tests/localizabilityGraphTest.cpp)
+target_link_libraries(runalltests gtest gtest_main optimizeteachrepeat ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
+
+add_executable(rununittests tests/localizabilityGraphTest.cpp)
+target_link_libraries(rununittests optimizeteachrepeat gtest gtest_main)
 
 add_test( runUnitTests runUnitTests )

@@ -15,11 +15,13 @@ namespace TeachRepeat {
             std::vector<int> localizablePointClouds = cloudsLocalizedByAnchorPoint(map, i);
 
             for(auto pointIndex : localizablePointClouds) {
-                localizabilityGraph.anchorPointLocalisesPoint(i, pointIndex);
+                localizabilityGraph.anchorPointLocalizesPoint(i, pointIndex);
             }
 
             std::cout << "Point no " << i << ": " << localizablePointClouds.size() << std::endl;
         }
+
+        localizabilityGraph.optimalSetOfAnchorPoints();
 
         return optimizedMap;
     }
@@ -30,8 +32,8 @@ namespace TeachRepeat {
 
         it++;
         std::vector<int> cloudsThatCanBeLocalized;
-        while(toleranceEllipseCalculator.readingCanBeLocalizedByAnchorPoint(*it, anchorPoint) &&
-                it < map.end()) {
+        while(it < map.end() &&
+                toleranceEllipseCalculator.readingCanBeLocalizedByAnchorPoint(*it, anchorPoint)) {
             cloudsThatCanBeLocalized.push_back(it++ - map.begin());
         }
 
