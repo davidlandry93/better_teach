@@ -25,7 +25,4 @@ namespace TeachRepeat {
     };
 }
 
-
-
-
 #endif //BETTERTEACH_LOCALIZABILITYGRAPH_H
