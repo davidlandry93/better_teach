@@ -9,16 +9,19 @@ TeachRepeat::LocalizabilityGraph::LocalizabilityGraph(int nOfPoints) :
     graph() {
 
     if(nOfPoints > 0) {
-        source = boost::add_vertex(0, graph);
+        source = graph.add_vertex();
     }
 
     for(int i = 1; i < nOfPoints; i++) {
-        boost::add_vertex(i, graph);
+        graph.add_vertex();
     }
 }
 
 void TeachRepeat::LocalizabilityGraph::anchorPointLocalizesPoint(int anchorPointIndex,
                                                                  int pointIndex) {
+
+    graph.
+
     VertexIterator begin, end;
     boost::tie(begin, end) = boost::vertices(graph);
 

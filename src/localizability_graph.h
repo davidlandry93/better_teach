@@ -4,14 +4,13 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <boost/graph/directed_graph.hpp>
 
 namespace TeachRepeat {
     class LocalizabilityGraph {
         typedef int Weight;
-        typedef boost::property<boost::edge_weight_t, Weight> WeightProperty;
-        typedef boost::property<boost::vertex_name_t, int> NameProperty;
 
-        typedef boost::adjacency_list<boost::setS, boost::vecS, boost::directedS, NameProperty, WeightProperty> Graph;
+        typedef boost::directed_graph<> Graph;
         typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
         typedef boost::graph_traits<Graph>::vertex_iterator VertexIterator;
 
