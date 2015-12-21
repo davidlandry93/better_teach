@@ -102,5 +102,22 @@ namespace TeachRepeat {
     }
 
 
+    void Map::addAnchorPoint(LocalisedPointCloud &anchorPoint) {
+        anchorPoints.push_back(anchorPoint);
+    }
 
+    LocalisedPointCloud Map::getAnchorPointByIndex(int index) const {
+        return anchorPoints[index];
+    }
+
+    void Map::removeAllAnchorsExceptIndexes(std::list<int> &indexes) {
+
+        std::vector<LocalisedPointCloud> newVector;
+
+        for(auto index : indexes) {
+            newVector.push_back(anchorPoints[index]);
+        }
+
+        anchorPoints = newVector;
+    }
 } //namespace TeachRepeat

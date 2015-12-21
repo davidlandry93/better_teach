@@ -7,8 +7,7 @@ namespace TeachRepeat {
 
     }
 
-    Map MapOptimizer::optimize(Map& map) {
-        Map optimizedMap;
+    void MapOptimizer::optimize(Map& map) {
         LocalizabilityGraph localizabilityGraph(map.size());
 
         for(int i = 0; i < map.size(); i++) {
@@ -21,9 +20,8 @@ namespace TeachRepeat {
             std::cout << "Point no " << i << ": " << localizablePointClouds.size() << std::endl;
         }
 
-        localizabilityGraph.optimalSetOfAnchorPoints();
-
-        return optimizedMap;
+        std::list<int> optimalSetOfAnchors = localizabilityGraph.optimalSetOfAnchorPoints();
+        map.removeAllAnchorsExceptIndexes(optimalSetOfAnchors);
     }
 
     std::vector<int> MapOptimizer::cloudsLocalizedByAnchorPoint(Map& map, int anchorPointIndex) {

@@ -22,6 +22,11 @@ namespace TeachRepeat {
         std::vector<LocalisedPointCloud>::iterator begin();
         std::vector<LocalisedPointCloud>::iterator end();
         int size() const;
+
+        void addAnchorPoint(LocalisedPointCloud& anchorPoint);
+        LocalisedPointCloud getAnchorPointByIndex(int index) const;
+        void removeAllAnchorsExceptIndexes(std::list<int>& indexes);
+
         void correctPositions(PointMatcherService<float>& pointMatcherService);
         void outputAnchorPointsMetadata(std::ostream &ostream);
 

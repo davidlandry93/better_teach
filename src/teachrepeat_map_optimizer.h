@@ -2,6 +2,7 @@
 #define BETTERTEACH_TEACHREPEAT_MAP_OPTIMIZER_H
 
 #include <vector>
+#include <list>
 #include "teach_repeat_map.h"
 #include "ellipse.h"
 #include "tolerance_ellipse_calculator.h"
@@ -11,7 +12,7 @@ namespace TeachRepeat {
     class MapOptimizer {
     public:
         MapOptimizer(ToleranceEllipseCalculator<float>& toleranceEllipseCalculator);
-        Map optimize(Map& map);
+        void optimize(Map& map);
 
     private:
         ToleranceEllipseCalculator<float> toleranceEllipseCalculator;

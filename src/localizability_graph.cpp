@@ -14,6 +14,10 @@ namespace TeachRepeat {
             indexMap[addedNode] = i;
             nodes.push_back(addedNode);
         }
+
+        for(int i = 0; i < nodes.size() - 1; i++) {
+            graph.addArc(nodes[i], nodes[i+1]);
+        }
     }
 
     void LocalizabilityGraph::anchorPointLocalizesPoint(int anchorPointIndex,
@@ -41,6 +45,7 @@ namespace TeachRepeat {
                 optimalSetOfAnchors.push_front(indexMap[currentNode]);
             } else {
                 std::cout << "node was not reached" << std::endl;
+                return std::list<int>();
             }
         }
         optimalSetOfAnchors.push_front(0);  // The first node is always part of the optimal set.

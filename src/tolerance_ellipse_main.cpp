@@ -75,7 +75,11 @@ int main(int argc, char** argv) {
     ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipse, MAX_ERROR_TO_CONVERGE, pmService);
     MapOptimizer optimizer(toleranceEllipseCalculator);
 
-    Map optimizedMap = optimizer.optimize(map);
+    optimizer.optimize(map);
+
+    ofs.open("optimizedMap.csv");
+    map.outputAnchorPointsMetadata(ofs);
+    ofs.close();
 
     return 0;
 }
