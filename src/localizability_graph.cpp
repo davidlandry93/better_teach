@@ -6,52 +6,43 @@ TeachRepeat::LocalizabilityGraph::LocalizabilityGraph() : LocalizabilityGraph(0)
 }
 
 TeachRepeat::LocalizabilityGraph::LocalizabilityGraph(int nOfPoints) :
-    graph() {
+    graph(), indexMap(graph) {
 
-    if(nOfPoints > 0) {
-        source = graph.add_vertex();
-    }
-
-    for(int i = 1; i < nOfPoints; i++) {
-        graph.add_vertex();
+    for(int i = 0; i < nOfPoints; i++) {
+        Node addedNode = graph.addNode();
+        indexMap[addedNode] = i;
+        nodes.push_back(addedNode);
     }
 }
 
 void TeachRepeat::LocalizabilityGraph::anchorPointLocalizesPoint(int anchorPointIndex,
                                                                  int pointIndex) {
-
-    graph.
-
-    VertexIterator begin, end;
-    boost::tie(begin, end) = boost::vertices(graph);
-
-    Vertex anchorPoint = *(begin + anchorPointIndex);
-    Vertex point = *(begin + pointIndex);
-
-    boost::add_edge(anchorPoint, point, 1, graph); // Every edge has a weight of one.
+    graph.addArc(nodes[anchorPointIndex], nodes[pointIndex]);
 }
 
-std::vector<int> TeachRepeat::LocalizabilityGraph::optimalSetOfAnchorPoints() const {
-    int nVerticesOfGraph = boost::num_vertices(graph);
-    std::vector<Vertex> predecessors(nVerticesOfGraph);
-    std::vector<Weight> distancesFromSource(nVerticesOfGraph);
+std::list<int> TeachRepeat::LocalizabilityGraph::optimalSetOfAnchorPoints() const {
+    LengthMap distances(graph);
 
-    IndexMap indexMap = boost::get(boost::vertex_index, graph);
-    PredecessorMap predecessorMap(&predecessors[0], indexMap);
-    DistanceMap distanceMap(&distancesFromSource[0], indexMap);
-
-    boost::dijkstra_shortest_paths(graph, source, boost::distance_map(distanceMap).predecessor_map(predecessorMap));
-
-    std::cout << "distances and parents" << std::endl;
-
-    NameMap nameMap = boost::get(boost::vertex_name, graph);
-    BGL_FORALL_VERTICES(v, graph, Graph)
-    {
-        std::cout << "distance(" << nameMap[source] << ", " << nameMap[v] << ") = " << distanceMap[v] << ", ";
-        std::cout << "predecessor(" << nameMap[v] << ") = " << nameMap[predecessorMap[v]] << std::endl;
+    for(Graph::ArcIt it(graph); it != lemon::INVALID; ++it) {
+        distances[it] = 1;
     }
 
-    return std::vector<int>();
+    lemon::Dijkstra<Graph, LengthMap> dijkstra(graph, distances);
+    dijkstra.run(nodes[0]);
+
+    std::cout << "Cost: " << dijkstra.dist(nodes[nodes.size() - 1]) << std::endl;
+
+    std::list<int> optimalSetOfAnchors;
+    Node lastNode = nodes[nodes.size() - 1];
+    for(Node currentNode = dijkstra.predNode(lastNode); currentNode != nodes[0]; currentNode = dijkstra.predNode(currentNode)) {
+        if(currentNode != lemon::INVALID) {
+            std::cout << indexMap[currentNode] << std::endl;
+            optimalSetOfAnchors.push_front(indexMap[currentNode]);
+        } else {
+            std::cout << "node was not reached" << std::endl;
+        }
+    }
+    optimalSetOfAnchors.push_front(0);  // The first node is always part of the optimal set.
+
+    return optimalSetOfAnchors;
 }
-
-
