@@ -21,6 +21,8 @@
 \usepackage{tikzscale}
 \usetikzlibrary{calc}
 
+\graphicspath{{img/}}
+
 \title{\LARGE \bf
 Preparation of Papers for IEEE Sponsored Conferences \& Symposia*
 }
@@ -85,8 +87,8 @@ the expected translation and the resulting translation when performing ICP on bo
 
 \begin{figure}[thpb]
   \centering
-  \includegraphics[scale=1.0]{img/unoptimized-graph.pdf}
-  \includegraphics[scale=1.0]{img/optimized-graph.pdf}
+  \includegraphics[scale=1.0]{unoptimized-graph}
+  \includegraphics[scale=1.0]{optimized-graph}
   \caption{Optimal node subset using the graph approach}
 \end{figure}
 
@@ -95,6 +97,8 @@ the expected translation and the resulting translation when performing ICP on bo
 We can talk about the offline optimisation we did on some dataset.
 
 \begin{figure}
+  \centering
+  \includegraphics[scale=0.4]{map_optimization}
   \caption{Comparison of un-optimized and optimized maps}
 \end{figure}
 
