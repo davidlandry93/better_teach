@@ -15,7 +15,13 @@
 % on the last page of the document
 
 % The following packages can be found on http:\\www.ctan.org
-%\usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{standalone}
+\usepackage{tikz}
+\usepackage{tikzscale}
+\usetikzlibrary{calc}
 %\usepackage{epsfig} % for postscript graphics files
 %\usepackage{mathptmx} % assumes new font selection scheme installed
 %\usepackage{times} % assumes new font selection scheme installed
@@ -48,10 +54,10 @@ Preparation of Papers for IEEE Sponsored Conferences \& Symposia*
 \section{INTRODUCTION}
 
 
-\section{Related work}
+\section{RELATED WORK}
 
 
-\section{Problem definition}
+\section{PROBLEM DEFINITION}
 \begin{itemize}
     \item Talk about teach and repeat
     \item How teach maps are aquired (point clouds are taken at regular steps)
@@ -59,7 +65,7 @@ Preparation of Papers for IEEE Sponsored Conferences \& Symposia*
 \end{itemize}
 
 
-\section{Our approach}
+\section{OUR APPROACH}
 \begin{itemize}
   \item Choose elipse of a given shape. We assume that if ICP converges on the
     ellipse, it would converge at any given point inside the ellipse (we need the explain why we made this assumption)
@@ -67,16 +73,20 @@ Preparation of Papers for IEEE Sponsored Conferences \& Symposia*
   \item For each point, find the nearest point that doesn't converge with ICP
 
   \item Create an oriented graph where arcs represents a successful ICP convergence
-    \begin{figure}
-      \caption{Figure explaining the graph aproach}
-    \end{figure}
 
   \item Find the shortest path in the graph from that converge
 
 \end{itemize}
 
+\begin{figure}[thpb]
+  \centering
+  \includegraphics[scale=1.0]{img/unoptimized-graph.pdf}
+  \includegraphics[scale=1.0]{img/optimized-graph.pdf}
+  \caption{Optimal node subset using the graph approach}
+\end{figure}
 
-\section{Experiments}
+
+\section{EXPERIMENTS}
 We can talk about the offline optimisation we did on some dataset.
 
 \begin{figure}
@@ -84,7 +94,7 @@ We can talk about the offline optimisation we did on some dataset.
 \end{figure}
 
 
-\section{Future work}
+\section{FUTURE WORK}
 
 \begin{itemize}
   \item Experiment with Husky
@@ -97,6 +107,6 @@ We can talk about the offline optimisation we did on some dataset.
 
 \end{itemize}
 
-\section{Conclusion}
+\section{CONCLUSION}
 
 \end{document}
