@@ -60,21 +60,13 @@ int main(int argc, char** argv) {
         cursor++;
     }
 
-    LocalisedPointCloud anchorPoint = *cursor;
-
-    for(int i=0; i < 1; i++)
-    {
-        cursor++;
-    }
-
-    LocalisedPointCloud reading = *cursor;
 
     Ellipse<float> toleranceEllipse = Ellipse<float>(0.4, 0.4);
-
 
     ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipse, MAX_ERROR_TO_CONVERGE, pmService);
     MapOptimizer optimizer(toleranceEllipseCalculator);
 
+    std::cout << "Optimizing map..." << std::endl;
     optimizer.optimize(map);
 
     ofs.open("optimizedMap.csv");

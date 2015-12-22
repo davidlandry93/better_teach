@@ -35,13 +35,10 @@ namespace TeachRepeat {
         lemon::Dijkstra<Graph, LengthMap> dijkstra(graph, distances);
         dijkstra.run(nodes[0]);
 
-        std::cout << "Cost: " << dijkstra.dist(nodes[nodes.size() - 1]) << std::endl;
-
         std::list<int> optimalSetOfAnchors;
         Node lastNode = nodes[nodes.size() - 1];
         for(Node currentNode = dijkstra.predNode(lastNode); currentNode != nodes[0]; currentNode = dijkstra.predNode(currentNode)) {
             if(currentNode != lemon::INVALID) {
-                std::cout << indexMap[currentNode] << std::endl;
                 optimalSetOfAnchors.push_front(indexMap[currentNode]);
             } else {
                 std::cout << "node was not reached" << std::endl;

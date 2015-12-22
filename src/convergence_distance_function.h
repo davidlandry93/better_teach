@@ -53,7 +53,6 @@ namespace TeachRepeat {
         // reading.transform(icpResult);
         // reading.saveToDisk("", "res" + std::to_string(nCalls++) + ".vtk");
         // reading.transform(icpResult.inverse());
-        std::cout << nCalls << std::endl;
 
         return (icpResult.translationPart() - tFromReadingToRef.translationPart()).squaredNorm();
     }
