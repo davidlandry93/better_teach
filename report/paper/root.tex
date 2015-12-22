@@ -22,7 +22,7 @@
 \usetikzlibrary{calc}
 
 \title{\LARGE \bf
-Preparation of Papers for IEEE Sponsored Conferences \& Symposia*
+  Optimizing Topometric Maps for Teach and Repeat
 }
 
 
@@ -71,6 +71,7 @@ then sample the function $f: T \rightarrow \mathbb{R}$ that outputs the euclidia
 the expected translation and the resulting translation when performing ICP on both point clouds.
 
 \section{OUR APPROACH}
+\label{approach}
 \begin{itemize}
   \item Choose elipse of a given shape. We assume that if ICP converges on the
     ellipse, it would converge at any given point inside the ellipse (we need the explain why we made this assumption)
@@ -103,16 +104,22 @@ We can talk about the offline optimisation we did on some dataset.
 
 \begin{itemize}
   \item Experiment with Husky
-
-  \item Multi objective optimization to have an automatic error elipse
-
-  \item handling rotations (3D ellipsoid)
-
-  \item Reoptimisation of the graph
-
 \end{itemize}
 
 \subsection{Multi-objective optimization for automatic parameter selection}
+
+To focus our efforts on fiding the minimal node subset, we made the simplication the error ellipse has a fixed sized.
+In other words, we manually specify the distance in $x$ and $y$ for which we want the ICP to converge. With those parameters given,
+we can reduce the problem to a finding the shortest path in a graph, as shown in section \ref{approach}.
+
+
+A limitation of this approach is that, if for a given node, decreasing the size of the ellipse would make the ICP
+converge on further nodes of the graph. We can see that as a tradeoff between the precision and the number of nodes of the final map.
+
+
+An improvement on the current method would be model the problem as a multi-objective optimization problem. Given an initial
+ellipse size for each node of the graph, changing reducing the size of the ellipse has a cost. The goal is to find the best
+tradeoff between the length of the shortest path in the graph and the the costs of the nodes that are used by that shortest path.
 
 \subsection{Handling of rotations}
 
