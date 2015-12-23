@@ -135,11 +135,42 @@ The ellipse has been choosen because it is a geometric shape that fits well the 
 converges (see figure \ref{convergence_bassin}). We also observed that this zone is continuous; there is no ``hole'' where the ICP doesn't converge inside the bassin.
 Therefore, we only need to test readings on the circonference to verify if an ellipse is a convergence ellipse.
 
-\subsection{Mapping matching readings}
 
-\subsection{Topometric map as a graph}
+\begin{figure}[thpb]
+  \centering
+  \includegraphics[scale=0.4]{convergence_bassin}
+  \caption{The covergence bassin of a pair of readings}
+  \label{convergence_bassin}
+\end{figure}
+
+\subsection{Mapping matching readings}
+To reduce the size of the topometric map, we need to filter out nodes that are considered to add no value to the map. To do so,
+we check how far appart can a reading and an anchor point be while still be usable for localization. More formally, for each node
+$n_i$, we verify is an ellipse of readings of a predetermined size is a convergence ellipse for the anchor point located at $n_{i+2}$,
+$n_{i+3}$... $n_{i+k}$ until we find the node  where the readings of the ellipse don't converge to the anchor point $n_{i_k}$. We assume
+that the anchor point $n_{i_i}$ is always valid.
+
+
+The results of this search are represented as an oriented graph, where an edge from $n_{i}$ to $n_{j}$ means that the the ellipse of readings
+around $n_{i}$ is a convergence ellipse considering the node $n_j$ as the anchor point. An example graph is represented on figure \ref{graph_unoptimized}
+
+
+\begin{figure}[thpb]
+  \centering
+  \includegraphics[scale=1.0]{unoptimized-graph}
+  \caption{Representing convergence ellipses as an oriented graph}
+  \label{graph_unoptimized}
+\end{figure}
+
+
 
 \subsection{Smallest topometric map}
+
+\begin{figure}[thpb]
+  \centering
+  \includegraphics[scale=1.0]{optimized-graph}
+  \caption{Optimal node subset using the graph approach}
+\end{figure}
 
 \begin{itemize}
   \item Choose elipse of a given shape. We assume that if ICP converges on the
@@ -152,21 +183,6 @@ Therefore, we only need to test readings on the circonference to verify if an el
   \item Find the shortest path in the graph from that converge
 
 \end{itemize}
-
-\begin{figure}
-  \centering
-  \includegraphics[scale=0.4]{convergence_bassin}
-  \caption{The covergence bassin of a pair of readings}
-  \label{convergence_bassin}
-\end{figure}
-
-
-\begin{figure}[thpb]
-  \centering
-  \includegraphics[scale=1.0]{unoptimized-graph}
-  \includegraphics[scale=1.0]{optimized-graph}
-  \caption{Optimal node subset using the graph approach}
-\end{figure}
 
 
 \section{EXPERIMENTS}
@@ -302,7 +318,7 @@ finding the shortest path in the localizability graph, we ensure that every node
 reached by using the preceding node as a reference. This means (assuming that the ICP algorithm is
 reflexive) that every second anchor point in our optimized map becomes superfluous and can be removed.
 
-\section*{REFERENCES}
+
 \printbibliography
 
 \end{document}
