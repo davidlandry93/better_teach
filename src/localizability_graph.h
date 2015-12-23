@@ -3,6 +3,7 @@
 
 #include <lemon/list_graph.h>
 #include <lemon/dijkstra.h>
+#include <lemon/lgf_writer.h>
 
 namespace TeachRepeat {
     class LocalizabilityGraph {
@@ -17,6 +18,7 @@ namespace TeachRepeat {
         LocalizabilityGraph(int nOfPoints);
         void anchorPointLocalizesPoint(int anchorPointIndex, int pointIndex);
         std::list<int> optimalSetOfAnchorPoints() const;
+        void save(std::ostream& os) const;
 
     private:
         Graph graph;
