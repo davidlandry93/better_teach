@@ -11,7 +11,7 @@
 \usepackage{times} % assumes new font selection scheme installed
 \usepackage{amsmath} % assumes amsmath package installed
 \usepackage{amssymb}  % assumes amsmath package installed
-
+\usepackage[backend=bibtex8,style=ieee,sorting=none]{biblatex}
 
 \usepackage{graphics} % for pdf, bitmapped graphics files
 \usepackage{caption}
@@ -22,6 +22,7 @@
 \usetikzlibrary{calc}
 
 \graphicspath{{img/}}
+\addbibresource{references.bib}
 
 \title{\LARGE \bf
   Optimizing Topometric Maps for Teach and Repeat
@@ -46,7 +47,9 @@
 
 \section{INTRODUCTION}
 
-
+Teach and Repeat is a popular and efficient paradigm to execute tasks where it is possible to have
+an operator show the robot how to execute the task beforehand. It has been implemented using stereo cameras
+\cite{Furgale10} or lidar sensors \cite{Sprunk13}.
 
 \begin{itemize}
     \item Talk about teach and repeat
@@ -163,14 +166,36 @@ We can talk about the offline optimisation we did on some dataset.
   \caption{Comparison of un-optimized and optimized maps}
 \end{figure}
 
-We tested the algorithm on a few datasets that were recorded through previous \textit{teach}
-sessions. Our approach was indeed able to greatly reduce the number of anchor points needed to
-localize a \textit{repeat} session.
+First we ran our approach on three dataset from previous \textit{teach} sessions. The
+\textit{terasse} dataset is a short run paving stones on Université Laval's campus. It was a busy
+summer day, and passer-by that were curious about the robot introduced noise in the point
+clouds. The \textit{forest} dataset is a short run in some woodland on campus, making the environment
+highly unstructured. Finally, we used \textit{hallway}, mapping an indoor hallway, as a
+benchmark through the development of the algorithm. It records the robot going in a straight line.
+During this \textit{teach} session the robot was tuned to record a very high number of point clouds,
+so we expect the optimization algorithm to filter a lot of nodes in this case.
 
-We noticed that the \textit{ICP chain} used to reconstruct the relative positions between the nodes
-may be noisier than we thought, yielding unrealistic positions for sucessive anchor points. It
-leaves us wondering wether we should rather rely on the odometry from the weels as a reference
-transformation.
+We used parameters $a=0.4 m$, $b=0.4 m$ and $\epsilon=0.05 m$ for those optimization runs. The
+optimization is indeed able to reduce the number of point clouds necessary to execute a
+\textit{repeat} session. As exepected, depending on the robot trajectory some zones contain more
+superfluous nodes than others. Straight lines in very static environments tend to require less
+anchor points, where trajectories containing heavy rotations are less filtered out. The algorithm
+tends not only to eliminate superfluous point clouds, but it also gets rid of the nodes that are
+hard to localize against, for instance a point cloud containing a passer-by that is not there on the
+other neighboring point clouds. For instance in the \textit{hallway} dataset, even though the
+overall localization using ICP is easy, some clouds could not be used for localization at all.
+Finally, the number of remaining nodes could be tuned down even more, at the cost of a lower
+tolerance to error. Our algorithm thus gives the user a very direct way to control the
+memory-size/ability-to-localize tradeoff. The numbers given in table
+\ref{tabopti} are meant to give a general idea, but they could be very different depending on the
+geometry of the environment, the parameters given by the user, and the quality of the odometry
+estimates.
+
+We noticed that in some datasets, the \textit{ICP chain} used to reconstruct the relative positions
+between the nodes may be noisier than we thought, yielding unrealistic positions for sucessive
+anchor points. It leaves us wondering wether we should rather rely on the odometry from the weels as
+a reference transformation. A Kalmann Filter using both odometry and the results from ICP would be
+optimal.
 
 \begin{table}[h]
 \centering
@@ -180,9 +205,11 @@ Dataset & N. of points & N. of points after optimization & \% \\
 \hline
 terasse & 304 & 186 & 61.2 \\
   \hline
+forest & 62 & 41 & 66,1 \\
+  \hline
 \end{tabular}
 \caption{The result of the optimization on different datasets}
-
+\label{tabopti}
 \end{table}
 
 \section{FUTURE WORK}
@@ -235,6 +262,7 @@ finding the shortest path in the localizability graph, we ensure that every node
 reached by using the preceding node as a reference. This means (assuming that the ICP algorithm is
 reflexive) that every second anchor point in our optimized map becomes superfluous and can be removed.
 
-
+\section*{REFERENCES}
+\printbibliography
 
 \end{document}
