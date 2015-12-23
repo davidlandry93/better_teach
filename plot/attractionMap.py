@@ -17,8 +17,9 @@ def xyzOfCsv(csvFilename):
                 ZRow.append(float(value))
             Z.append(ZRow)
 
-    X = np.arange(0,len(Z),1)
-    Y = np.arange(0,len(Z[0]),1)
+    X = np.arange(-3,3, 6.0/20)
+    print(len(X))
+    Y = np.arange(-3,3, 6.0/20)
     X, Y = np.meshgrid(X,Y)
     return X,Y,Z
 
