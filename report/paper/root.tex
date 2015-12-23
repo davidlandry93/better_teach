@@ -271,6 +271,12 @@ a (m) & b (m) &  N. of points after optimization & \% \\
 \section{FUTURE WORK}
 
 \subsection{Experiment with Husky}
+In the future, we would like to validate experimentally, using a Clearpath Husky Robot, that the produced topometric map do can be used for localization.
+To reach that goal, we would optimized maps acquired during the teach phase of a teach and repeat. Then, we would compare
+the accuracy of the robot during the repeat phase using the optimized and unoptimized maps.
+We would also want to validate experimentally the effect of the parameters $a$ and $b$ (the semi-axis of the ellipse)
+on the accuracy of the map.
+Finally, we would like to validate if removing nodes from the topometric map harms precision in highly unstructured environment like forests.
 
 \subsection{Multi-objective optimization for automatic parameter selection}
 
