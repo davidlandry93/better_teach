@@ -24,7 +24,7 @@
 \graphicspath{{img/}}
 
 \title{\LARGE \bf
-Preparation of Papers for IEEE Sponsored Conferences \& Symposia*
+  Optimizing Topometric Maps for Teach and Repeat
 }
 
 
@@ -74,7 +74,7 @@ large errors, we can guarantee an increasingly large robustness by going in the 
 the localisation will fail: the ICP algorithm will enter a local minimum, and the result of the ICP
 will be largely different that the induced error.
 \section{OUR APPROACH}
-
+\label{approach}
 
 \begin{itemize}
   \item Choose elipse of a given shape. We assume that if ICP converges on the
@@ -131,16 +131,22 @@ terasse & 304 & 186 & 61.2 \\
 
 \begin{itemize}
   \item Experiment with Husky
-
-  \item Multi objective optimization to have an automatic error elipse
-
-  \item handling rotations (3D ellipsoid)
-
-  \item Reoptimisation of the graph
-
 \end{itemize}
 
 \subsection{Multi-objective optimization for automatic parameter selection}
+
+To focus our efforts on fiding the minimal node subset, we made the simplication the error ellipse has a fixed sized.
+In other words, we manually specify the distance in $x$ and $y$ for which we want the ICP to converge. With those parameters given,
+we can reduce the problem to a finding the shortest path in a graph, as shown in section \ref{approach}.
+
+
+A limitation of this approach is that, if for a given node, decreasing the size of the ellipse would make the ICP
+converge on further nodes of the graph. We can see that as a tradeoff between the precision and the number of nodes of the final map.
+
+
+An improvement on the current method would be model the problem as a multi-objective optimization problem. Given an initial
+ellipse size for each node of the graph, changing reducing the size of the ellipse has a cost. The goal is to find the best
+tradeoff between the length of the shortest path in the graph and the the costs of the nodes that are used by that shortest path.
 
 \subsection{Handling of rotations}
 
