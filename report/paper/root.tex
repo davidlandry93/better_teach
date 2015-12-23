@@ -72,8 +72,6 @@ error during the \textit{repeat} phase. Instead of choosing at what frequency th
 mapped, the operator will now have to wonder what tolerance to error he needs, which is a more
 natural decision to make given a certain application.
 
-\section{RELATED WORK}
-
 
 \section{PROBLEM DEFINITION}
 
@@ -146,6 +144,7 @@ Therefore, we only need to test readings on the circonference to verify if an el
 \end{figure}
 
 \subsection{Mapping matching readings}
+\label{matching-readings}
 To reduce the size of the topometric map, we need to filter out nodes that are considered to add no value to the map. To do so,
 we check how far appart can a reading and an anchor point be while still be usable for localization. More formally, for each node
 $n_i$, we verify is an ellipse of readings of a predetermined size is a convergence ellipse for the anchor point located at $n_{i+2}$,
@@ -167,24 +166,23 @@ around $n_{i}$ is a convergence ellipse considering the node $n_j$ as the anchor
 
 
 \subsection{Smallest topometric map}
+To determine the smallest topometric map that still can be used for localization, we need to eliminate redundant nodes.
+For example, if the anchor point $n_{i+2}$ can be used for localization of the readings around the node $n_i$, there is no need to keep the node $n_{i+1}$
+in the map.
+
+
+The graph reprensentation presented in the section \ref{matching-readings} allows to easily solve this problem. If each edge
+on the graph has a cost of 1, the minimal topometric map from the beginning of the map (node $b$) to the end of the map (node $e$)
+can be found using the Dijkstra's algorithm \cite{dijkstra}. The nodes used
+is the shortest path from $b$ to $e$ are the minimal node subset of the optimal topometric map. Note that the way the graph is built, it
+is guaranteed to be acyclic, therefore Dijkstra's algorithm will always find the minimal node subset.
+
 
 \begin{figure}[thpb]
   \centering
   \includegraphics[scale=1.0]{optimized-graph}
-  \caption{Optimal node subset using the graph approach}
+  \caption{Optimal node subset using the graph approach and Dijkstra's algorithm}
 \end{figure}
-
-\begin{itemize}
-  \item Choose elipse of a given shape. We assume that if ICP converges on the
-    ellipse, it would converge at any given point inside the ellipse (we need the explain why we made this assumption)
-
-  \item For each point, find the nearest point that doesn't converge with ICP
-
-  \item Create an oriented graph where arcs represents a successful ICP convergence
-
-  \item Find the shortest path in the graph from that converge
-
-\end{itemize}
 
 
 \section{EXPERIMENTS}
