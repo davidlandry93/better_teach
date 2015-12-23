@@ -1,0 +1,58 @@
+
+\documentclass[letterpaper]{article}
+\usepackage[margin=1in]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+
+\title{Plan de travail \\ Teach and repeat}
+\author{David Landry, Alexandre Gariépy}
+
+\begin{document}
+\maketitle
+
+Pour les besoins du cours on a cru bon de faire une remise partielle dans des délais
+raisonnables. Cependant l'algorithme est loin d'être terminé: voici trois façons dont on pourrait
+l'améliorer encore plus.
+
+\section{Gestion des rotations}
+
+\section{Réoptimisation du graphe}
+
+Le sous-ensemble de points de référence qu'on crée est considéré comme optimal, mais en fait on
+pourrait faire encore mieux. Pendant le repeat, on utilise un point de référence pour se localiser
+jusqu'à ce que le prochain point de référence devienne plus proche que l'ancien. Ensuite on fait la
+transition. Cependant, lors de l'optimisation on montre que les points de référence peuvent nous
+localiser comme il faut jusqu'au prochain point de référence. C'est comme si pendant le repeat on
+changeait de point de référence seulement quand on a atteint le prochain point, au lieu de le faire
+quand il devient plus proche.
+
+En d'autres mots, les cartes créées sont deux fois plus robustes que demandé. On peut se servir de
+cela pour optimiser encore plus les cartes créées.
+
+\section{Expérimentaions avec le husky}
+
+On devrait essayer une des cartes optimisées dans le cadre d'un teach and repeat réel, pour montrer
+que les cartes nous permettent réellement de nous localiser sans problème. Exemples de choses que
+l'expérience pourrait montrer:
+
+\begin{itemize}
+\item Que les cartes optimisées sont effectivement suffisantes pour se localiser.
+\item Que les cartes nous donnent une tolérance à l'erreur qui est à peu près équivalente à celle
+  qu'on avait demandé lors de l'optimisation de la carte.
+\item Plus l'ellipse de convergence demandée est petite, moins le repeat est robuste.
+\end{itemize}
+
+Pour pouvoir faire cette expérience, il faudra apporter quelques modifications à l'implémentation
+actuelle du teach and repeat.
+
+\begin{itemize}
+\item Les cartes dans le teach and repeat sont légèrement différentes des cartes manipulées pendant
+  l'optimisation. Il faudra uniformiser le tout dans le code.
+\end{itemize}
+
+
+
+\end{document}

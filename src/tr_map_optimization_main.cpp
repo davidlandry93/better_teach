@@ -1,6 +1,5 @@
 
 #include <boost/program_options.hpp>
-#include <yaml-cpp/yaml.h>
 
 #include "pointmatcher/PointMatcher.h"
 
@@ -10,14 +9,35 @@
 
 using namespace TeachRepeat;
 
+namespace po = boost::program_options;
+
+bool validate_user_input(po::variables_map vm) {
+    if(!vm.count("map"))
+    {
+        std::cout << "No map specified" << std::endl;
+        return false;
+    }
+
+    if(!vm.count("semimajor") || !vm.count("semiminor")) {
+        std::cout << "Axes lengts must be defined" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 int main(int argc, char** argv) {
     const float MAX_ERROR_TO_CONVERGE = 0.05;
 
-    namespace po = boost::program_options;
+
+
     po::options_description desc("Options");
 
     desc.add_options()
-            ("config,c", po::value< std::string >(), "The config file to use")
+            ("semimajor,a", po::value< float >(), "The length of the semimajor axis")
+            ("semiminor,b", po::value< float >(), "The lenght of the semiminor axis")
+            ("icp,i", po::value< std::string >(), "Path to the ICP config file")
+            ("map,m", po::value< std::string >(), "Path to the teach and repeat map")
             ("help,h", "Produce a help message");
 
     po::variables_map vm;
@@ -29,37 +49,22 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    std::string configFile;
-    if(!vm.count("config"))
-    {
-        std::cout << "No config file specified" << std::endl;
+    if(!validate_user_input(vm)) {
         return 1;
     }
-    else
-    {
-        configFile = vm["config"].as< std::string >();
-    }
-    YAML::Node config = YAML::LoadFile(configFile.c_str());
-
-    std::cout << "Loading map in memory..." << std::endl;
 
     PointMatcherService<float> pmService;
-    pmService.loadConfigFile(config["icp_config"].as< std::string >());
+    if(vm.count("icp")) {
+        pmService.loadConfigFile(vm["icp"].as< std::string >());
+    }
 
-    Map map(config["map"].as< std::string >(), pmService);
+    std::cout << "Initializing map..." << std::endl;
+    Map map(vm["map"].as< std::string >(), pmService);
 
     std::ofstream ofs;
     ofs.open("correctedAnchorPointsPositions.apd");
     map.outputAnchorPointsMetadata(ofs);
     ofs.close();
-
-    std::vector<LocalisedPointCloud>::iterator cursor = map.begin();
-
-    for(int i = 0; i < 1; i++)
-    {
-        cursor++;
-    }
-
 
     Ellipse<float> toleranceEllipse = Ellipse<float>(0.4, 0.4);
 

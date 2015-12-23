@@ -1,0 +1,37 @@
+\documentclass[tikz,convert=false]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+
+\begin{document}
+\begin{tikzpicture}
+\tikzset{vertex/.style = {shape=circle,draw,minimum size=0.5em}}
+\tikzset{edge/.style = {->,> = latex'}}
+
+\node[vertex] (a) at (0,0) {$b$};
+\node[vertex] (b) at (1,0) {};
+\node[vertex] (c) at (2,0) {};
+\node[vertex] (d) at (3,0) {};
+\node[vertex] (e) at (4,0) {};
+\node[vertex] (f) at (5,0) {};
+\node[vertex] (g) at (6,0) {};
+\node[vertex] (h) at (7,0) {$e$};
+
+\draw[edge] (a) to (b);
+\draw[edge] (b) to (c);
+\draw[edge] (c) to (d);
+\draw[edge] (d) to (e);
+\draw[edge] (e) to (f);
+\draw[edge] (f) to (g);
+\draw[edge] (g) to (h);
+
+\draw[edge] (a) to[bend left] (c);
+\draw[edge] (a) to[bend left] (d);
+\draw[edge] (a) to[bend left] (e);
+\draw[edge] (c) to[bend right] (e);
+\draw[edge] (c) to[bend right] (f);
+\draw[edge] (d) to[bend left] (f);
+\draw[edge] (e) to[bend left] (g);
+\draw[edge] (e) to[bend left] (h);
+\draw[edge] (f) to[bend right] (h);
+\end{tikzpicture}
+\end{document}

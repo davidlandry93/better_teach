@@ -34,8 +34,13 @@ add_library(optimizeteachrepeat STATIC
 target_link_libraries(optimizeteachrepeat teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
 
 add_executable(optimizeteachrepeatmain
-        src/tolerance_ellipse_main.cpp)
+        src/tr_map_optimization_main.cpp)
 target_link_libraries(optimizeteachrepeatmain optimizeteachrepeat)
+
+add_executable(attractionbassinmain
+        src/attraction_bassin_main.cpp
+        src/attraction_bassin_builder.cpp)
+target_link_libraries(attractionbassinmain pointmatcherservice optimizeteachrepeat)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
