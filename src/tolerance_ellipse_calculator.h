@@ -49,9 +49,7 @@ namespace TeachRepeat {
 
             Transform inducedError(pointOnEllipse.toVector());
 
-            std::cout << inducedError << std::endl;
             T convergenceDistance = f(inducedError);
-            std::cout << "Resulting error" << convergenceDistance << std::endl;
             convergenceDistances.push_back(convergenceDistance);
         }
 

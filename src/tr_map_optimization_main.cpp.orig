@@ -1,5 +1,6 @@
 
 #include <boost/program_options.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "pointmatcher/PointMatcher.h"
 
@@ -10,6 +11,7 @@
 using namespace TeachRepeat;
 
 namespace po = boost::program_options;
+namespace pt = boost::posix_time;
 
 bool validate_user_input(po::variables_map vm) {
     if(!vm.count("map"))
@@ -28,9 +30,6 @@ bool validate_user_input(po::variables_map vm) {
 
 int main(int argc, char** argv) {
     const float MAX_ERROR_TO_CONVERGE = 0.05;
-
-
-
     po::options_description desc("Options");
 
     desc.add_options()
@@ -58,6 +57,13 @@ int main(int argc, char** argv) {
         pmService.loadConfigFile(vm["icp"].as< std::string >());
     }
 
+    std::cout << "=== Teach and Repeat map optimization ===" << std::endl;
+    std::cout << "Began on " << pt::to_iso_extended_string(pt::second_clock::local_time()) << std::endl;
+    std::cout << "Parameters" << std::endl;
+    std::cout << "semimajor (a): " << vm["semimajor"].as<float>() << std::endl;
+    std::cout << "semiminor (b): " << vm["semiminor"].as<float>() << std::endl;
+    std::cout << "epsilon: " << MAX_ERROR_TO_CONVERGE << std::endl;
+
     std::cout << "Initializing map..." << std::endl;
     Map map(vm["map"].as< std::string >(), pmService);
 
@@ -65,17 +71,30 @@ int main(int argc, char** argv) {
     ofs.open("correctedAnchorPointsPositions.apd");
     map.outputAnchorPointsMetadata(ofs);
     ofs.close();
+<<<<<<< Updated upstream
+=======
 
-    Ellipse<float> toleranceEllipse = Ellipse<float>(0.4, 0.4);
+>>>>>>> Stashed changes
+    Ellipse<float> toleranceEllipse = Ellipse<float>(vm["semimajor"].as<float>(), vm["semiminor"].as<float>());
 
     ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipse, MAX_ERROR_TO_CONVERGE, pmService);
     MapOptimizer optimizer(toleranceEllipseCalculator);
 
+    std::cout << "Map initialization ended on " << pt::to_iso_extended_string(pt::second_clock::local_time())<< std::endl;
+    std::cout << "Optimizing map..." << std::endl;
     optimizer.optimize(map);
+
+    std::cout << "Writing results..." << std::endl;
 
     ofs.open("optimizedMap.csv");
     map.outputAnchorPointsMetadata(ofs);
     ofs.close();
+
+    ofs.open("localizabilityGraph.lgf");
+    optimizer.saveGraph(ofs);
+    ofs.close();
+
+    std::cout << "Optimization ended on " << pt::to_iso_extended_string(pt::second_clock::local_time())<< std::endl;
 
     return 0;
 }

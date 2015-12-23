@@ -5,7 +5,6 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-ORIGINAL_FILE = 'setOfAnchorPoints.csv'
 CORRECTED_FILE = 'correctedSetOfAnchorPoints.csv'
 OPTIMIZED_FILE = 'optimizedSetOfAnchorPoints.csv'
 
@@ -23,11 +22,7 @@ def poses_of_csv(csvFile):
     return poses
 
 if __name__ == '__main__':
-    originalFile = open(ORIGINAL_FILE)
-    originalPoses = poses_of_csv(originalFile)
-    originalPoses = bring_poses_to_origin(originalPoses)
-    originalFile.close()
-    
+
     correctedFile = open(CORRECTED_FILE)
     correctedPoses = poses_of_csv(correctedFile)
     correctedFile.close()
@@ -37,15 +32,11 @@ if __name__ == '__main__':
     optimizedFile.close()
 
 
-
     xs, ys = zip(*optimizedPoses)
     plt.scatter(xs, ys, s=50.0, color='red')
 
     xs, ys = zip(*correctedPoses)
     plt.scatter(xs,ys,marker='*')
-
-    xs, ys = zip(*originalPoses)
-    #plt.scatter(xs,ys, marker='o')
 
     plt.legend(['Anchor points of the optimized map', 'Anchor points of the original map'])
     plt.xlabel('Position of the anchor point (m)')
