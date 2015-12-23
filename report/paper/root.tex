@@ -48,15 +48,29 @@
 \section{INTRODUCTION}
 
 Teach and Repeat is a popular and efficient paradigm to execute tasks where it is possible to have
-an operator show the robot how to execute the task beforehand. It has been implemented using stereo cameras
-\cite{Furgale10} or lidar sensors \cite{Sprunk13}.
+an operator show the robot how to execute the task beforehand. It has been implemented using stereo
+cameras \cite{Furgale10} or lidar sensors \cite{Sprunk13}. As shown in \cite{Furgale10}, an hybrid
+between metric and topographic maps is an appropriate way to record the aspect of the environment
+during a \textit{teach} run (we will refer to those maps as \textit{topometric}). One of the
+questions that arises when implementing such a navigation algorithm is how sparsely should the
+environement should be mapped. A very frequent sampling, with lots of \textit{anchor points} to
+localize against during the \textit{repeat} run, will provide more robustness to the
+algorithm. However the robustness comes at the cost of a very large database size. The database size
+is in itself a burden but more importantly if affects the performance of an eventual loop closure
+algorithms (TODO CITE LOOP CLOSURE).
 
-\begin{itemize}
-    \item Talk about teach and repeat
-    \item How teach maps are aquired (point clouds are taken at regular steps)
-    \item Why we want to optimize this (loop closure spped, memory for large maps)
-\end{itemize}
+The current approach leaves it to the operator to decide how frequently an anchor point is
+recorded. Both in \cite{Furgale10} and \cite{Sprunk13} the robot is told to record a new anchor
+point at regular intervals, based on the odometry from the wheels. This approach comes with no
+consideration for the complexity of the environment, and the operator has to guess what parameter
+would be appropriate for a given application.
 
+Inspired by \cite{Churchill15}, we will implement an algorithm such that there is no need for this
+guesswork. By carefully evaluating ability of the anchor points to localize the robot on the taught
+trajectory, we will be able to remove the unnecessary ones while still guaranteeing a tolerance to
+error during the \textit{repeat} phase. Instead of choosing at what frequency the environment is
+mapped, the operator will now have to wonder what tolerance to error he needs, which is a more
+natural decision to make given a certain application.
 
 \section{RELATED WORK}
 
