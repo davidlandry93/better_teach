@@ -77,8 +77,8 @@ int main(int argc, char **argv) {
         builder.setIcpConfigFile(icpConfigPath);
     }
 
-    float convergenceMapFromX = reading.getPosition().getVector()(0) - 5.0;
-    float convergenceMapToX = reading.getPosition().getVector()(0) + 5.0;
+    float convergenceMapFromX = reading.getPosition().getVector()(0) - 3.0;
+    float convergenceMapToX = reading.getPosition().getVector()(0) + 3.0;
     float convergenceMapFromY = reading.getPosition().getVector()(1) - 3.0;
     float convergenceMapToY = reading.getPosition().getVector()(1) + 3.0;
 
@@ -86,8 +86,8 @@ int main(int argc, char **argv) {
                                                     convergenceMapToX,
                                                     convergenceMapFromY,
                                                     convergenceMapToY,
-                                                    30,
-                                                    30);
+                                                    20,
+                                                    20);
 
     Eigen::IOFormat CsvFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n", "", "", "",
                               "");

@@ -60,6 +60,11 @@
 
 \section{PROBLEM DEFINITION}
 
+In our current implementation of the Teach and Repeat paradigm, the maps we use to repeat a
+trajectory contains anchor points, transformations to go from one anchor to another, as well as
+recorded commands for the whole trajectory. This paper, however, is focused on how to improve the
+size of the underlying topometric map, without consideration for the list of commands.
+
 We begin with an unoptimized topometric map, containing $N$ a set of interconnected nodes and $T$
 the geometric transformations to go from one node to it's neighbor. The nodes in $N$ are in fact
 anchor points to our teach an repeat implementation. They are point clouds in this case, but could
@@ -68,11 +73,13 @@ cloud $p_i$. The nodes are linked as a chain, from the first node recorded to th
 
 Our objective is to find the smallest subset of $N$ such that the robot can reliably localize itself
 against a node at any time while it follows the taught trajectory. To decide wether the robot can
-localize itself at a given position in the global frame, we will induce an error in the
+localize itself at a given position on the taught trajectory, we will induce an error in the
 transformation estimate between both nodes. The intuition behind it is that by inducing increasingly
-large errors, we can guarantee an increasingly large robustness by going in the field. At some point
-the localisation will fail: the ICP algorithm will enter a local minimum, and the result of the ICP
-will be largely different that the induced error.
+large errors, and having the ICP succeed nontheless, we can guarantee an increasingly large
+robustness by going in the field. When the induced error becomes large enough, the localisation will
+fail: the ICP algorithm will enter a local minimum, and the result of the ICP will be largely
+different that the induced error.
+
 \section{OUR APPROACH}
 \label{approach}
 
@@ -87,6 +94,13 @@ will be largely different that the induced error.
   \item Find the shortest path in the graph from that converge
 
 \end{itemize}
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.4]{convergence_bassin}
+  \caption{The covergence bassin of a pair of readings}
+\end{figure}
+
 
 \begin{figure}[thpb]
   \centering
@@ -135,20 +149,23 @@ terasse & 304 & 186 & 61.2 \\
 
 \subsection{Multi-objective optimization for automatic parameter selection}
 
-To focus our efforts on fiding the minimal node subset, we made the simplication the error ellipse has a fixed sized.
-In other words, we manually specify the distance in $x$ and $y$ for which we want the ICP to converge. With those parameters given,
-we can reduce the problem to a finding the shortest path in a graph, as shown in section \ref{approach}.
+To focus our efforts on fiding the minimal node subset, we made the simplication the error ellipse
+has a fixed sized.  In other words, we manually specify the distance in $x$ and $y$ for which we
+want the ICP to converge. With those parameters given, we can reduce the problem to a finding the
+shortest path in a graph, as shown in section \ref{approach}.
 
 
-A limitation of this approach is that, if for a given node, decreasing the size of the ellipse would make the ICP
-converge on further nodes of the graph. We can see that as a tradeoff between the precision and the number of nodes of the final map.
+A limitation of this approach is that, if for a given node, decreasing the size of the ellipse would
+make the ICP converge on further nodes of the graph. We can see that as a tradeoff between the
+precision and the number of nodes of the final map.
 
 
-An improvement on the current method would be model the problem as a multi-objective optimization problem. Given an initial
-ellipse size for each node of the graph, changing reducing the size of the ellipse has a cost. The goal is to find the best
-tradeoff between the length of the shortest path in the graph and the the costs of the nodes that are used by that shortest path.
+An improvement on the current method would be model the problem as a multi-objective optimization
+problem. Given an initial ellipse size for each node of the graph, changing reducing the size of the
+ellipse has a cost. The goal is to find the best tradeoff between the length of the shortest path in
+the graph and the the costs of the nodes that are used by that shortest path.
 
-\subsection{Handling of rotations}
+\subsection{Handling rotations}
 
 For the sake of simplicity we did not use rotations when inducing errors to the reading's
 position estimate, before testing the reliability of the localization. To make the optimization
@@ -164,6 +181,17 @@ represent the error in heading, or $\Delta \theta$.
 
 \subsection{Reoptimization of the localizability graph}
 
+The optimization could be taken a step further if we make one more assumption about the behavior
+of the \textit{repeat} phase. So far we assumed that the repeat algorithm would work that way: when
+following a trajectory passing by anchor points $a$ then $b$, the robot would use point $a$ as a
+reference for localization until it is very close to $b$, and then switch reference. It would be
+reasonable to have the robot behave differently and make it switch references somewhere in between
+$a$ and $b$, which would make the localization easier.
+
+This modification would allow us to make an even better optimization of the topometric maps. When
+finding the shortest path in the localizability graph, we ensure that every node in the graph can be
+reached by using the preceding node as a reference. This means (assuming that the ICP algorithm is
+reflexive) that every second anchor point in our optimized map becomes superfluous and can be removed.
 
 
 \section{CONCLUSION}
