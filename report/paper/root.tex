@@ -101,6 +101,7 @@ different that the induced error.
 \label{approach}
 
 \subsection{Deciding if a reading and anchor point pair can be used for localization}
+\label{approach-deciding-converge}
 
 First, lets define the terms reading and anchor point:
 
@@ -125,8 +126,16 @@ a transformation $[-x, -y]^T$. This is verified by checking if the norm of the v
 
 
 \subsection{Convergence ellipse}
-For each node in $N$, we define the concept of a convergence ellipse.
-It is an ellipse in which every point, given another node in $N$,
+Given two nodes $n_i$ and $n_j$ in $N$, we can use $n_i$ to generate readings and $n_j$ as an anchor point.
+We define the concept of a convergence ellipse as the ellipse around $n_i$ where we generate readings by inducing
+error corresponding to the position in the ellipse, the center of the ellipse being no induced error. We call the ellipse
+a convergence ellipse because each generated reading can be used for localization using the $n_j$ anchor point, as described in the
+section \ref{approach-deciding-converge}
+
+
+The ellipse has been choosen because it is a geometric shape that fits well the convergence bassin, or zone where we can induce error and the ICP still
+converges (see figure \ref{convergence_bassin}). We also observed that this zone is continuous; there is no ``hole'' where the ICP doesn't converge inside the bassin.
+Therefore, we only need to test readings on the circonference to verify if an ellipse is a convergence ellipse.
 
 \subsection{Mapping matching readings}
 
@@ -150,6 +159,7 @@ It is an ellipse in which every point, given another node in $N$,
   \centering
   \includegraphics[scale=0.4]{convergence_bassin}
   \caption{The covergence bassin of a pair of readings}
+  \label{convergence_bassin}
 \end{figure}
 
 
