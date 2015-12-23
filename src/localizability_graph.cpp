@@ -49,6 +49,12 @@ namespace TeachRepeat {
 
         return optimalSetOfAnchors;
     }
+
+    void LocalizabilityGraph::save(std::ostream& os) const {
+        lemon::DigraphWriter<Graph> writer(graph, os);
+        writer.nodeMap("id", indexMap);
+        writer.run();
+    }
 }
 
 
