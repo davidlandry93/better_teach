@@ -231,7 +231,7 @@ optimal.
 \centering
 \begin{tabular}{|l|r|r|r|}
   \hline
-Dataset & N. of points & N. of points after optimization & \% \\
+Dataset & N. of nodes & N. of nodes (optimized) & \% nodes kept \\
 \hline
   hallway & 117 & 14 & 12.0 \\
 \hline
@@ -247,21 +247,28 @@ forest & 62 & 41 & 66,1 \\
 
 \subsection{Parameters $a$ and $b$}
 
-We observed the effects of parameters $a$ and $b$ when optimizing the \textit{forest} dataset.
+We observed the effects of parameters $a$ and $b$ when optimizing the \textit{forest} dataset. As
+expected, the percentage of nodes kepts after optimization grows with the tolerance ellipse. We
+noticed that very small tolerance ellipses does not necessarily mean a very small amount of nodes;
+that is explained by the quality of the anchor points themselves. A point cloud that has a very bas
+initial position estimate, or that contains a passer-by, is always going to make the optimization
+more difficult, no matter how small the tolerance ellipse is.
 
 \begin{table}[h]
 \centering
 \begin{tabular}{|r|r|r|r|}
   \hline
-a (m) & b (m) &  N. of points after optimization & \% \\
+a (m) & b (m) &  N. of nodes after optimization & \% of points kept \\
 \hline
   0.2 & 0.1 & 41 & 66.1  \\
 \hline
- 0.4 & 0.2 &  &  \\
-  \hline
  0.4 & 0.4 & 41 & 66.1 \\
   \hline
- 0.8 & 0.4 & &  \\
+ 1.6 & 0.8 & 44 & 72.1 \\
+  \hline
+1.8 & 0.9 & 59 & 96.7 \\
+  \hline
+  2.0 & 1.0 & 61 & 100.0 \\
   \hline
 \end{tabular}
 \caption{The effects of parameters $a$ and $b$}
