@@ -28,9 +28,6 @@ bool validate_user_input(po::variables_map vm) {
 
 int main(int argc, char** argv) {
     const float MAX_ERROR_TO_CONVERGE = 0.05;
-
-
-
     po::options_description desc("Options");
 
     desc.add_options()
@@ -58,6 +55,12 @@ int main(int argc, char** argv) {
         pmService.loadConfigFile(vm["icp"].as< std::string >());
     }
 
+    std::cout << "=== Teach and Repeat map optimization ===" << std::endl;
+    std::cout << "Parameters" << std::endl;
+    std::cout << "semimajor (a)" << vm["semimajor"].as<float>() << std::endl;
+    std::cout << "semiminor (b)" << vm["semiminor"].as<float>() << std::endl;
+    std::cout << "epsilon" << MAX_ERROR_TO_CONVERGE << std::endl;
+
     std::cout << "Initializing map..." << std::endl;
     Map map(vm["map"].as< std::string >(), pmService);
 
@@ -66,7 +69,7 @@ int main(int argc, char** argv) {
     map.outputAnchorPointsMetadata(ofs);
     ofs.close();
 
-    Ellipse<float> toleranceEllipse = Ellipse<float>(0.4, 0.4);
+    Ellipse<float> toleranceEllipse = Ellipse<float>(vm["semimajor"].as<float>(), vm["semiminor"].as<float>());
 
     ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipse, MAX_ERROR_TO_CONVERGE, pmService);
     MapOptimizer optimizer(toleranceEllipseCalculator);
