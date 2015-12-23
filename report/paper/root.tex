@@ -60,19 +60,22 @@ Preparation of Papers for IEEE Sponsored Conferences \& Symposia*
 
 \section{PROBLEM DEFINITION}
 
-We begin with an unoptimized topometric map, containing $N$ a set of nodes and $T$ the geometric transformations to go
-from one node to it's neighbor. The nodes in $N$ are in fact anchor points to our teach an repeat
-implementation. They are point clouds in this case, but could be any mean of localization, like
-features in an image.
+We begin with an unoptimized topometric map, containing $N$ a set of interconnected nodes and $T$
+the geometric transformations to go from one node to it's neighbor. The nodes in $N$ are in fact
+anchor points to our teach an repeat implementation. They are point clouds in this case, but could
+be any mean of localization, like features in an image. Every node $n_i$ has an associated point
+cloud $p_i$. The nodes are linked as a chain, from the first node recorded to the last.
 
-Our objective is to find the smallest subset of $N$ such that the robot
-can reliably localize itself against a node at any time while it follows the taught trajectory. To
-decide wether the robot can localize itself at a given position in the global frame, we pick two
-nodes in $N$, $a$ and $r$. $a$ is to be considered as the anchor point, and $r$ as a reading. We
-then sample the function $f: T \rightarrow \mathbb{R}$ that outputs the euclidian distance between
-the expected translation and the resulting translation when performing ICP on both point clouds.
-
+Our objective is to find the smallest subset of $N$ such that the robot can reliably localize itself
+against a node at any time while it follows the taught trajectory. To decide wether the robot can
+localize itself at a given position in the global frame, we will induce an error in the
+transformation estimate between both nodes. The intuition behind it is that by inducing increasingly
+large errors, we can guarantee an increasingly large robustness by going in the field. At some point
+the localisation will fail: the ICP algorithm will enter a local minimum, and the result of the ICP
+will be largely different that the induced error.
 \section{OUR APPROACH}
+
+
 \begin{itemize}
   \item Choose elipse of a given shape. We assume that if ICP converges on the
     ellipse, it would converge at any given point inside the ellipse (we need the explain why we made this assumption)
@@ -102,6 +105,27 @@ We can talk about the offline optimisation we did on some dataset.
   \caption{Comparison of un-optimized and optimized maps}
 \end{figure}
 
+We tested the algorithm on a few datasets that were recorded through previous \textit{teach}
+sessions. Our approach was indeed able to greatly reduce the number of anchor points needed to
+localize a \textit{repeat} session.
+
+We noticed that the \textit{ICP chain} used to reconstruct the relative positions between the nodes
+may be noisier than we thought, yielding unrealistic positions for sucessive anchor points. It
+leaves us wondering wether we should rather rely on the odometry from the weels as a reference
+transformation.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|r|r|r|}
+  \hline
+Dataset & N. of points & N. of points after optimization & \% \\
+\hline
+terasse & 304 & 186 & 61.2 \\
+  \hline
+\end{tabular}
+\caption{The result of the optimization on different datasets}
+
+\end{table}
 
 \section{FUTURE WORK}
 

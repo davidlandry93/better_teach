@@ -37,6 +37,11 @@ add_executable(optimizeteachrepeatmain
         src/tolerance_ellipse_main.cpp)
 target_link_libraries(optimizeteachrepeatmain optimizeteachrepeat)
 
+add_executable(attractionbassinmain
+        src/attraction_bassin_main.cpp
+        src/attraction_bassin_builder.cpp)
+target_link_libraries(attractionbassinmain pointmatcherservice optimizeteachrepeat)
+
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 if(COMPILER_SUPPORTS_CXX11)
