@@ -71,6 +71,10 @@ int main(int argc, char** argv) {
     ofs.open("correctedAnchorPointsPositions.apd");
     map.outputAnchorPointsMetadata(ofs);
     ofs.close();
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     Ellipse<float> toleranceEllipse = Ellipse<float>(vm["semimajor"].as<float>(), vm["semiminor"].as<float>());
 
     ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipse, MAX_ERROR_TO_CONVERGE, pmService);
