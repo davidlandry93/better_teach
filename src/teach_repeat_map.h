@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <list>
 
 #include "pointmatcherservice.h"
 #include "localised_point_cloud.h"
