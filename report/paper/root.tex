@@ -72,8 +72,6 @@ error during the \textit{repeat} phase. Instead of choosing at what frequency th
 mapped, the operator will now have to wonder what tolerance to error he needs, which is a more
 natural decision to make given a certain application.
 
-\section{RELATED WORK}
-
 
 \section{PROBLEM DEFINITION}
 
@@ -174,6 +172,8 @@ Therefore, we only need to test readings on the circonference to verify if an el
 \section{EXPERIMENTS}
 We can talk about the offline optimisation we did on some dataset.
 
+\subsection{Map optimization}
+
 \begin{figure}
   \centering
   \includegraphics[scale=0.4]{map_optimization}
@@ -225,6 +225,30 @@ forest & 62 & 41 & 66,1 \\
   \hline
 \end{tabular}
 \caption{The result of the optimization on different datasets}
+\label{tabopti}
+\end{table}
+
+
+\subsection{Parameters $a$ and $b$}
+
+We observed the effects of parameters $a$ and $b$ when optimizing the \textit{forest} dataset.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|r|r|r|r|}
+  \hline
+a (m) & b (m) &  N. of points after optimization & \% \\
+\hline
+  0.2 & 0.1 & 41 & 66.1  \\
+\hline
+ 0.4 & 0.2 &  &  \\
+  \hline
+ 0.4 & 0.4 & 41 & 66.1 \\
+  \hline
+ 0.8 & 0.4 & &  \\
+  \hline
+\end{tabular}
+\caption{The effects of parameters $a$ and $b$}
 \label{tabopti}
 \end{table}
 
