@@ -39,10 +39,17 @@
 \pagestyle{empty}
 
 
-\begin{abstract}
-
-  abstract
-
+\begin{abstract} Topometric maps are a convenient approach to record the aspect of the environment
+in the Teach and Repeat paradigm. When using such a map, the question of how sparsely the
+environment should be sampled arises. A very dense sampling will be more robust at the cost of an
+increased database size. Fewer reference points will make the use of loop-closure algorithms
+easier. To replace the traditional approach of recording data at a regular intervals based on the
+odometry of the wheels, we propose an offline algorithm that automatically filters the reference
+points in a way that guarantees a certain tolerance to error. The topometric map then contains the
+minimal amount of nodes required to execute the \textit{repeat} runs, thus making loop-closure
+easier and allowing the mapping of longer trajectories. Offline experiments confirmed the ability of
+our approach to optimize topometric maps, and showed that the size of the map will vary given a
+certain demanded error tolerance.
 \end{abstract}
 
 \section{INTRODUCTION}
