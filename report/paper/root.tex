@@ -76,6 +76,40 @@ will be largely different that the induced error.
 \section{OUR APPROACH}
 \label{approach}
 
+\subsection{Deciding if a reading and anchor point pair can be used for localization}
+
+First, lets define the terms reading and anchor point:
+
+\begin{itemize}
+  \item \textbf{Anchor point:} an anchor point is a node $n_i$ the nodes of the unoptimized topometric map. Each
+    anchor point has an associated point cloud $p_i$. This point cloud is used as the reference point cloud when performing the
+    ICP algorithm.
+  \item \textbf{Reading:} a reading is the point cloud produced by the robot sensor during the repeat phase. However,
+    we do the optimization of the topometric map in an offline process using only the teach data. Therefore,
+    we use simulated reading. To simulate a reading, we take the point cloud $p_j$ of an anchor point and induce an
+    error. This error is a 2D translation vector $[x, y]^T$, where $x$ is the forward-backword error and $y$ is the left-right error,
+    following ROS frame convensions.
+\end{itemize}
+
+Lets consider a reading $r$ and an anchor point $a$. We know that $r$ is derived from inducing an error $[x, y]^T$ to $p_r$, which is associated to a node $n_r$.
+We also know that the anchor point $a$ is associated to a node $n_a$ and a point cloud $p_a$. We can easily get the transform $t$ between $n_r$ and $n_a$ from $T$.
+
+
+We want to know if the $a$ can be used to localize $r$. To do so, we run the ICP algorithm using $r$ as the input and $p_a$ as the reference, using $t$
+as the initialization of the ICP. ICP returns a transform $[x_{icp}, y_{icp}]^T$. We would except that ICP corrects the induced error by returning
+a transformation $[-x, -y]^T$. This is verified by checking if the norm of the vector $[x_{icp}, y_{icp}]^T - [-x, -y]^T$ is under a certain $\epsilon$.
+
+
+\subsection{Convergence ellipse}
+For each node in $N$, we define the concept of a convergence ellipse.
+It is an ellipse in which every point, given another node in $N$,
+
+\subsection{Mapping matching readings}
+
+\subsection{Topometric map as a graph}
+
+\subsection{Smallest topometric map}
+
 \begin{itemize}
   \item Choose elipse of a given shape. We assume that if ICP converges on the
     ellipse, it would converge at any given point inside the ellipse (we need the explain why we made this assumption)
@@ -129,13 +163,11 @@ terasse & 304 & 186 & 61.2 \\
 
 \section{FUTURE WORK}
 
-\begin{itemize}
-  \item Experiment with Husky
-\end{itemize}
+\subsection{Experiment with Husky}
 
 \subsection{Multi-objective optimization for automatic parameter selection}
 
-To focus our efforts on fiding the minimal node subset, we made the simplication the error ellipse has a fixed sized.
+To focus our efforts on fiding the minimal node subset, we made the simplication the convergence ellipse has a fixed sized.
 In other words, we manually specify the distance in $x$ and $y$ for which we want the ICP to converge. With those parameters given,
 we can reduce the problem to a finding the shortest path in a graph, as shown in section \ref{approach}.
 
@@ -166,6 +198,5 @@ represent the error in heading, or $\Delta \theta$.
 
 
 
-\section{CONCLUSION}
 
 \end{document}
