@@ -123,7 +123,7 @@ Lets consider a reading $r$ and an anchor point $a$. We know that $r$ is derived
 We also know that the anchor point $a$ is associated to a node $n_a$ and a point cloud $p_a$. We can easily get the transform $t$ between $n_r$ and $n_a$ from $T$.
 
 
-We want to know if the $a$ can be used to localize $r$. To do so, we run the ICP algorithm using $r$ as the input and $p_a$ as the reference, using $t$
+We want to know if $a$ can be used to localize $r$. To do so, we run the ICP algorithm using $r$ as the input and $p_a$ as the reference, using $t$
 as the initialization of the ICP. ICP returns a transform $[x_{icp}, y_{icp}]^T$. We would except that ICP corrects the induced error by returning
 a transformation $[-x, -y]^T$. This is verified by checking if the norm of the vector $[x_{icp}, y_{icp}]^T - [-x, -y]^T$ is under a certain $\epsilon$.
 
@@ -151,11 +151,12 @@ circonference to verify if an ellipse is a convergence ellipse.
 
 \subsection{Mapping matching readings}
 \label{matching-readings}
-To reduce the size of the topometric map, we need to filter out nodes that are considered to add no value to the map. To do so,
-we check how far appart can a reading and an anchor point be while still be usable for localization. More formally, for each node
-$n_i$, we verify is an ellipse of readings of a predetermined size is a convergence ellipse for the anchor point located at $n_{i+2}$,
-$n_{i+3}$... $n_{i+k}$ until we find the node  where the readings of the ellipse don't converge to the anchor point $n_{i_k}$. We assume
-that the anchor point $n_{i_i}$ is always valid.
+To reduce the size of the topometric map, we need to filter out nodes that are considered to add no
+value to the map. To do so, we check how far appart can a reading and an anchor point be while still
+be usable for localization. More formally, for each node $n_i$, we verify if an ellipse of readings
+of a predetermined size is a convergence ellipse for the anchor point located at $n_{i+2}$,
+$n_{i+3}$... $n_{i+k}$ until we find the node where the readings of the ellipse doesn't converge to
+the anchor point $n_{i+k}$. We assume that the anchor point $n_{i+1}$ is always valid.
 
 
 The results of this search are represented as an oriented graph, where an edge from $n_{i}$ to $n_{j}$ means that the the ellipse of readings
