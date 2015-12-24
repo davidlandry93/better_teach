@@ -39,17 +39,17 @@
 \pagestyle{empty}
 
 
-\begin{abstract} Topometric maps are a convenient approach to record the aspect of the environment
-in the Teach and Repeat paradigm. When using such a map, the question of how sparsely the
-environment should be sampled to build reference points arises. A very dense sampling will be more
-robust at the cost of an increased database size. Fewer reference points will make the use of
-loop-closure algorithms easier. To replace the traditional approach of recording data at a regular
-intervals based on the odometry of the wheels, we propose an offline algorithm that automatically
-filters the reference points in a way that guarantees a certain tolerance to error. The topometric
-map then contains the minimal amount of nodes required to execute the \textit{repeat} runs, thus
-making loop-closure easier and allowing the mapping of longer trajectories. Offline experiments
-confirmed the ability of our approach to optimize topometric maps, and showed that the size of the
-map will vary given a certain demanded error tolerance.
+\begin{abstract} Topometric maps are a convenient approach to record reference points (also called
+anchor points) in the Teach and Repeat paradigm. When using such a map, the question of how sparsely
+the environment should be sampled arises. A very dense sampling will be more robust at the cost of
+an increased database size. Fewer anchor points will make the use of loop-closure algorithms
+easier. To replace the traditional approach of recording data at a regular intervals based on the
+odometry of the wheels, we propose an offline algorithm that automatically filters the anchor points
+points in a way that guarantees a certain tolerance to error. The topometric map then contains the
+minimal amount of nodes required to execute the \textit{repeat} runs, making loop-closure easier and
+allowing the mapping of longer trajectories. Offline experiments confirmed the ability of our
+approach to optimize topometric maps, and showed that the size of the map will vary given a certain
+demanded error tolerance.
 \end{abstract}
 
 \section{INTRODUCTION}
@@ -211,6 +211,12 @@ highly unstructured. Finally, we used \textit{hallway}, mapping an indoor hallwa
 benchmark through the development of the algorithm. It records the robot going in a straight line.
 During this \textit{teach} session the robot was tuned to record a very high number of point clouds,
 so we expect the optimization algorithm to filter a lot of nodes in this case.
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.5]{hallway_optimization}
+  \caption{Optimization of hallway dataset}
+\end{figure}
 
 We used parameters $a=0.4 m$, $b=0.4 m$ and $\epsilon=0.05 m$ for those optimization runs. The
 optimization is indeed able to reduce the number of point clouds necessary to execute a
