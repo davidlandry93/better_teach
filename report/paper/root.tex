@@ -134,13 +134,15 @@ point.  We define the concept of a convergence ellipse as the ellipse around $n_
 readings by inducing error corresponding to the position in the ellipse, the center of the ellipse
 being no induced error. We call the ellipse a convergence ellipse because each generated reading can
 be used for localization using the $n_j$ anchor point, as described in the section
-\ref{approach-deciding-converge}
+\ref{approach-deciding-converge} We chose the ellipse because it's shape corresponds to the motion model of most ground robots.
 
-The ellipse has been choosen because it is a geometric shape that fits well the convergence bassin,
-or zone where we can induce error and the ICP still converges (see figure
-\ref{convergence_bassin}). We also observed that this zone is continuous; there is no ``hole'' where
-the ICP doesn't converge inside the bassin.  Therefore, we only need to test readings on the
-circonference to verify if an ellipse is a convergence ellipse.
+Verifying if an ellipse is a convergence ellipse for a pair of nodes can be though of as fitting an
+ellipse inside the convergence bassin seen in figure \ref{convergence_bassin}. This figure
+represents, for a pair nodes $n_i$ and $n_j$, the size of the error after we ran the ICP with a
+certain induced error. We also make the assumption that the bassin of convergence has a reasonable
+shape and does not contain any holes. This assumption allows us to sample the function represented
+on figure \ref{convergence_bassin} only on the edges of the ellipse, and make our algorithm much
+more efficient.
 
 \begin{figure}[thpb]
   \centering
@@ -155,13 +157,12 @@ To reduce the size of the topometric map, we need to filter out nodes that are c
 value to the map. To do so, we check how far appart can a reading and an anchor point be while still
 be usable for localization. More formally, for each node $n_i$, we verify if an ellipse of readings
 of a predetermined size is a convergence ellipse for the anchor point located at $n_{i+2}$,
-$n_{i+3}$... $n_{i+k}$ until we find the node where the readings of the ellipse doesn't converge to
+$n_{i+3}$... $n_{i+k}$ until we find the node where the readings of the ellipse don't converge to
 the anchor point $n_{i+k}$. We assume that the anchor point $n_{i+1}$ is always valid.
 
-
-The results of this search are represented as an oriented graph, where an edge from $n_{i}$ to $n_{j}$ means that the the ellipse of readings
-around $n_{i}$ is a convergence ellipse considering the node $n_j$ as the anchor point. An example graph is represented on figure \ref{graph_unoptimized}
-
+The results of this search are represented as an oriented graph, where an edge from $n_{i}$ to
+$n_{j}$ means that the the ellipse of readings around $n_{j}$ is a convergence ellipse using the
+node $n_i$ as the anchor point. An example graph is represented on figure \ref{graph_unoptimized}.
 
 \begin{figure}[thpb]
   \centering
@@ -169,7 +170,6 @@ around $n_{i}$ is a convergence ellipse considering the node $n_j$ as the anchor
   \caption{Representing convergence ellipses as an oriented graph}
   \label{graph_unoptimized}
 \end{figure}
-
 
 
 \subsection{Smallest topometric map}
@@ -193,7 +193,6 @@ is guaranteed to be acyclic, therefore Dijkstra's algorithm will always find the
 
 
 \section{EXPERIMENTS}
-We can talk about the offline optimisation we did on some dataset.
 
 \subsection{Map optimization}
 
