@@ -41,15 +41,15 @@
 
 \begin{abstract} Topometric maps are a convenient approach to record the aspect of the environment
 in the Teach and Repeat paradigm. When using such a map, the question of how sparsely the
-environment should be sampled arises. A very dense sampling will be more robust at the cost of an
-increased database size. Fewer reference points will make the use of loop-closure algorithms
-easier. To replace the traditional approach of recording data at a regular intervals based on the
-odometry of the wheels, we propose an offline algorithm that automatically filters the reference
-points in a way that guarantees a certain tolerance to error. The topometric map then contains the
-minimal amount of nodes required to execute the \textit{repeat} runs, thus making loop-closure
-easier and allowing the mapping of longer trajectories. Offline experiments confirmed the ability of
-our approach to optimize topometric maps, and showed that the size of the map will vary given a
-certain demanded error tolerance.
+environment should be sampled to build reference points arises. A very dense sampling will be more
+robust at the cost of an increased database size. Fewer reference points will make the use of
+loop-closure algorithms easier. To replace the traditional approach of recording data at a regular
+intervals based on the odometry of the wheels, we propose an offline algorithm that automatically
+filters the reference points in a way that guarantees a certain tolerance to error. The topometric
+map then contains the minimal amount of nodes required to execute the \textit{repeat} runs, thus
+making loop-closure easier and allowing the mapping of longer trajectories. Offline experiments
+confirmed the ability of our approach to optimize topometric maps, and showed that the size of the
+map will vary given a certain demanded error tolerance.
 \end{abstract}
 
 \section{INTRODUCTION}
@@ -340,6 +340,17 @@ finding the shortest path in the localizability graph, we ensure that every node
 reached by using the preceding node as a reference. This means (assuming that the ICP algorithm is
 reflexive) that every second anchor point in our optimized map becomes superfluous and can be removed.
 
+\section{Conclusion}
+
+We introduced an offline algorithm that can greatly reduce the amount of reference points needed in
+a topometric map for it to be used in a Teach and Repeat implementation. Our algorithm computes the
+ability of candidate anchor points to be used as good reference when navigating a given
+environment. The results of this computation are used to filter out nodes in the topometric map
+until it is as small as possible to execute a \textit{repeat} run, given a demanded tolerance to
+error. Our approach was tested using 3d point clouds from a lidar sensor and ICP, but is general
+enough to be applied to vision-based implementations of the Teach and Repeat paradigm. Experiments
+confirm that the algorithm is indeed able to optimize topometric maps, and that the user can tune
+the size of the map by changing his error tolerance requirements.
 
 \printbibliography
 
