@@ -130,11 +130,11 @@ a transformation $[-x, -y]^T$. This is verified by checking if the norm of the v
 
 \subsection{Convergence ellipse}
 Given two nodes $n_i$ and $n_j$ in $N$, we can use $n_j$ to generate readings and $n_i$ as an anchor
-point.  We define the concept of a convergence ellipse as the ellipse around $n_i$ where we generate
+point.  We define the concept of a convergence ellipse as the ellipse around $n_j$ where we generate
 readings by inducing error corresponding to the position in the ellipse, the center of the ellipse
 being no induced error. We call the ellipse a convergence ellipse because each generated reading can
-be used for localization using the $n_j$ anchor point, as described in the section
-\ref{approach-deciding-converge} We chose the ellipse because it's shape corresponds to the motion model of most ground robots.
+be used for localization using the $n_i$ anchor point, as described in the section
+\ref{approach-deciding-converge}. We chose the ellipse because it's shape corresponds to the motion model of most ground robots.
 
 Verifying if an ellipse is a convergence ellipse for a pair of nodes can be though of as fitting an
 ellipse inside the convergence bassin seen in figure \ref{convergence_bassin}. This figure
@@ -303,7 +303,7 @@ Finally, we would like to validate if removing nodes from the topometric map har
 \subsection{Multi-objective optimization for automatic parameter selection}
 
 To focus our efforts on fiding the minimal node subset, we made the simplication the convergence ellipse has a fixed sized.
-has a fixed sized.  In other words, we manually specify the distance in $x$ and $y$ for which we
+has a fixed sized.  In other words, we manually specify the parameters $a$ and $b$ for which we
 want the ICP to converge. With those parameters given, we can reduce the problem to a finding the
 shortest path in a graph, as shown in section \ref{approach}.
 
