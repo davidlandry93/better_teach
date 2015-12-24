@@ -134,7 +134,8 @@ point.  We define the concept of a convergence ellipse as the ellipse around $n_
 readings by inducing error corresponding to the position in the ellipse, the center of the ellipse
 being no induced error. We call the ellipse a convergence ellipse because each generated reading can
 be used for localization using the $n_j$ anchor point, as described in the section
-\ref{approach-deciding-converge} We chose the ellipse because it's shape corresponds to the motion model of most ground robots.
+\ref{approach-deciding-converge} We chose the ellipse because it's shape corresponds to the motion
+model of most ground robots. Throughout this paper, we define the ellipse by it's semiaxis $a$ and $b$.
 
 Verifying if an ellipse is a convergence ellipse for a pair of nodes can be though of as fitting an
 ellipse inside the convergence bassin seen in figure \ref{convergence_bassin}. This figure
@@ -213,7 +214,9 @@ clouds. The \textit{forest} dataset is a short run in some woodland on campus, m
 highly unstructured. Finally, we used \textit{hallway}, mapping an indoor hallway, as a
 benchmark through the development of the algorithm. It records the robot going in a straight line.
 During this \textit{teach} session the robot was tuned to record a very high number of point clouds,
-so we expect the optimization algorithm to filter a lot of nodes in this case.
+so we expect the optimization algorithm to filter a lot of nodes in this case. All three datasets
+were collecting using a Clearpath Husky A200 equiped with a Velodyne HDL-32e lidar sensor. The teach
+sessions were executed using home-grown Teach and Repeat software.
 
 \begin{figure}
   \centering
@@ -299,7 +302,9 @@ To reach that goal, we would optimized maps acquired during the teach phase of a
 the accuracy of the robot during the repeat phase using the optimized and unoptimized maps.
 
 We would also want to validate experimentally the effect of the parameters $a$ and $b$ (the semi-axis of the ellipse)
-on the accuracy of the map.
+on the accuracy of the map. That is, given a certain repeat run, we would like to validate that if
+we optimized the map demanding a tolerance to error $x$, we are able to move the robot outside of
+it's trajectory by $x$ and still be able to localize.
 
 Finally, we would like to validate if removing nodes from the topometric map harms precision in highly unstructured environment like forests.
 
