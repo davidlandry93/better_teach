@@ -55,29 +55,28 @@ demanded error tolerance.
 \section{INTRODUCTION}
 
 Teach and Repeat is a popular and efficient paradigm to execute tasks where it is possible to have
-an operator show the robot how to execute the task beforehand. It has been implemented using stereo
+an operator show the robot how to execute it beforehand. It has been implemented using stereo
 cameras \cite{Furgale10} or lidar sensors \cite{Sprunk13}. As shown in \cite{Furgale10}, an hybrid
-between metric and topographic maps is an appropriate way to record the aspect of the environment
-during a \textit{teach} run (we will refer to those maps as \textit{topometric}). One of the
-questions that arises when implementing such a navigation algorithm is how sparsely should the
-environement should be mapped. A very frequent sampling, with lots of \textit{anchor points} to
-localize against during the \textit{repeat} run, will provide more robustness to the
-algorithm. However the robustness comes at the cost of a very large database size. The database size
-is in itself a burden but more importantly if affects the performance of an eventual loop closure
-algorithms (TODO CITE LOOP CLOSURE).
+between metric and topographic maps is an appropriate way to record a series of anchor points during
+a \textit{teach} run. We will refer to those maps as \textit{topometric}. One of the questions that
+arises when implementing such a navigation algorithm is how sparsely should the environement should
+be mapped. A very frequent sampling, with lots of \textit{anchor points} to localize against during
+the \textit{repeat} run, will provide more robustness to the algorithm. However the robustness comes
+at the cost of a very large database size. The database size is in itself a burden but more
+importantly if affects the performance of an eventual loop closure algorithms.
 
 The current approach leaves it to the operator to decide how frequently an anchor point is
 recorded. Both in \cite{Furgale10} and \cite{Sprunk13} the robot is told to record a new anchor
-point at regular intervals, based on the odometry from the wheels. This approach comes with no
+point at regular intervals, based on the odometry of the wheels. This approach comes with no
 consideration for the complexity of the environment, and the operator has to guess what parameter
 would be appropriate for a given application.
 
 Inspired by \cite{Churchill15}, we will implement an algorithm such that there is no need for this
 guesswork. By carefully evaluating ability of the anchor points to localize the robot on the taught
-trajectory, we will be able to remove the unnecessary ones while still guaranteeing a tolerance to
-error during the \textit{repeat} phase. Instead of choosing at what frequency the environment is
-mapped, the operator will now have to wonder what tolerance to error he needs, which is a more
-natural decision to make given a certain application.
+trajectory, we will be able to remove the unnecessary ones while still guaranteeing a certain
+tolerance to error during the \textit{repeat} phase. Instead of choosing at what frequency the
+environment is mapped, the operator will now have to wonder what tolerance to error he needs, which
+is a more natural decision to make given a certain application.
 
 
 \section{PROBLEM DEFINITION}
@@ -90,17 +89,17 @@ size of the underlying topometric map, without consideration for the list of com
 We begin with an unoptimized topometric map, containing $N$ a set of interconnected nodes and $T$
 the geometric transformations to go from one node to it's neighbor. The nodes in $N$ are in fact
 anchor points to our teach an repeat implementation. They are point clouds in this case, but could
-be any mean of localization, like features in an image. Every node $n_i$ has an associated point
+be any mean of localization, like the features of an image. Every node $n_i$ has an associated point
 cloud $p_i$. The nodes are linked as a chain, from the first node recorded to the last.
 
 Our objective is to find the smallest subset of $N$ such that the robot can reliably localize itself
-against a node at any time while it follows the taught trajectory. To decide wether the robot can
-localize itself at a given position on the taught trajectory, we will induce an error in the
-transformation estimate between both nodes. The intuition behind it is that by inducing increasingly
-large errors, and having the ICP succeed nontheless, we can guarantee an increasingly large
-robustness by going in the field. When the induced error becomes large enough, the localisation will
-fail: the ICP algorithm will enter a local minimum, and the result of the ICP will be largely
-different that the induced error.
+against an anchor point at any time while it follows the taught trajectory. To decide wether the
+robot can localize itself at a given position on the taught trajectory, we will induce an error in
+the transformation estimate between both nodes. The intuition behind it is that by inducing
+increasingly large errors, and having the ICP succeed nontheless, we can guarantee an increasingly
+large robustness when going in the field. When the induced error becomes large enough, the
+localisation will fail: the ICP algorithm converge in a local minimum, and the result of the ICP will
+be largely different than the induced error.
 
 \section{OUR APPROACH}
 \label{approach}
@@ -111,14 +110,13 @@ different that the induced error.
 First, lets define the terms reading and anchor point:
 
 \begin{itemize}
-  \item \textbf{Anchor point:} an anchor point is a node $n_i$ the nodes of the unoptimized topometric map. Each
-    anchor point has an associated point cloud $p_i$. This point cloud is used as the reference point cloud when performing the
-    ICP algorithm.
-  \item \textbf{Reading:} a reading is the point cloud produced by the robot sensor during the repeat phase. However,
-    we do the optimization of the topometric map in an offline process using only the teach data. Therefore,
-    we use simulated reading. To simulate a reading, we take the point cloud $p_j$ of an anchor point and induce an
-    error. This error is a 2D translation vector $[x, y]^T$, where $x$ is the forward-backword error and $y$ is the left-right error,
-    following ROS frame convensions.
+  \item \textbf{Anchor point:} an anchor point is a node $n_i$ the nodes of the unoptimized
+    topometric map. Each anchor point has an associated point cloud $p_i$. This point cloud is used
+    as the reference point cloud when performing the ICP algorithm.
+  \item \textbf{Reading:} a reading is the point cloud produced by the robot sensor during the
+    repeat phase. However, we do the optimization of the topometric map in an offline process using
+only the teach data. Therefore, we use simulated reading. To simulate a reading, we use the point
+cloud $p_j$ of an anchor point and induce an error. This error is a 2D translation vector $[x,y]^T$, where $x$ is the forward-backword error and $y$ is the left-right error.
 \end{itemize}
 
 Lets consider a reading $r$ and an anchor point $a$. We know that $r$ is derived from inducing an error $[x, y]^T$ to $p_r$, which is associated to a node $n_r$.
@@ -131,17 +129,20 @@ a transformation $[-x, -y]^T$. This is verified by checking if the norm of the v
 
 
 \subsection{Convergence ellipse}
-Given two nodes $n_i$ and $n_j$ in $N$, we can use $n_j$ to generate readings and $n_i$ as an anchor point.
-We define the concept of a convergence ellipse as the ellipse around $n_j$ where readings are generated by inducing
-errors corresponding to positions in the ellipse, the center of the ellipse being no induced error. We call the ellipse
-a convergence ellipse because each generated reading can be used for localization using the $n_i$ anchor point, as described in the
-section \ref{approach-deciding-converge}
+Given two nodes $n_i$ and $n_j$ in $N$, we can use $n_j$ to generate readings and $n_i$ as an anchor
+point.  We define the concept of a convergence ellipse as the ellipse around $n_i$ where we generate
+readings by inducing error corresponding to the position in the ellipse, the center of the ellipse
+being no induced error. We call the ellipse a convergence ellipse because each generated reading can
+be used for localization using the $n_j$ anchor point, as described in the section
+\ref{approach-deciding-converge} We chose the ellipse because it's shape corresponds to the motion model of most ground robots.
 
-
-The ellipse has been choosen because it is a geometric shape that fits well the convergence bassin, or zone where we can induce error and the ICP still
-converges (see figure \ref{convergence_bassin}). We also observed that this zone is continuous; there is no ``hole'' where the ICP doesn't converge inside the bassin.
-Therefore, we only need to test readings on the circonference to verify if an ellipse is a convergence ellipse.
-
+Verifying if an ellipse is a convergence ellipse for a pair of nodes can be though of as fitting an
+ellipse inside the convergence bassin seen in figure \ref{convergence_bassin}. This figure
+represents, for a pair nodes $n_i$ and $n_j$, the size of the error after we ran the ICP with a
+certain induced error. We also make the assumption that the bassin of convergence has a reasonable
+shape and does not contain any holes. This assumption allows us to sample the function represented
+on figure \ref{convergence_bassin} only on the edges of the ellipse, and make our algorithm much
+more efficient.
 
 \begin{figure}[thpb]
   \centering
@@ -152,16 +153,16 @@ Therefore, we only need to test readings on the circonference to verify if an el
 
 \subsection{Mapping matching readings}
 \label{matching-readings}
-To reduce the size of the topometric map, we need to filter out nodes that are considered to add no value to the map. To do so,
-we check how far appart can a reading and an anchor point be while still be usable for localization. More formally, for each node
-$n_i$, we verify is an ellipse of readings of a predetermined size is a convergence ellipse for the anchor point located at $n_{i+2}$,
-$n_{i+3}$... $n_{i+k}$ until we find the node  where the readings of the ellipse don't converge to the anchor point $n_{i+k}$. We assume
-that the anchor point $n_{i+1}$ is always valid.
+To reduce the size of the topometric map, we need to filter out nodes that are considered to add no
+value to the map. To do so, we check how far appart can a reading and an anchor point be while still
+be usable for localization. More formally, for each node $n_i$, we verify if an ellipse of readings
+of a predetermined size is a convergence ellipse for the anchor point located at $n_{i+2}$,
+$n_{i+3}$... $n_{i+k}$ until we find the node where the readings of the ellipse don't converge to
+the anchor point $n_{i+k}$. We assume that the anchor point $n_{i+1}$ is always valid.
 
-
-The results of this search are represented as an oriented graph, where an edge from $n_{i}$ to $n_{j}$ means that the the ellipse of readings
-around $n_{i}$ is a convergence ellipse considering the node $n_j$ as the anchor point. An example graph is represented on figure \ref{graph_unoptimized}
-
+The results of this search are represented as an oriented graph, where an edge from $n_{i}$ to
+$n_{j}$ means that the the ellipse of readings around $n_{j}$ is a convergence ellipse using the
+node $n_i$ as the anchor point. An example graph is represented on figure \ref{graph_unoptimized}.
 
 \begin{figure}[thpb]
   \centering
@@ -169,7 +170,6 @@ around $n_{i}$ is a convergence ellipse considering the node $n_j$ as the anchor
   \caption{Representing convergence ellipses as an oriented graph}
   \label{graph_unoptimized}
 \end{figure}
-
 
 
 \subsection{Smallest topometric map}
@@ -193,7 +193,6 @@ is guaranteed to be acyclic, therefore Dijkstra's algorithm will always find the
 
 
 \section{EXPERIMENTS}
-We can talk about the offline optimisation we did on some dataset.
 
 \subsection{Map optimization}
 
