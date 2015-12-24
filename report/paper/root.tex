@@ -142,7 +142,9 @@ represents, for a pair nodes $n_i$ and $n_j$, the size of the error after we ran
 certain induced error. We also make the assumption that the bassin of convergence has a reasonable
 shape and does not contain any holes. This assumption allows us to sample the function represented
 on figure \ref{convergence_bassin} only on the edges of the ellipse, and make our algorithm much
-more efficient.
+more efficient. It also allows us to make a pretty sparse sampling of the edges of the ellipse: in
+our experiment we sample 20 points around the ellipse and verify that the corresponding induced
+error can still converge during ICP.
 
 \begin{figure}[thpb]
   \centering
@@ -173,16 +175,17 @@ node $n_i$ as the anchor point. An example graph is represented on figure \ref{g
 
 
 \subsection{Smallest topometric map}
-To determine the smallest topometric map that still can be used for localization, we need to eliminate redundant nodes.
-For example, if the anchor point $n_{i}$ can be used for localization of the readings around the node $n_{i+2}$, there is no need to keep the node $n_{i+1}$
-in the map for localization at $n_{i+2}$.
 
+To determine the smallest topometric map that still can be used for localization, we need to
+eliminate redundant nodes.  For example, if the anchor point $n_{i+2}$ can be used for localization
+of the readings around the node $n_i$, there is no need to keep the node $n_{i+1}$ in the map.
 
-The graph reprensentation presented in the section \ref{matching-readings} allows to easily solve this problem. If each edge
-on the graph has a cost of 1, the minimal topometric map from the beginning of the map (node $b$) to the end of the map (node $e$)
-can be found using the Dijkstra's algorithm \cite{dijkstra}. The nodes used
-on the shortest path from $b$ to $e$ are the minimal node subset of the optimal topometric map. Note that the way the graph is built, it
-is guaranteed to be acyclic, therefore Dijkstra's algorithm will always find the minimal node subset.
+The graph reprensentation presented in the section \ref{matching-readings} allows to easily solve
+this problem. If each edge on the graph has a cost of 1, the minimal topometric map from the
+beginning of the map (node $b$) to the end of the map (node $e$) can be found using the Dijkstra's
+algorithm \cite{dijkstra}. The nodes used on the shortest path from $b$ to $e$ are the minimal node
+subset of the optimal topometric map. Note that the way the graph is built, it is guaranteed to be
+acyclic, therefore Dijkstra's algorithm will always find the minimal node subset.
 
 
 \begin{figure}[thpb]
