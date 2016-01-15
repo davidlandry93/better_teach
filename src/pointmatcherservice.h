@@ -24,6 +24,7 @@ class PointMatcherService {
 public:
     PointMatcherService(int nOfThreads);
     PointMatcherService(const PointMatcherService& otherService);
+    ~PointMatcherService();
     void loadConfigFile(std::string pathToConfig);
     void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform& result);
     void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform, Transform& result);
@@ -35,6 +36,8 @@ private:
     boost::thread_group threadPool;
 
     void initService(int nOfThreads);
+    void icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform& result);
+    void icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform, Transform& result);
 };
 
 class IcpException : public std::exception {
