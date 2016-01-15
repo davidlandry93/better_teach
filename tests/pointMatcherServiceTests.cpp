@@ -25,7 +25,7 @@ protected:
 TEST_F(PointMatcherServiceTest, sameCloudTest) {
     Transform icpResult;
     service->icp(cloud1, cloud2, icpResult);
-    service->waitForQueueEmpty();
+    service->waitUntilDone();
 
     ASSERT_TRUE(icpResult.isApproxEqual(Transform::identity(), 0.01));
 }
@@ -39,7 +39,7 @@ TEST_F(PointMatcherServiceTest, initialGuessTest) {
 
     Transform icpResult;
     service->icp(cloud2, cloud1, transform, icpResult);
-    service->waitForQueueEmpty();
+    service->waitUntilDone();
 
     ASSERT_TRUE(icpResult.isApproxEqual(transform, 0.01));
 }

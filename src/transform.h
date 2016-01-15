@@ -24,6 +24,7 @@ namespace TeachRepeat {
         Eigen::Quaternionf rotationPart();
         Eigen::Vector3f translationPart();
         Transform inverse();
+        void transform(const Transform otherTransform);
         bool isApproxEqual(const Transform otherTransform, float epsilon) const;
 
 

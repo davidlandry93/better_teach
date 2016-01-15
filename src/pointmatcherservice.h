@@ -28,12 +28,13 @@ public:
     void loadConfigFile(std::string pathToConfig);
     void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform& result);
     void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform, Transform& result);
-    void waitForQueueEmpty();
+    void waitUntilDone();
 
 private:
     typename PointMatcher<float>::ICP icpEngine;
     boost::asio::io_service ioService;
     boost::thread_group threadPool;
+    boost::asio::io_service::work work;
 
     void initService(int nOfThreads);
     void icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform& result);

@@ -2,12 +2,12 @@
 namespace TeachRepeat {
 
     template <typename T>
-    PointMatcherService<T>::PointMatcherService(int nOfThreads) {
+    PointMatcherService<T>::PointMatcherService(int nOfThreads) : work(ioService) {
         initService(nOfThreads);
     }
 
     template <typename T>
-    PointMatcherService<T>::PointMatcherService(const PointMatcherService& otherService) {
+    PointMatcherService<T>::PointMatcherService(const PointMatcherService& otherService) : work(ioService) {
         initService(otherService.threadPool.size());
     }
 
@@ -56,7 +56,8 @@ namespace TeachRepeat {
             throw IcpException();
         }
 
-        result = result * Transform(icpResult);
+        std::cout << "Writing results";
+        result.transform(Transform(icpResult));
     }
 
     template <typename T>
@@ -69,11 +70,13 @@ namespace TeachRepeat {
             throw IcpException();
         }
 
-        result = result * Transform(icpResult);
+        std::cout << "Writing results";
+        result.transform(Transform(icpResult));
     }
 
     template <typename T>
-    void PointMatcherService<T>::waitForQueueEmpty() {
+    void PointMatcherService<T>::waitUntilDone() {
+        work.~work();
         threadPool.join_all();
     }
 }

@@ -41,6 +41,10 @@ namespace TeachRepeat {
         return Transform();
     }
 
+    void Transform::transform(const Transform otherTransform) {
+        mTransform = otherTransform.mTransform * mTransform;
+    }
+
     Eigen::Quaternionf Transform::rotationPart() {
         return Eigen::Quaternionf(mTransform.rotation());
     }

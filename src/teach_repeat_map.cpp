@@ -80,7 +80,7 @@ namespace TeachRepeat {
             pointMatcherService.icp(*it, *(it - 1), initialGuess, icpResults[i - 1]);
         }
 
-        pointMatcherService.waitForQueueEmpty();
+        pointMatcherService.waitUntilDone();
 
         for(int i = 0; i < anchorPoints.size(); ++i) {
             Transform originToPreviousPose = correctedPoses[i-1].transFromPose(Pose::origin());
