@@ -49,10 +49,9 @@ namespace TeachRepeat {
 
         for(int i = 0; i < inducedErrors.size(); i++) {
             Transform preTransform = inducedErrors[i] * tFromReadingToRef;
-            pointMatcherService.icp(reading, reference, preTransform, icpResults[i]);
+            pointMatcherService.icp(reading, reference, preTransform, &icpResults[i]);
         }
-
-        pointMatcherService.waitForQueueEmpty();
+        pointMatcherService.waitUntilDone();
 
         std::vector<float> scalarDistances(inducedErrors.size());
         for(int i = 0; i < icpResults.size(); i++) {

@@ -35,7 +35,6 @@ namespace TeachRepeat {
     template <class T>
     ToleranceEllipseCalculator<T>::ToleranceEllipseCalculator(Ellipse<T> ellipse, T maxConvergenceError, PointMatcherService<T> const& pointMatcherService) :
             toleranceEllipse(ellipse), maxConvergenceError(maxConvergenceError), pointMatcherService(pointMatcherService) {
-        this->pointMatcherService = pointMatcherService;
     }
 
     template <class T>
@@ -43,16 +42,16 @@ namespace TeachRepeat {
         ConvergenceDistanceFunction<T> f(reading, anchorPoint, pointMatcherService);
 
         float delta = 2 * M_PI / N_SEGMENTS;
-        std::vector<T> convergenceDistances;
+
+        std::vector<Transform> inducedErrors;
         for(int i = 0; i < N_SEGMENTS; i++) {
             Point<T> pointOnEllipse = toleranceEllipse.curve(i*delta);
 
             Transform inducedError(pointOnEllipse.toVector());
-
-            T convergenceDistance = f(inducedError);
-            convergenceDistances.push_back(convergenceDistance);
+            inducedErrors.push_back(inducedError);
         }
 
+        std::vector<T> convergenceDistances = f.sampleForTransforms(inducedErrors);
         for(auto distance : convergenceDistances) {
             if (distance > maxConvergenceError) return false;
         }
