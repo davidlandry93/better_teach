@@ -31,7 +31,7 @@ namespace TeachRepeat {
     }
 
     template <typename T>
-    Transform PointMatcherService<T>::icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference) {
+    void PointMatcherService<T>::icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform& result) {
         TP icpResult;
         try {
             icpResult = icpEngine(reading.getCloud(), reference.getCloud());
@@ -40,11 +40,11 @@ namespace TeachRepeat {
             throw IcpException();
         }
 
-        return Transform(icpResult);
+        result = result * Transform(icpResult);
     }
 
     template <typename T>
-    Transform PointMatcherService<T>::icp(const LocalisedPointCloud &reading, const LocalisedPointCloud &reference, const Transform preTransform) {
+    void PointMatcherService<T>::icp(const LocalisedPointCloud &reading, const LocalisedPointCloud &reference, const Transform preTransform, Transform& result) {
         TP icpResult;
         try {
             icpResult = icpEngine(reading.getCloud(), reference.getCloud(), preTransform.pmTransform());
@@ -53,6 +53,11 @@ namespace TeachRepeat {
             throw IcpException();
         }
 
-        return Transform(icpResult);
+        result = result * Transform(icpResult);
+    }
+
+    template <typename T>
+    void PointMatcherService<T>::waitForQueueEmpty() {
+        threadPool.join_all();
     }
 }

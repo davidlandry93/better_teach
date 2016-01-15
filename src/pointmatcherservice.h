@@ -25,8 +25,9 @@ public:
     PointMatcherService(int nOfThreads);
     PointMatcherService(const PointMatcherService& otherService);
     void loadConfigFile(std::string pathToConfig);
-    Transform icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference);
-    Transform icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform);
+    void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform& result);
+    void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform, Transform& result);
+    void waitForQueueEmpty();
 
 private:
     typename PointMatcher<float>::ICP icpEngine;

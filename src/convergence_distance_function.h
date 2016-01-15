@@ -21,6 +21,7 @@ namespace TeachRepeat {
     public:
         ConvergenceDistanceFunction(LocalisedPointCloud &reading, LocalisedPointCloud &reference, PointMatcherService<T>& pointMatcherService);
         float operator()(Transform inducedError);
+        std::vector<float> sampleForTransforms(const std::vector<Transform>& transforms);
 
     private:
         static int nCalls;
@@ -40,21 +41,25 @@ namespace TeachRepeat {
                                                                 PointMatcherService<T>& pointMatcherService) :
         reading(reading), reference(reference), pointMatcherService(pointMatcherService) {
         tFromReadingToRef = reading.getPosition().transFromPose(reference.getPosition());
-
-        Transform tFromRoughEstimateToLocalisation = pointMatcherService.icp(reading, reference, tFromReadingToRef);
     }
 
     template <typename T>
-    float ConvergenceDistanceFunction<T>::operator()(Transform inducedError) {
-        Transform preTransform = inducedError * tFromReadingToRef;
-        Transform icpResult = pointMatcherService.icp(reading, reference, preTransform);
+    std::vector<float> ConvergenceDistanceFunction<T>::sampleForTransforms(const std::vector<Transform>& inducedErrors) {
+        std::vector<Transform> icpResults(inducedErrors.size());
 
-        // reference.saveToDisk("", "ref" + std::to_string(nCalls) + ".vtk");
-        // reading.transform(icpResult);
-        // reading.saveToDisk("", "res" + std::to_string(nCalls++) + ".vtk");
-        // reading.transform(icpResult.inverse());
+        for(int i = 0; i < inducedErrors.size(); i++) {
+            Transform preTransform = inducedErrors[i] * tFromReadingToRef;
+            pointMatcherService.icp(reading, reference, preTransform, icpResults[i]);
+        }
 
-        return (icpResult.translationPart() - tFromReadingToRef.translationPart()).squaredNorm();
+        pointMatcherService.waitForQueueEmpty();
+
+        std::vector<float> scalarDistances(inducedErrors.size());
+        for(int i = 0; i < icpResults.size(); i++) {
+            scalarDistances[i] = (icpResults[i].translationPart() - tFromReadingToRef.translationPart()).squaredNorm();
+        }
+
+        return scalarDistances;
     }
 }
 

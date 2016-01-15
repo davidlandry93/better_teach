@@ -31,6 +31,12 @@ namespace TeachRepeat {
             mTransform(eigenTransform) {
     }
 
+    Transform Transform::operator=(const Transform& otherTransform) {
+        mTransform = otherTransform.mTransform;
+        return *this;
+    };
+
+
     Transform Transform::identity() {
         return Transform();
     }

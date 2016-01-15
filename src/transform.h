@@ -30,6 +30,7 @@ namespace TeachRepeat {
         static std::string quatToString(Eigen::Quaternionf quat);
         friend std::ostream &operator<<(std::ostream &out, Transform &t);
         friend Transform operator*(Transform lhs, const Transform &rhs);
+        Transform operator=(const Transform& otherTransform);
 
         static Transform identity();
 
