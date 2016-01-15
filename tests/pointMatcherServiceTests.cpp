@@ -10,7 +10,7 @@ protected:
     LocalisedPointCloud cloud1 = LocalisedPointCloud("aPointCloud.vtk", Pose::origin());
     LocalisedPointCloud cloud2 = LocalisedPointCloud("aPointCloud.vtk", Pose::origin());
 
-    PointMatcherService<float> service;
+    PointMatcherService<float>* service = new PointMatcherService<float>(4);
 
     virtual void SetUp() {
         cloud1.loadFromDisk("res/");
@@ -18,12 +18,12 @@ protected:
     }
 
     virtual void TearDown() {
-
+        delete service;
     }
 };
 
 TEST_F(PointMatcherServiceTest, sameCloudTest) {
-    Transform icpResult = service.icp(cloud1, cloud2);
+    Transform icpResult = service->icp(cloud1, cloud2);
 
     ASSERT_TRUE(icpResult.isApproxEqual(Transform::identity(), 0.01));
 }
@@ -35,7 +35,7 @@ TEST_F(PointMatcherServiceTest, initialGuessTest) {
 
     cloud1.transform(transform);
 
-    Transform icpResult = service.icp(cloud2, cloud1, transform);
+    Transform icpResult = service->icp(cloud2, cloud1, transform);
 
     ASSERT_TRUE(icpResult.isApproxEqual(transform, 0.01));
 }

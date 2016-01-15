@@ -2,9 +2,25 @@
 namespace TeachRepeat {
 
     template <typename T>
-    PointMatcherService<T>::PointMatcherService() {
+    PointMatcherService<T>::PointMatcherService(int nOfThreads) {
+        initService(nOfThreads);
+    }
+
+    template <typename T>
+    PointMatcherService<T>::PointMatcherService(const PointMatcherService& otherService) {
+        initService(otherService.threadPool.size());
+    }
+
+    template <typename T>
+    void PointMatcherService<T>::initService(int nOfThreads) {
         icpEngine = PointMatcher<float>::ICP();
         icpEngine.setDefault();
+
+        boost::asio::io_service::work work(ioService);
+
+        for(int i = 0; i < nOfThreads; i++) {
+            threadPool.create_thread(boost::bind(&boost::asio::io_service::run, &ioService));
+        }
     }
 
     template <typename T>

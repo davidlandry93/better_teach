@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    PointMatcherService<float> pmService;
+    PointMatcherService<float> pmService(4);
     if(vm.count("icp")) {
         pmService.loadConfigFile(vm["icp"].as< std::string >());
     }

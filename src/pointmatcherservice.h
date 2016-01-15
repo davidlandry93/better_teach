@@ -2,6 +2,10 @@
 #ifndef BETTERTEACH_POINTMATCHERSERVICE_H
 #define BETTERTEACH_POINTMATCHERSERVICE_H
 
+#include <boost/asio/io_service.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
+
 #include "transform.h"
 #include "localised_point_cloud.h"
 
@@ -18,13 +22,18 @@ class PointMatcherService {
 
 
 public:
-    PointMatcherService();
+    PointMatcherService(int nOfThreads);
+    PointMatcherService(const PointMatcherService& otherService);
     void loadConfigFile(std::string pathToConfig);
     Transform icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference);
     Transform icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform);
 
 private:
     typename PointMatcher<float>::ICP icpEngine;
+    boost::asio::io_service ioService;
+    boost::thread_group threadPool;
+
+    void initService(int nOfThreads);
 };
 
 class IcpException : public std::exception {

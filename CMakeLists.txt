@@ -7,7 +7,7 @@ project(BetterTeach)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations" )
 
-find_package(Boost COMPONENTS system filesystem program_options date_time REQUIRED)
+find_package(Boost COMPONENTS system filesystem program_options date_time thread REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(libpointmatcher REQUIRED)
 find_package(YAMLCPP REQUIRED)
