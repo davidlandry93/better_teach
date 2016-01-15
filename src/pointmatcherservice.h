@@ -26,8 +26,8 @@ public:
     PointMatcherService(const PointMatcherService& otherService);
     ~PointMatcherService();
     void loadConfigFile(std::string pathToConfig);
-    void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform& result);
-    void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform, Transform& result);
+    void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform* result);
+    void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform, Transform* result);
     void waitUntilDone();
 
 private:
@@ -37,8 +37,8 @@ private:
     boost::asio::io_service::work work;
 
     void initService(int nOfThreads);
-    void icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform& result);
-    void icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform, Transform& result);
+    void icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform* result);
+    void icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform, Transform* result);
 };
 
 class IcpException : public std::exception {

@@ -77,7 +77,7 @@ namespace TeachRepeat {
             Transform initialGuess = currentOdometryEstimate.transFromPose(previousOdometryEstimate);
 
             icpResults.push_back(Transform::identity());
-            pointMatcherService.icp(*it, *(it - 1), initialGuess, icpResults[i - 1]);
+            pointMatcherService.icp(*it, *(it - 1), initialGuess, &icpResults[i - 1]);
         }
 
         pointMatcherService.waitUntilDone();
