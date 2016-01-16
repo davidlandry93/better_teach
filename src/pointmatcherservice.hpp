@@ -56,8 +56,6 @@ namespace TeachRepeat {
             std::cout << e.what() << std::endl;
             throw IcpException();
         }
-
-        std::cout << "Writing results";
         result->transform(Transform(icpResult));
     }
 
@@ -71,7 +69,6 @@ namespace TeachRepeat {
             throw IcpException();
         }
 
-        std::cout << "Writing results";
         result->transform(Transform(icpResult));
     }
 

@@ -65,11 +65,8 @@ namespace TeachRepeat {
     }
 
     void Map::correctPositions(PointMatcherService<float> & pointMatcherService) {
-        std::vector<Pose> correctedPoses;
-        correctedPoses.push_back(Pose::origin());
-
         pointMatcherService.restart();
-        std::vector<Transform> icpResults;
+        std::vector<Transform> icpResults(anchorPoints.size(), Transform::identity());
         for(int i = 1; i < anchorPoints.size(); ++i) {
             auto it = anchorPoints.begin() + i;
 
@@ -77,14 +74,17 @@ namespace TeachRepeat {
             Pose currentOdometryEstimate = it->getPosition();
             Transform initialGuess = currentOdometryEstimate.transFromPose(previousOdometryEstimate);
 
-            icpResults.push_back(Transform::identity());
-            pointMatcherService.icp(*it, *(it - 1), initialGuess, &icpResults[i - 1]);
+            pointMatcherService.icp(*it, *(it - 1), initialGuess, &icpResults[i]);
         }
         pointMatcherService.waitUntilDone();
 
+        std::vector<Pose> correctedPoses;
+        correctedPoses.push_back(Pose::origin());
         for(int i = 0; i < anchorPoints.size(); ++i) {
             Transform originToPreviousPose = correctedPoses[i-1].transFromPose(Pose::origin());
             Transform tFromOriginToCurrent = icpResults[i] * originToPreviousPose;
+
+            std::cout << icpResults[i] << std::endl;
 
             Pose poseOfCurrent = Pose::origin();
             poseOfCurrent.transform(tFromOriginToCurrent);
