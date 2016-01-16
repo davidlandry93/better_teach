@@ -47,6 +47,7 @@ namespace TeachRepeat {
     std::vector<float> ConvergenceDistanceFunction<T>::sampleForTransforms(const std::vector<Transform>& inducedErrors) {
         std::vector<Transform> icpResults(inducedErrors.size());
 
+        pointMatcherService.restart();
         for(int i = 0; i < inducedErrors.size(); i++) {
             Transform preTransform = inducedErrors[i] * tFromReadingToRef;
             pointMatcherService.icp(reading, reference, preTransform, &icpResults[i]);

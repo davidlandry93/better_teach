@@ -29,12 +29,13 @@ public:
     void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform* result);
     void icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform, Transform* result);
     void waitUntilDone();
+    void restart();
 
 private:
     typename PointMatcher<float>::ICP icpEngine;
     boost::asio::io_service ioService;
     boost::thread_group threadPool;
-    boost::asio::io_service::work work;
+    boost::asio::io_service::work* work;
 
     void initService(int nOfThreads);
     void icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform* result);
