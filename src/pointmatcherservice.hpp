@@ -74,13 +74,15 @@ namespace TeachRepeat {
 
     template <typename T>
     void PointMatcherService<T>::waitUntilDone() {
-        ioService.stop();
+        ioService.reset();
+        delete work;
         threadPool.join_all();
+        work = new boost::asio::io_service::work(ioService);
+        //work = new boost::asio::io_service::work(ioService);
     }
 
     template <typename T>
     void PointMatcherService<T>::restart() {
         ioService.reset();
-        work = new boost::asio::io_service::work(ioService);
     }
 }
