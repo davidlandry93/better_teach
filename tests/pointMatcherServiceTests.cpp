@@ -1,4 +1,4 @@
-
+#include <pointmatcherservice.h>
 #include "gtest/gtest.h"
 #include "pointmatcherservice.h"
 #include "localised_point_cloud.h"

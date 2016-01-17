@@ -49,6 +49,8 @@ namespace TeachRepeat {
 
     template <typename T>
     void PointMatcherService<T>::icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform* result) {
+        incrementJobsNotDoneCounter();
+
         TP icpResult;
         try {
             icpResult = icpEngine(reading.getCloud(), reference.getCloud());
@@ -57,10 +59,14 @@ namespace TeachRepeat {
             throw IcpException();
         }
         result->transform(Transform(icpResult));
+
+        decrementJobsNotDoneCounter();
     }
 
     template <typename T>
     void PointMatcherService<T>::icpWorker(const LocalisedPointCloud &reading, const LocalisedPointCloud &reference, const Transform preTransform, Transform* result) {
+        incrementJobsNotDoneCounter();
+
         TP icpResult;
         try {
             icpResult = icpEngine(reading.getCloud(), reference.getCloud(), preTransform.pmTransform());
@@ -70,19 +76,50 @@ namespace TeachRepeat {
         }
 
         result->transform(Transform(icpResult));
+
+        decrementJobsNotDoneCounter();
     }
 
     template <typename T>
     void PointMatcherService<T>::waitUntilDone() {
-        ioService.reset();
         delete work;
+        ioService.post(boost::bind(&PointMatcherService::allJobsDoneMonitor, *this));
         threadPool.join_all();
         work = new boost::asio::io_service::work(ioService);
-        //work = new boost::asio::io_service::work(ioService);
     }
 
     template <typename T>
     void PointMatcherService<T>::restart() {
-        ioService.reset();
+        //ioService.reset();
+    }
+
+    template <typename T>
+    void PointMatcherService<T>::allJobsDoneMonitor() {
+        while(true) {
+            jobCounterMutex.lock();
+            if(jobsBeingDone == 0) {
+                ioService.stop();
+                jobCounterMutex.unlock();
+                return;
+            } else {
+                jobCounterMutex.unlock();
+            }
+        }
+    }
+
+    template <typename T>
+    void PointMatcherService<T>::incrementJobsNotDoneCounter() {
+        jobCounterMutex.lock();
+        jobsBeingDone++;
+        std::cout << jobsBeingDone << std::endl;
+        jobCounterMutex.unlock();
+    }
+
+    template <typename T>
+    void PointMatcherService<T>::decrementJobsNotDoneCounter() {
+        jobCounterMutex.lock();
+        jobsBeingDone--;
+        std::cout << jobsBeingDone << std::endl;
+        jobCounterMutex.unlock();
     }
 }

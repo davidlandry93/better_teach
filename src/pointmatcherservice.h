@@ -2,9 +2,11 @@
 #ifndef BETTERTEACH_POINTMATCHERSERVICE_H
 #define BETTERTEACH_POINTMATCHERSERVICE_H
 
+#include <mutex>
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
 #include "transform.h"
 #include "localised_point_cloud.h"
@@ -36,10 +38,15 @@ private:
     boost::asio::io_service ioService;
     boost::thread_group threadPool;
     boost::asio::io_service::work* work;
+    std::mutex jobCounterMutex;
+    int jobsBeingDone = 0;
 
     void initService(int nOfThreads);
     void icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform* result);
     void icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, const Transform preTransform, Transform* result);
+    void allJobsDoneMonitor();
+    void incrementJobsNotDoneCounter();
+    void decrementJobsNotDoneCounter();
 };
 
 class IcpException : public std::exception {

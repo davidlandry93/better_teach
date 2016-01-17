@@ -65,7 +65,6 @@ namespace TeachRepeat {
     }
 
     void Map::correctPositions(PointMatcherService<float> & pointMatcherService) {
-        pointMatcherService.restart();
         std::vector<Transform> icpResults(anchorPoints.size(), Transform::identity());
         for(int i = 1; i < anchorPoints.size(); ++i) {
             auto it = anchorPoints.begin() + i;
