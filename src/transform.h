@@ -27,7 +27,6 @@ namespace TeachRepeat {
         bool isApproxEqual(const Transform otherTransform, float epsilon) const;
         void transform(const Transform& otherTransform);
 
-
         static std::string quatToString(Eigen::Quaternionf quat);
         friend std::ostream &operator<<(std::ostream &out, Transform &t);
         friend Transform operator*(Transform lhs, const Transform &rhs);

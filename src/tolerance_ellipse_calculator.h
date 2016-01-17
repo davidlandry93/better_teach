@@ -42,22 +42,21 @@ namespace TeachRepeat {
     bool ToleranceEllipseCalculator<T>::readingCanBeLocalizedByAnchorPoint(LocalisedPointCloud& reading, LocalisedPointCloud& anchorPoint) {
         ConvergenceDistanceFunction<T> f(reading, anchorPoint, pointMatcherService);
 
-        float delta = 1.0 / N_SEGMENTS;
+        float d_u = 2*M_PI / N_SEGMENTS;
+        float d_v = M_PI / N_SEGMENTS;
 
         std::vector<T> convergenceDistances;
         for(int i = 0; i < N_SEGMENTS; i++) {
             for(int j = 0; j < N_SEGMENTS; j++)
             {
-                Point<float> pointOnEllipse = toleranceEllipsoid.stereographicParametrization(i*delta, j*delta);
+                Point<float> pointOnEllipse = toleranceEllipsoid.standardParametrization(i*d_u, j*d_v);
 
                 Eigen::Matrix<float,3,1>  inducedTranslationVector;
                 inducedTranslationVector << pointOnEllipse.getX(), pointOnEllipse.getY(), 0.0;
 
-                Eigen::Quaternion<float> inducedRotationQuaternion( 0.0, 0.0, std::cos(pointOnEllipse.getZ()) / 2, std::sin(pointOnEllipse.getZ() / 2));
+                Eigen::Quaternion<float> inducedRotationQuaternion( std::cos(pointOnEllipse.getZ() / 2), 0.0, 0.0, std::sin(pointOnEllipse.getZ() / 2));
 
                 Transform inducedError(inducedTranslationVector, inducedRotationQuaternion);
-
-                std::cout << inducedError << std::endl;
 
                 T convergenceDistance = f(inducedError);
 

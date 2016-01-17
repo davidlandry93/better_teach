@@ -16,9 +16,8 @@ namespace TeachRepeat {
             mTransform(Eigen::Affine3f(Eigen::Translation3f(translation))) {
     }
 
-    Transform::Transform(Eigen::Vector3f translation, Eigen::Quaternionf rotation) {
-        Transform();
-
+    Transform::Transform(Eigen::Vector3f translation, Eigen::Quaternionf rotation) :
+        mTransform(Eigen::Affine3f::Identity()){
         mTransform.translate(translation);
         mTransform.rotate(rotation);
     }
