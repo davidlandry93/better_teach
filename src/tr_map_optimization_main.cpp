@@ -67,6 +67,10 @@ int main(int argc, char** argv) {
     std::cout << "Initializing map..." << std::endl;
     Map map(vm["map"].as< std::string >(), pmService);
 
+    if(map.size() <= 0) {
+        throw std::invalid_argument("Error: provided map is empty");
+    }
+
     std::ofstream ofs;
     ofs.open("correctedAnchorPointsPositions.apd");
     map.outputAnchorPointsMetadata(ofs);
