@@ -33,8 +33,9 @@ int main(int argc, char** argv) {
     po::options_description desc("Options");
 
     desc.add_options()
-            ("semimajor,a", po::value< float >(), "The length of the semimajor axis")
-            ("semiminor,b", po::value< float >(), "The lenght of the semiminor axis")
+            ("semimajor,a", po::value< float >(), "The tolerance to forward error")
+            ("semiminor,b", po::value< float >(), "The tolerance to lateral error")
+            ("rotation,c", po::value< float >(), "To tolerance to rotation")
             ("icp,i", po::value< std::string >(), "Path to the ICP config file")
             ("map,m", po::value< std::string >(), "Path to the teach and repeat map")
             ("help,h", "Produce a help message");
@@ -62,6 +63,7 @@ int main(int argc, char** argv) {
     std::cout << "Parameters" << std::endl;
     std::cout << "semimajor (a): " << vm["semimajor"].as<float>() << std::endl;
     std::cout << "semiminor (b): " << vm["semiminor"].as<float>() << std::endl;
+    std::cout << "rotation (c): " << vm["rotation"].as<float>() << std::endl;
     std::cout << "epsilon: " << MAX_ERROR_TO_CONVERGE << std::endl;
 
     std::cout << "Initializing map..." << std::endl;
