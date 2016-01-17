@@ -30,7 +30,7 @@ add_library(optimizeteachrepeat STATIC
         src/teachrepeat_map_optimizer.cpp
         src/teachrepeat_map_optimizer.h
         src/localizability_graph.cpp
-        src/localizability_graph.h)
+        src/localizability_graph.h src/ellipsoid.h)
 target_link_libraries(optimizeteachrepeat teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
 
 add_executable(optimizeteachrepeatmain
