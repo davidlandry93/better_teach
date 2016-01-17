@@ -39,18 +39,18 @@ namespace TeachRepeat {
 
     template <typename T>
     void PointMatcherService<T>::icp(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform* result) {
+        incrementJobsNotDoneCounter();
         ioService.post(boost::bind(&PointMatcherService<T>::icpWorker, *this, reading, reference, result));
     }
 
     template <typename T>
     void PointMatcherService<T>::icp(const LocalisedPointCloud &reading, const LocalisedPointCloud &reference, const Transform preTransform, Transform* result) {
+        incrementJobsNotDoneCounter();
         ioService.post(boost::bind(&PointMatcherService<T>::icpWorker, *this, reading, reference, preTransform, result));
     }
 
     template <typename T>
     void PointMatcherService<T>::icpWorker(const LocalisedPointCloud& reading, const LocalisedPointCloud& reference, Transform* result) {
-        incrementJobsNotDoneCounter();
-
         TP icpResult;
         try {
             icpResult = icpEngine(reading.getCloud(), reference.getCloud());
@@ -65,8 +65,6 @@ namespace TeachRepeat {
 
     template <typename T>
     void PointMatcherService<T>::icpWorker(const LocalisedPointCloud &reading, const LocalisedPointCloud &reference, const Transform preTransform, Transform* result) {
-        incrementJobsNotDoneCounter();
-
         TP icpResult;
         try {
             icpResult = icpEngine(reading.getCloud(), reference.getCloud(), preTransform.pmTransform());
@@ -111,7 +109,6 @@ namespace TeachRepeat {
     void PointMatcherService<T>::incrementJobsNotDoneCounter() {
         jobCounterMutex.lock();
         jobsBeingDone++;
-        std::cout << jobsBeingDone << std::endl;
         jobCounterMutex.unlock();
     }
 
@@ -119,7 +116,6 @@ namespace TeachRepeat {
     void PointMatcherService<T>::decrementJobsNotDoneCounter() {
         jobCounterMutex.lock();
         jobsBeingDone--;
-        std::cout << jobsBeingDone << std::endl;
         jobCounterMutex.unlock();
     }
 }
