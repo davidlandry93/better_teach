@@ -9,7 +9,7 @@ namespace TeachRepeat {
     class Ellipsoid {
     public:
         Ellipsoid(T a, T b, T c);
-        Point<T> parametrization(T theta, T phi);
+        Point<T> stereographicParametrization(T theta, T phi);
 
     private:
         T a;
@@ -23,8 +23,14 @@ namespace TeachRepeat {
     }
 
     template <typename T>
-    Point<T> Ellipsoid<T>::parametrization(T theta, T phi) {
-        return Point<T>(a*std::cos(theta)*std::cos(phi), b*std::cos(theta)*std::sin(phi), c*std::sin(phi));
+    Point<T> Ellipsoid<T>::stereographicParametrization(T u, T v) {
+        T norm_factor = 1 + u*u + v*v;
+
+        T x = a * (1 - u*u - v*v) / norm_factor;
+        T y = 2 * b * u / norm_factor;
+        T z = 2 * c * v / norm_factor;
+
+        return Point<T>(x,y,z);
     }
 }
 

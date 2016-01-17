@@ -7,7 +7,7 @@
 
 #include "pointmatcher/PointMatcher.h"
 #include "localised_point_cloud.h"
-#include "ellipse.h"
+#include "ellipsoid.h"
 #include "convergence_distance_function.h"
 
 namespace TeachRepeat {
@@ -17,13 +17,13 @@ namespace TeachRepeat {
         typedef typename PointMatcher<T>::ICP ICP;
 
     public:
-        ToleranceEllipseCalculator(Ellipse<T> ellipse, T maxConvergenceError, PointMatcherService<T> const& pointMatcherService);
+        ToleranceEllipseCalculator(Ellipsoid<T> ellipsoid, T maxConvergenceError, PointMatcherService<T> const& pointMatcherService);
         bool readingCanBeLocalizedByAnchorPoint(LocalisedPointCloud& reading, LocalisedPointCloud& anchorPoint);
 
     private:
-        static const int N_SEGMENTS = 20;
+        static const int N_SEGMENTS = 5;
 
-        Ellipse<T> toleranceEllipse;
+        Ellipsoid<T> toleranceEllipsoid;
         T maxConvergenceError;
         PointMatcherService<T> pointMatcherService;
 
@@ -33,8 +33,8 @@ namespace TeachRepeat {
 
 
     template <class T>
-    ToleranceEllipseCalculator<T>::ToleranceEllipseCalculator(Ellipse<T> ellipse, T maxConvergenceError, PointMatcherService<T> const& pointMatcherService) :
-            toleranceEllipse(ellipse), maxConvergenceError(maxConvergenceError), pointMatcherService(pointMatcherService) {
+    ToleranceEllipseCalculator<T>::ToleranceEllipseCalculator(Ellipsoid<T> ellipse, T maxConvergenceError, PointMatcherService<T> const& pointMatcherService) :
+            toleranceEllipsoid(ellipse), maxConvergenceError(maxConvergenceError), pointMatcherService(pointMatcherService) {
         this->pointMatcherService = pointMatcherService;
     }
 
@@ -42,19 +42,27 @@ namespace TeachRepeat {
     bool ToleranceEllipseCalculator<T>::readingCanBeLocalizedByAnchorPoint(LocalisedPointCloud& reading, LocalisedPointCloud& anchorPoint) {
         ConvergenceDistanceFunction<T> f(reading, anchorPoint, pointMatcherService);
 
-        float delta = 2 * M_PI / N_SEGMENTS;
+        float delta = 1.0 / N_SEGMENTS;
+
         std::vector<T> convergenceDistances;
         for(int i = 0; i < N_SEGMENTS; i++) {
-            Point<T> pointOnEllipse = toleranceEllipse.curve(i*delta);
+            for(int j = 0; j < N_SEGMENTS; j++)
+            {
+                Point<float> pointOnEllipse = toleranceEllipsoid.stereographicParametrization(i*delta, j*delta);
 
-            Transform inducedError(pointOnEllipse.toVector());
+                Eigen::Matrix<float,3,1>  inducedTranslationVector;
+                inducedTranslationVector << pointOnEllipse.getX(), pointOnEllipse.getY(), 0.0;
 
-            T convergenceDistance = f(inducedError);
-            convergenceDistances.push_back(convergenceDistance);
-        }
+                Eigen::Quaternion<float> inducedRotationQuaternion( 0.0, 0.0, std::cos(pointOnEllipse.getZ()) / 2, std::sin(pointOnEllipse.getZ() / 2));
 
-        for(auto distance : convergenceDistances) {
-            if (distance > maxConvergenceError) return false;
+                Transform inducedError(inducedTranslationVector, inducedRotationQuaternion);
+
+                std::cout << inducedError << std::endl;
+
+                T convergenceDistance = f(inducedError);
+
+                if(convergenceDistance > maxConvergenceError) return false;
+            }
         }
 
         return true;

@@ -78,7 +78,7 @@ endif()
 add_executable(runalltests tests/pointMatcherServiceTests.cpp tests/localizabilityGraphTest.cpp)
 target_link_libraries(runalltests gtest gtest_main optimizeteachrepeat ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
 
-add_executable(rununittests tests/localizabilityGraphTest.cpp)
+add_executable(rununittests tests/localizabilityGraphTest.cpp tests/ellipsoidTest.cpp tests/transofmTest.cpp)
 target_link_libraries(rununittests optimizeteachrepeat gtest gtest_main)
 
 add_test( runUnitTests runUnitTests )

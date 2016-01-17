@@ -7,6 +7,7 @@
 #include "teach_repeat_map.h"
 #include "tolerance_ellipse_calculator.h"
 #include "teachrepeat_map_optimizer.h"
+#include "ellipsoid.h"
 
 using namespace TeachRepeat;
 
@@ -74,9 +75,9 @@ int main(int argc, char** argv) {
     map.outputAnchorPointsMetadata(ofs);
     ofs.close();
 
-    Ellipse<float> toleranceEllipse = Ellipse<float>(vm["semimajor"].as<float>(), vm["semiminor"].as<float>());
+    Ellipsoid<float> toleranceEllipsoid = Ellipsoid<float>(vm["semimajor"].as<float>(), vm["semiminor"].as<float>(), vm["rotation"].as<float>());
 
-    ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipse, MAX_ERROR_TO_CONVERGE, pmService);
+    ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipsoid, MAX_ERROR_TO_CONVERGE, pmService);
     MapOptimizer optimizer(toleranceEllipseCalculator);
 
     std::cout << "Map initialization ended on " << pt::to_iso_extended_string(pt::second_clock::local_time())<< std::endl;

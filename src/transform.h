@@ -25,6 +25,7 @@ namespace TeachRepeat {
         Eigen::Vector3f translationPart();
         Transform inverse();
         bool isApproxEqual(const Transform otherTransform, float epsilon) const;
+        void transform(const Transform& otherTransform);
 
 
         static std::string quatToString(Eigen::Quaternionf quat);

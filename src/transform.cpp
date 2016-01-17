@@ -80,4 +80,8 @@ namespace TeachRepeat {
     bool Transform::isApproxEqual(const Transform otherTransform, float epsilon) const {
         return mTransform.isApprox(otherTransform.mTransform, epsilon);
     }
+
+    void Transform::transform(const Transform& otherTransform) {
+        mTransform = otherTransform.mTransform * mTransform;
+    }
 } // Namespace TeachRepeat.
