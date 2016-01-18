@@ -59,11 +59,11 @@ an operator show the robot how to execute it beforehand. It has been implemented
 cameras \cite{Furgale10} or lidar sensors \cite{Sprunk13}. As shown in \cite{Furgale10}, an hybrid
 between metric and topographic maps is an appropriate way to record a series of anchor points during
 a \textit{teach} run. We will refer to those maps as \textit{topometric}. One of the questions that
-arises when implementing such a navigation algorithm is how sparsely should the environement should
+arises when implementing such a navigation algorithm is how sparsely should the environment
 be mapped. A very frequent sampling, with lots of \textit{anchor points} to localize against during
 the \textit{repeat} run, will provide more robustness to the algorithm. However the robustness comes
 at the cost of a very large database size. The database size is in itself a burden but more
-importantly if affects the performance of an eventual loop closure algorithms.
+importantly if affects the performance of an eventual loop closure algorithm.
 
 The current approach leaves it to the operator to decide how frequently an anchor point is
 recorded. Both in \cite{Furgale10} and \cite{Sprunk13} the robot is told to record a new anchor
@@ -72,7 +72,7 @@ consideration for the complexity of the environment, and the operator has to gue
 would be appropriate for a given application.
 
 Inspired by \cite{Churchill15}, we will implement an algorithm such that there is no need for this
-guesswork. By carefully evaluating ability of the anchor points to localize the robot on the taught
+guesswork. By carefully evaluating the ability of the anchor points to localize the robot on the taught
 trajectory, we will be able to remove the unnecessary ones while still guaranteeing a certain
 tolerance to error during the \textit{repeat} phase. Instead of choosing at what frequency the
 environment is mapped, the operator will now have to wonder what tolerance to error he needs, which
@@ -87,7 +87,7 @@ recorded commands for the whole trajectory. This paper, however, is focused on h
 size of the underlying topometric map, without consideration for the list of commands.
 
 We begin with an unoptimized topometric map, containing $N$ a set of interconnected nodes and $T$
-the geometric transformations to go from one node to it's neighbor. The nodes in $N$ are in fact
+the geometric transformations to go from one node to its neighbour. The nodes in $N$ are in fact
 anchor points to our teach an repeat implementation. They are point clouds in this case, but could
 be any mean of localization, like the features of an image. Every node $n_i$ has an associated point
 cloud $p_i$. The nodes are linked as a chain, from the first node recorded to the last.
@@ -119,13 +119,19 @@ only the teach data. Therefore, we use simulated reading. To simulate a reading,
 cloud $p_j$ of an anchor point and induce an error. This error is a 2D translation vector $[x,y]^T$, where $x$ is the forward-backword error and $y$ is the left-right error.
 \end{itemize}
 
-Lets consider a reading $r$ and an anchor point $a$. We know that $r$ is derived from inducing an error $[x, y]^T$ to $p_r$, which is associated to a node $n_r$.
-We also know that the anchor point $a$ is associated to a node $n_a$ and a point cloud $p_a$. We can easily get the transform $t$ between $n_r$ and $n_a$ from $T$.
+Lets consider a reading $r$ and an anchor point $a$. We know that $r$ is derived
+from inducing an error $[x, y]^T$ to $p_r$, which is associated to a node $n_r$.
+We also know that the anchor point $a$ is associated to a node $n_a$ and a point
+cloud $p_a$. We can easily get the transform $t$ between $n_r$ and $n_a$ from
+$T$.
 
 
-We want to know if $a$ can be used to localize $r$. To do so, we run the ICP algorithm using $r$ as the input and $p_a$ as the reference, using $t$
-as the initialization of the ICP. ICP returns a transform $[x_{icp}, y_{icp}]^T$. We would except that ICP corrects the induced error by returning
-a transformation $[-x, -y]^T$. This is verified by checking if the norm of the vector $[x_{icp}, y_{icp}]^T - [-x, -y]^T$ is under a certain $\epsilon$.
+We want to know if $a$ can be used to localize $r$. To do so, we run the ICP
+algorithm using $r$ as the input and $p_a$ as the reference, using $t$ as the
+initialization of the ICP. ICP returns a transform $[x_{icp}, y_{icp}]^T$. We
+would expect that ICP corrects the induced error by returning a transformation
+$[-x, -y]^T$. This is verified by checking if the norm of the vector $[x_{icp},
+y_{icp}]^T - [-x, -y]^T$ is under a certain $\epsilon$.
 
 
 \subsection{Convergence ellipse}
@@ -134,8 +140,8 @@ point.  We define the concept of a convergence ellipse as the ellipse around $n_
 readings by inducing error corresponding to the position in the ellipse, the center of the ellipse
 being no induced error. We call the ellipse a convergence ellipse because each generated reading can
 be used for localization using the $n_i$ anchor point, as described in the section
-\ref{approach-deciding-converge} We chose the ellipse because it's shape corresponds to the motion
-model of most ground robots. Throughout this paper, we define the ellipse by it's semiaxis $a$ and $b$.
+\ref{approach-deciding-converge} We chose the ellipse because its shape corresponds to the motion
+model of most ground robots. Throughout this paper, we define the ellipse by its semiaxes $a$ and $b$.
 
 Verifying if an ellipse is a convergence ellipse for a pair of nodes can be though of as fitting an
 ellipse inside the convergence bassin seen in figure \ref{convergence_bassin}. This figure
@@ -143,8 +149,8 @@ represents, for a pair nodes $n_i$ and $n_j$, the size of the error after we ran
 certain induced error. We also make the assumption that the bassin of convergence has a reasonable
 shape and does not contain any holes. This assumption allows us to sample the function represented
 on figure \ref{convergence_bassin} only on the edges of the ellipse, and make our algorithm much
-more efficient. It also allows us to make a pretty sparse sampling of the edges of the ellipse: in
-our experiment we sample 20 points around the ellipse and verify that the corresponding induced
+more efficient. It also allows us to make a sparse sampling of the edges of the ellipse: in
+our experiments we sampled 20 points around the ellipse and verified that the corresponding induced
 error can still converge during ICP.
 
 \begin{figure}[thpb]
@@ -160,7 +166,8 @@ To reduce the size of the topometric map, we need to filter out nodes that are c
 value to the map. To do so, we check how far appart can a reading and an anchor point be while still
 be usable for localization. More formally, for each node $n_i$, we verify if an ellipse of readings
 of a predetermined size is a convergence ellipse for the anchor point located at $n_{i+2}$,
-$n_{i+3}$... $n_{i+k}$ until we find the node where the readings of the ellipse don't converge to
+$n_{i+3}$... $n_{i+k}$ until we find the node where the readings of the ellipse
+do not converge to
 the anchor point $n_{i+k}$. We assume that the anchor point $n_{i+1}$ is always valid.
 
 The results of this search are represented as an oriented graph, where an edge from $n_{i}$ to
@@ -206,7 +213,7 @@ acyclic, therefore Dijkstra's algorithm will always find the minimal node subset
   \caption{Comparison of un-optimized and optimized maps}
 \end{figure}
 
-First, we implemented our topometric map optimization method conformably to section \ref{approach}.
+First, we implemented our topometric map optimization method as described in section \ref{approach}.
 Then, we optimized three dataset acquired during three previous \textit{teach} sessions. The
 \textit{terasse} dataset is a short run paving stones on Université Laval's campus. It was a busy
 summer day, and passer-by that were curious about the robot introduced noise in the point
@@ -226,7 +233,7 @@ sessions were executed using home-grown Teach and Repeat software.
 
 We used parameters $a=0.4 m$, $b=0.4 m$ and $\epsilon=0.05 m$ for those optimization runs. The
 optimization is indeed able to reduce the number of point clouds necessary to execute a
-\textit{repeat} session. As exepected, depending on the robot trajectory some zones contain more
+\textit{repeat} session. As expected, depending on the robot trajectory some zones contain more
 superfluous nodes than others. Straight lines in very static environments tend to require less
 anchor points, where trajectories containing heavy rotations are less filtered out. The algorithm
 tends not only to eliminate superfluous point clouds, but it also gets rid of the nodes that are
@@ -243,8 +250,8 @@ estimates.
 We noticed that in some datasets, the \textit{ICP chain} used to reconstruct the relative positions
 between the nodes may be noisier than we thought, yielding unrealistic positions for sucessive
 anchor points. It leaves us wondering wether we should rather rely on the odometry from the weels as
-a reference transformation. A Kalmann Filter using both odometry and the results from ICP would be
-optimal.
+a reference transformation. A Kalmann Filter using both odometry and the results
+from ICP would improve this situation.
 
 \begin{table}[h]
 \centering
@@ -256,7 +263,7 @@ Dataset & N. of nodes & N. of nodes (optimized) & \% nodes kept \\
 \hline
 terasse & 304 & 186 & 61.2 \\
   \hline
-forest & 62 & 41 & 66,1 \\
+forest & 62 & 41 & 66.1 \\
   \hline
 \end{tabular}
 \caption{The result of the optimization on different datasets}
@@ -269,7 +276,7 @@ forest & 62 & 41 & 66,1 \\
 We observed the effects of parameters $a$ and $b$ when optimizing the \textit{forest} dataset. As
 expected, the percentage of nodes kepts after optimization grows with the tolerance ellipse. We
 noticed that very small tolerance ellipses does not necessarily mean a very small amount of nodes;
-that is explained by the quality of the anchor points themselves. A point cloud that has a very bas
+that is explained by the quality of the anchor points themselves. A point cloud that has a very 
 initial position estimate, or that contains a passer-by, is always going to make the optimization
 more difficult, no matter how small the tolerance ellipse is.
 
@@ -296,33 +303,34 @@ a (m) & b (m) &  N. of nodes after optimization & \% of points kept \\
 
 \section{FUTURE WORK}
 
-\subsection{Experiment with Husky}
-In the future, we would like to validate experimentally, using a Clearpath Husky Robot, that the produced topometric map do can be used for localization.
-To reach that goal, we would optimized maps acquired during the teach phase of a teach and repeat. Then, we would compare
-the accuracy of the robot during the repeat phase using the optimized and unoptimized maps.
+\subsection{Experiment with Husky} In the future, we would like to validate
+experimentally, using a Clearpath Husky Robot, that the produced topometric map
+can indeed be used for localization. To reach that goal, we would optimize maps
+acquired during the teach phase of a teach and repeat. Then, we would compare
+the accuracy of the robot during the repeat phase using the optimized and
+non-optimized maps.
 
 We would also want to validate experimentally the effect of the parameters $a$ and $b$ (the semi-axis of the ellipse)
 on the accuracy of the map. That is, given a certain repeat run, we would like to validate that if
 we optimized the map demanding a tolerance to error $x$, we are able to move the robot outside of
-it's trajectory by $x$ and still be able to localize.
+its trajectory by $x$ and still be able to localize.
 
 Finally, we would like to validate if removing nodes from the topometric map harms precision in highly unstructured environment like forests.
 
 \subsection{Multi-objective optimization for automatic parameter selection}
 
-To focus our efforts on fiding the minimal node subset, we made the simplication the convergence ellipse has a fixed sized.
-has a fixed sized.  In other words, we manually specify the parameters $a$ and $b$ for which we
-want the ICP to converge. With those parameters given, we can reduce the problem to a finding the
-shortest path in a graph, as shown in section \ref{approach}.
-
+To focus our efforts on fiding the minimal node subset, we made the simplification
+the convergence ellipse has a fixed sized. In other words, we manually specify
+the parameters $a$ and $b$ for which we want the ICP to converge. With those
+parameters given, we can reduce the problem to a finding the shortest path in a
+graph, as shown in section \ref{approach}.
 
 A limitation of this approach is that, if for a given node, decreasing the size of the ellipse would
 make the ICP converge on further nodes of the graph. We can see that as a tradeoff between the
 precision and the number of nodes of the final map.
 
-
-An improvement on the current method would be model the problem as a multi-objective optimization
-problem. Given an initial ellipse size for each node of the graph, changing reducing the size of the
+An improvement on the current method would be to model the problem as a multi-objective optimization
+problem. Given an initial ellipse size for each node of the graph, reducing the size of the
 ellipse has a cost. The goal is to find the best tradeoff between the length of the shortest path in
 the graph and the the costs of the nodes that are used by that shortest path.
 
@@ -330,7 +338,7 @@ the graph and the the costs of the nodes that are used by that shortest path.
 
 For the sake of simplicity we did not use rotations when inducing errors to the reading's
 position estimate, before testing the reliability of the localization. To make the optimization
-problem more difficult, while giving the user more ways garantee the reliability of the optimized
+problem more difficult, while giving the user more ways to guarantee the reliability of the optimized
 maps, we could replace $T$ the space of translations with $R \times T$ the space of rotations and
 translations in function $f$. That way, the user could demand that the generated maps be tolerant to
 a certain error in the orientation of the robot.
