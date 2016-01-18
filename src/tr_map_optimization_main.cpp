@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
     Map map(vm["map"].as< std::string >(), pmService);
 
     std::ofstream ofs;
-    ofs.open("correctedAnchorPointsPositions.apd");
+    ofs.open("correctedSetOfAnchorPoints.csv");
     map.outputAnchorPointsMetadata(ofs);
     ofs.close();
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 
     std::cout << "Writing results..." << std::endl;
 
-    ofs.open("optimizedMap.csv");
+    ofs.open("optimizedSetOfAnchorPoints.csv");
     map.outputAnchorPointsMetadata(ofs);
     ofs.close();
 
