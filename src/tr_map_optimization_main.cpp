@@ -30,7 +30,7 @@ bool validate_user_input(po::variables_map vm) {
 }
 
 int main(int argc, char** argv) {
-    const float MAX_ERROR_TO_CONVERGE = 0.05;
+    const float MAX_ERROR_TO_CONVERGE = 0.02;
     po::options_description desc("Options");
 
     desc.add_options()
