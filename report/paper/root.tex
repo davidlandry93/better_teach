@@ -24,6 +24,9 @@
 \graphicspath{{img/}}
 \addbibresource{references.bib}
 
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
 \title{\LARGE \bf
   Optimizing Topometric Maps for Teach and Repeat
 }
@@ -86,7 +89,9 @@ trajectory contains anchor points, transformations to go from one anchor to anot
 recorded commands for the whole trajectory. This paper, however, is focused on how to improve the
 size of the underlying topometric map, without consideration for the list of commands.
 
-We begin with an unoptimized topometric map, containing $N$ a set of interconnected nodes and $T$
+We begin with an unoptimized topometric map, containing $N$, a set of $|N|$
+interconnected nodes named $n_1, n_2, ... n_{|N|}$ and $t_1, t_2, ... t_{|N|-1}
+\in T$ the transformations to go from the frame of one node to another.
 the geometric transformations to go from one node to its neighbour. The nodes in $N$ are in fact
 anchor points to our teach an repeat implementation. They are point clouds in this case, but could
 be any mean of localization, like the features of an image. Every node $n_i$ has an associated point
@@ -100,6 +105,15 @@ increasingly large errors, and having the ICP succeed nontheless, we can guarant
 large robustness when going in the field. When the induced error becomes large enough, the
 localisation will fail: the ICP algorithm converge in a local minimum, and the result of the ICP will
 be largely different than the induced error.
+
+\begin{align*}
+ &\argmin_{S \in \mathcal{P}(N)} |S|  \\
+( \forall n_{j} &\in S \: | \: \texttt{LOCALISES}(n_{j-1}, n_{j})) \\
+\texttt{LOCALISES}&(n_{j-1},n_{j}) \Leftrightarrow  \\
+  &( \forall p \in P \: | \: \|\texttt{ICP}(n_{j-1}, n_{j}, p) - t_{j-1}\| < \epsilon) \\
+  P &\Leftrightarrow \\ 
+  &R(c \cos (v)) T(a \cos( u ) \sin( v ))t_{j-1}
+\end{align*}
 
 \section{OUR APPROACH}
 \label{approach}

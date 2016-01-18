@@ -45,8 +45,6 @@ namespace TeachRepeat {
         float d_u = 2*M_PI / N_SEGMENTS;
         float d_v = M_PI / N_SEGMENTS;
 
-        std::cout << "New convergence function..." << std::endl;
-
         std::vector<T> convergenceDistances;
         for(int i = 0; i < N_SEGMENTS; i++) {
             for(int j = 0; j < N_SEGMENTS; j++)

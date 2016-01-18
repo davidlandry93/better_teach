@@ -54,6 +54,10 @@ namespace TeachRepeat {
         // reading.saveToDisk("", "res" + std::to_string(nCalls++) + ".vtk");
         // reading.transform(icpResult.inverse());
 
+        // Print some output about how far we are from converging.
+        // std::cout << "Vector " << (icpResult.translationPart() - tFromReadingToRef.translationPart()).norm();
+        // std::cout << "Frobenius " << (icpResult.matrix().matrix() - tFromReadingToRef.matrix().matrix()).norm() << std::endl;
+
         return (icpResult.matrix().matrix() - tFromReadingToRef.matrix().matrix()).norm();
     }
 }
