@@ -54,6 +54,10 @@ namespace TeachRepeat {
         // reading.saveToDisk("", "res" + std::to_string(nCalls++) + ".vtk");
         // reading.transform(icpResult.inverse());
 
+        std::cout << "Euclidian translation distance: "
+        << (icpResult.translationPart() - tFromReadingToRef.translationPart()).squaredNorm()
+        << "Frobenius: " << (icpResult.matrix().matrix() - tFromReadingToRef.matrix().matrix()).norm() << std::endl;
+
         return (icpResult.translationPart() - tFromReadingToRef.translationPart()).squaredNorm();
     }
 }

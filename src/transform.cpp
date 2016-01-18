@@ -83,4 +83,8 @@ namespace TeachRepeat {
     void Transform::transform(const Transform& otherTransform) {
         mTransform = otherTransform.mTransform * mTransform;
     }
+
+    Eigen::Affine3f Transform::matrix() {
+        return Eigen::Affine3f(mTransform);
+    }
 } // Namespace TeachRepeat.

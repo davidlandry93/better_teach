@@ -23,6 +23,7 @@ namespace TeachRepeat {
         PointMatcher<float>::TransformationParameters pmTransform() const;
         Eigen::Quaternionf rotationPart();
         Eigen::Vector3f translationPart();
+        Eigen::Affine3f matrix();
         Transform inverse();
         bool isApproxEqual(const Transform otherTransform, float epsilon) const;
         void transform(const Transform& otherTransform);
