@@ -33,6 +33,9 @@ add_library(optimizeteachrepeat STATIC
         src/localizability_graph.h src/ellipsoid.h)
 target_link_libraries(optimizeteachrepeat teachrepeat yaml-cpp ${Boost_SYSTEM_LIBRARY} ${Boost_LIBRARIES})
 
+add_executable(pointmatchervariance src/pointmatchervariance.cpp)
+target_link_libraries(pointmatchervariance teachrepeat pointmatcherservice ${Boost_LIBRARIES})
+
 add_executable(optimizeteachrepeatmain
         src/tr_map_optimization_main.cpp)
 target_link_libraries(optimizeteachrepeatmain optimizeteachrepeat)
