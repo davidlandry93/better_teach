@@ -11,6 +11,7 @@
 \usepackage{times} % assumes new font selection scheme installed
 \usepackage{amsmath} % assumes amsmath package installed
 \usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{mathtools}
 \usepackage[backend=bibtex8,style=ieee,sorting=none]{biblatex}
 
 \usepackage{graphics} % for pdf, bitmapped graphics files
@@ -26,6 +27,7 @@
 
 
 \DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\mat}[1]{\mathbf{#1}}
 
 \title{\LARGE \bf
   Optimizing Topometric Maps for Teach and Repeat
@@ -89,64 +91,104 @@ trajectory contains anchor points, transformations to go from one anchor to anot
 recorded commands for the whole trajectory. This paper, however, is focused on how to improve the
 size of the underlying topometric map, without consideration for the list of commands.
 
-We begin with an unoptimized topometric map, containing $N$, a set of $|N|$
-interconnected nodes named $n_1, n_2, ... n_{|N|}$ and $t_1, t_2, ... t_{|N|-1}
-\in T$ the transformations to go from the frame of one node to another.
-the geometric transformations to go from one node to its neighbour. The nodes in $N$ are in fact
-anchor points to our teach an repeat implementation. They are point clouds in this case, but could
-be any mean of localization, like the features of an image. Every node $n_i$ has an associated point
-cloud $p_i$. The nodes are linked as a chain, from the first node recorded to the last.
+We begin with an unoptimized topometric map, containing $N$, a set of $i$
+interconnected nodes named $n_1, n_2, ... n_{i}$, each of the $n_x$ representing
+a point cloud. The taught map also contains the transformations to go from the
+frame of one node to another, named $\mat{T}_1, \mat{T}_2,..
+\mat{T}_{i-1}$.
+$\prescript{y}{x}{\mat{T}}$ is the transformation from frame $x$ to $y$ and is
+shorthand for $\mat{T}_y \mat{T}_{y-1}...\mat{T}_{x+1} \mat{T}_x$ 
 
-Our objective is to find the smallest subset of $N$ such that the robot can reliably localize itself
-against an anchor point at any time while it follows the taught trajectory. To decide wether the
-robot can localize itself at a given position on the taught trajectory, we will induce an error in
-the transformation estimate between both nodes. The intuition behind it is that by inducing
-increasingly large errors, and having the ICP succeed nontheless, we can guarantee an increasingly
-large robustness when going in the field. When the induced error becomes large enough, the
-localisation will fail: the ICP algorithm converge in a local minimum, and the result of the ICP will
-be largely different than the induced error.
+The nodes in $N$ are in fact anchor points to our teach an
+repeat implementation. They are point clouds in this case, but could be any mean
+of localization, like the features of an image. Our objective is to find the
+smallest subset of $N$ such that the robot can reliably localize itself against
+an anchor point at any time while it follows the taught trajectory.
 
-\begin{align*}
- &\argmin_{S \in \mathcal{P}(N)} |S|  \\
-( \forall n_{j} &\in S \: | \: \texttt{LOCALISES}(n_{j-1}, n_{j})) \\
-\texttt{LOCALISES}&(n_{j-1},n_{j}) \Leftrightarrow  \\
-  &( \forall p \in P \: | \: \|\texttt{ICP}(n_{j-1}, n_{j}, p) - t_{j-1}\| < \epsilon) \\
-  P &\Leftrightarrow \\ 
-  &R(c \cos (v)) T(a \cos( u ) \sin( v ))t_{j-1}
-\end{align*}
+More formally, we are looking for $S \in \mathcal{P}(N)$ containing $j \leq i$
+nodes $s$ such that $\forall x \in \{ 0..j-1 \}$ we have
+$\texttt{LOCALISES}(s_x, s_{x+1})$. We can think of the \texttt{LOCALISES}
+predicate as an indication that it is possible for a robot receiving the reading
+$s_{x+1}$ during a repeat phase to localize using $s_{x}$ as a reference. 
 
+With that in mind, and by making the assumption that localization is easier if you
+are closer to your reference point, having \texttt{LOCALISES} for all the pairs
+of successive nodes means that a robot could use $S$ as the nodes of its map and
+still be able to localize at any point during the repeat phase.
+\texttt{LOCALISES} is at the heart of our approach, and is described in detail in
+section \ref{approach}.
 \section{OUR APPROACH}
 \label{approach}
 
 \subsection{Deciding if a reading and anchor point pair can be used for localization}
 \label{approach-deciding-converge}
 
-First, lets define the terms reading and anchor point:
 
-\begin{itemize}
-  \item \textbf{Anchor point:} an anchor point is a node $n_i$ the nodes of the unoptimized
-    topometric map. Each anchor point has an associated point cloud $p_i$. This point cloud is used
-    as the reference point cloud when performing the ICP algorithm.
-  \item \textbf{Reading:} a reading is the point cloud produced by the robot sensor during the
-    repeat phase. However, we do the optimization of the topometric map in an offline process using
-only the teach data. Therefore, we use simulated reading. To simulate a reading, we use the point
-cloud $p_j$ of an anchor point and induce an error. This error is a 2D translation vector $[x,y]^T$, where $x$ is the forward-backword error and $y$ is the left-right error.
-\end{itemize}
+To decide whether the robot can localize itself at a given position on the
+taught trajectory, we will induce an error in the transformation estimate
+between both nodes, and then test if the ICP can successfully recover from that
+error. 
+The intuition behind it is that by inducing increasingly
+large errors, and having the ICP succeed nontheless, we can guarantee an
+increasingly large robustness when going in the field. When the induced error
+becomes large enough, the localisation will fail: the ICP algorithm converges in
+a local minimum, and the result of the ICP will be largely different than the
+induced error.
 
-Lets consider a reading $r$ and an anchor point $a$. We know that $r$ is derived
-from inducing an error $[x, y]^T$ to $p_r$, which is associated to a node $n_r$.
-We also know that the anchor point $a$ is associated to a node $n_a$ and a point
-cloud $p_a$. We can easily get the transform $t$ between $n_r$ and $n_a$ from
-$T$.
+That is how we can define the \texttt{LOCALISES} predicate more precisely: a
+reading can be robustly localized against a given anchor point if we can induce
+a predetermined level of error to the initial estimate and still localize
+precisely.
+As we are interested in teach and repeat using laser equipment, we should define
+a method $\texttt{ICP}(x_1, x_2, \mat{T}_i)$. 
+Given a point cloud $x_1$, a
+reference point cloud $x_2$, and an initial estimate of the transformation from
+the frame of $x_1$ to the frame of $x_2$, it returns $T_s$ the best transformation
+it could find to go from $x_1$ to $x_2$. 
+We can easily imagine another implementation called $\texttt{MATCHFEATURES}$
+that accomplishes a similar job using analogous inputs.
 
+We also have to decide what kind of error we want to induce to the initial
+estimate to decide if a reference/reading pair is robust enough. 
+If we are not careful enough at this point, we could try to localize under
+unfair errors and discard reference points that are in reality good enough for
+localization.
+On the contrary, simulating localization with an error that is too small will
+make us overconfident about the quality of the generated map.
 
-We want to know if $a$ can be used to localize $r$. To do so, we run the ICP
-algorithm using $r$ as the input and $p_a$ as the reference, using $t$ as the
-initialization of the ICP. ICP returns a transform $[x_{icp}, y_{icp}]^T$. We
-would expect that ICP corrects the induced error by returning a transformation
-$[-x, -y]^T$. This is verified by checking if the norm of the vector $[x_{icp},
-y_{icp}]^T - [-x, -y]^T$ is under a certain $\epsilon$.
+This decision boils down to deciding how to explore the space of rigid
+transformations $\mathcal{T}$ to simulate localization with a fair sample of it.
+The user should try to explore it in a way that is close the displacement errors
+the robot encounters in real life, but for the sake of this paper we developed a
+way that we feel should be satisfactory for a wide range of applications.
 
+Considering that $\mathcal{T}$ has three dimensions, $x$ the forward error, $y$
+the lateral error, and $z$ the heading error, we build and ellipsoid inside
+$\mathcal{T}$.
+We choose three parameters $a, b, c \in \mathbb{R}$ that are in fact the
+semiaxes of the ellipsoid. $a$ can be though of as the demanded robustness
+against forward errors, $b$ for lateral errors, and $c$ for heading errors.
+In our implementation we used this very common parameterization of an ellipsoid:
+
+\begin{align*}
+x(u,v) &= a \cos u \sin v \\
+y(u,v) &= b \sin u \sin v \\
+z(u,v) &= c \cos v
+\end{align*}
+
+with $u \in [0,2\pi)$ and $v \in [0,\pi]$. \
+For the sake of convenience we can define $\texttt{T}(u,v)$ that returns the
+appropriate transformation matrix given the parameters of the ellipsoid.
+
+Considering this we can simply define $\texttt{LOCALISES}$:
+
+\begin{align}
+\texttt{LOCALISES}&(n_x, n_y, \prescript{y}{x}{ \mat{T} }) \Leftrightarrow  \\
+&\| \texttt{ICP}(n_x, n_y, \texttt{T}(u,v) \prescript{y}{x}{\mat{T}}) - \prescript{y}{x}{ \mat{T} } < \epsilon \|
+\end{align}
+
+Our implementation uses the Frobenius*** norm for this computation, and $\epsilon$
+was set to $0.15$ for our experiments, after some trial and error.
 
 \subsection{Convergence ellipse}
 Given two nodes $n_i$ and $n_j$ in $N$, we can use $n_j$ to generate readings and $n_i$ as an anchor
