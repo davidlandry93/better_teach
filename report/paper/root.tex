@@ -92,7 +92,7 @@ recorded commands for the whole trajectory. This paper, however, is focused on h
 size of the underlying topometric map, without consideration for the list of commands.
 
 We begin with an unoptimized topometric map, containing $N$, a set of $i$
-interconnected nodes named $n_1, n_2, ... n_{i}$, each of the $n_x$ representing
+interconnected nodes named $n_1, n_2, ..., n_{i}$, each of the $n_x$ representing
 a point cloud. The taught map also contains the transformations to go from the
 frame of one node to another, named $\mat{T}_1, \mat{T}_2,..
 \mat{T}_{i-1}$.
@@ -109,16 +109,68 @@ More formally, we are looking for $S \in \mathcal{P}(N)$ containing $j \leq i$
 nodes $s$ such that $\forall x \in \{ 0..j-1 \}$ we have
 $\texttt{LOCALISES}(s_x, s_{x+1})$. We can think of the \texttt{LOCALISES}
 predicate as an indication that it is possible for a robot receiving the reading
-$s_{x+1}$ during a repeat phase to localize using $s_{x}$ as a reference. 
+$s_{x+1}$ during a repeat phase to localize using $s_{x}$ as a reference.
+Obviously \texttt{LOCALISES} is an ideal function that is difficult to obtain in
+a real environment. 
 
-With that in mind, and by making the assumption that localization is easier if you
-are closer to your reference point, having \texttt{LOCALISES} for all the pairs
-of successive nodes means that a robot could use $S$ as the nodes of its map and
-still be able to localize at any point during the repeat phase.
-\texttt{LOCALISES} is at the heart of our approach, and is described in detail in
-section \ref{approach}.
+With that in mind, and by making the assumption that localization is easier if
+you are closer to your reference point, having \texttt{LOCALISES} for all the
+pairs of successive nodes means that a robot could use $S$ as the nodes of its
+map and still be able to localize at any point during the repeat phase.
+Obviously, it is difficult to create such a function in a real environment.
+Using ICP we will approximate \texttt{LOCALISES}. This process is described in
+more detail in section \ref{ssec:localises}.
+
 \section{OUR APPROACH}
 \label{approach}
+
+\subsection{The \texttt{LOCALISES} predicate}
+\label{ssec:localises}
+
+We want to approximate a method $\texttt{LOCALISES}(n_k, n_l)$ that tells us, given two
+nodes in our teach and repeat map, if node $n_k$ can be used as a reference
+point if we were to receive the point cloud of $n_l$ as a reading during the
+repeat run. In our context, having a successful ICP is important for accurate
+localization. Our main idea is to affirm that we can be confident that localization is
+possible if we have a good tolerance to error: that is, the point cloud pair can
+do reliable ICP even if the initial estimates are inaccurate. We will simulate
+ICP localization given various induced errors, and make sure that the ICP
+algorithm converges to a transformation equivalent to the transformation we
+obtained using our best estimate. 
+
+More formally, we simulate $\texttt{LOCALISES}(n_x, n_y)$ with 
+
+\begin{align}
+  \| \texttt{ICP}&(n_x, n_y, \mat{E}(u,v) \prescript{y}{x}{\mat{T}}) - 
+\texttt{ICP}(n_x, n_y, \prescript{y}{x}{ \mat{T} }) \| < \epsilon  \\ 
+ &\forall u \in [0, 2 \pi),  v \in [0, \pi] \\
+\end{align}
+
+$\texttt{ICP}(n_x, n_y, \mat{T})$ returns a transformation that minimizes the
+distance between the pairs of closest points in the point clouds of $n_x$ and
+$n_y$. $\mat{T}$ is the initial estimate we have of this transformation. Usually
+it can be something similar to an odometry estimate.
+
+$\mat{E}(u,v)$ is a function we use to output the transformation matrix of an
+induced error. $u$ and $v$ are the parameters of an ellipsoid defined like so:
+
+\begin{align}
+  \begin{split}
+x = a \cos u \sin v \\
+y = b \cos u \cos b \\
+z = c \cos v \\
+\end{split}
+\end{align}
+
+Our algorithm goes like this: 
+
+As this is only an approximation, it is important to use the same algorithms
+that are mounted on the robot, such that a successful localization in the
+simulation is likely to be repeated experimentally, and vice versa.
+
+
+
+ 
 
 \subsection{Deciding if a reading and anchor point pair can be used for localization}
 \label{approach-deciding-converge}
@@ -184,7 +236,8 @@ Considering this we can simply define $\texttt{LOCALISES}$:
 
 \begin{align}
 \texttt{LOCALISES}&(n_x, n_y, \prescript{y}{x}{ \mat{T} }) \Leftrightarrow  \\
-&\| \texttt{ICP}(n_x, n_y, \texttt{T}(u,v) \prescript{y}{x}{\mat{T}}) - \prescript{y}{x}{ \mat{T} } < \epsilon \|
+&\| \texttt{ICP}(n_x, n_y, \texttt{T}(u,v) \prescript{y}{x}{\mat{T}}) - \\ 
+\prescript{y}{x}{ \mat{T} } < \epsilon \|
 \end{align}
 
 Our implementation uses the Frobenius*** norm for this computation, and $\epsilon$
