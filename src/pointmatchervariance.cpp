@@ -9,9 +9,13 @@ namespace po = boost::program_options;
 
 static const int N_SAMLE_PER_PAIR = 50;
 
-float variance(const std::vector<float>& samples) {
+float comp_mean(const std::vector<float>& samples) {
     float sum = std::accumulate(samples.begin(), samples.end(), 0.0);
-    float mean = sum / samples.size();
+    return sum / samples.size();
+}
+
+float variance(const std::vector<float>& samples) {
+    float mean = comp_mean(samples);
 
     float acc = 0;
     for(auto it = samples.begin(); it != samples.end(); it++) {
@@ -47,7 +51,7 @@ int main(int argc, char** argv) {
 
     int firstIndex = vm["first"].as< int >();
 
-    std::cout << "distance,stddeviation,samplesize" << std::endl;
+    std::cout << "distance,mean,stddeviation,samplesize" << std::endl;
 
     std::vector<float> variances;
 
@@ -65,6 +69,7 @@ int main(int argc, char** argv) {
         }
 
         std::cout << tFromReadingToReference.translationPart().norm() << ",";
+        std::cout << comp_mean(values) << ",";
         std::cout << std::sqrt(variance(values)) << ",";
         std::cout << N_SAMLE_PER_PAIR << std::endl;
     }
