@@ -44,60 +44,71 @@
 \pagestyle{empty}
 
 
-\begin{abstract} Topometric maps are a convenient approach to record reference points (also called
-anchor points) in the Teach and Repeat paradigm. When using such a map, the question of how sparsely
-the environment should be sampled arises. A very dense sampling will be more robust at the cost of
-an increased database size. Fewer anchor points will make the use of loop-closure algorithms
-easier. To replace the traditional approach of recording data at a regular intervals based on the
-odometry of the wheels, we propose an offline algorithm that automatically filters the anchor points
-points in a way that guarantees a certain tolerance to error. The topometric map then contains the
-minimal amount of nodes required to execute the \textit{repeat} runs, making loop-closure easier and
-allowing the mapping of longer trajectories. Offline experiments confirmed the ability of our
-approach to optimize topometric maps, and showed that the size of the map will vary given a certain
-demanded error tolerance.
+\begin{abstract} Topometric maps are a convenient approach to record reference
+points (also called anchor points) in the Teach and Repeat paradigm. When using
+such a map, the question of how sparsely the environment should be sampled
+arises. A very dense sampling will be more robust at the cost of an increased
+database size. Fewer anchor points will make the use of loop-closure algorithms
+easier. To replace the traditional approach of recording data at a regular
+intervals based on the odometry of the wheels, we propose an offline algorithm
+that automatically filters the anchor points points in a way that guarantees a
+certain tolerance to error. The topometric map then contains the minimal amount
+of nodes required to execute the \textit{repeat} runs, making loop-closure
+easier and allowing the mapping of longer trajectories. Offline experiments
+confirmed the ability of our approach to optimize topometric maps, and showed
+that the size of the map will vary given a certain demanded error tolerance.
 \end{abstract}
 
 \section{INTRODUCTION}
 
-Teach and Repeat is a popular and efficient paradigm to execute tasks where it is possible to have
-an operator show the robot how to execute it beforehand. It has been implemented using stereo
-cameras \cite{Furgale10} or lidar sensors \cite{Sprunk13}. As shown in \cite{Furgale10}, an hybrid
-between metric and topographic maps is an appropriate way to record a series of anchor points during
-a \textit{teach} run. We will refer to those maps as \textit{topometric}. One of the questions that
-arises when implementing such a navigation algorithm is how sparsely should the environment
-be mapped. A very frequent sampling, with lots of \textit{anchor points} to localize against during
-the \textit{repeat} run, will provide more robustness to the algorithm. However the robustness comes
-at the cost of a very large database size. The database size is in itself a burden but more
-importantly if affects the performance of an eventual loop closure algorithm.
+Teach and Repeat is a popular and efficient paradigm to execute tasks where it
+is possible to have an operator show the robot how to execute it beforehand. It
+has been implemented using stereo cameras \cite{Furgale10} or lidar sensors
+\cite{Sprunk13}. As shown in \cite{Furgale10}, an hybrid between metric and
+topographic maps is an appropriate way to record a series of anchor points
+during a \textit{teach} run. We will refer to those maps as \textit{topometric}.
+One of the questions that arises when implementing such a navigation algorithm
+is how sparsely should the environment be mapped. A very frequent sampling, with
+lots of \textit{anchor points} to localize against during the \textit{repeat}
+run, will provide more robustness to the algorithm. However the robustness comes
+at the cost of a very large database size. The database size is in itself a
+burden but more importantly if affects the performance of an eventual loop
+closure algorithm.
 
-The current approach leaves it to the operator to decide how frequently an anchor point is
-recorded. Both in \cite{Furgale10} and \cite{Sprunk13} the robot is told to record a new anchor
-point at regular intervals, based on the odometry of the wheels. This approach comes with no
-consideration for the complexity of the environment, and the operator has to guess what parameter
-would be appropriate for a given application.
+The current approach leaves it to the operator to decide how frequently an
+anchor point is recorded. Both in \cite{Furgale10} and \cite{Sprunk13} the robot
+is told to record a new anchor point at regular intervals, based on the odometry
+of the wheels. This approach comes with no consideration for the complexity of
+the environment, and the operator has to guess what parameter would be
+appropriate for a given application.
 
-Inspired by \cite{Churchill15}, we will implement an algorithm such that there is no need for this
-guesswork. By carefully evaluating the ability of the anchor points to localize the robot on the taught
-trajectory, we will be able to remove the unnecessary ones while still guaranteeing a certain
-tolerance to error during the \textit{repeat} phase. Instead of choosing at what frequency the
-environment is mapped, the operator will now have to wonder what tolerance to error he needs, which
-is a more natural decision to make given a certain application.
+Inspired by \cite{Churchill15}, we will implement an algorithm such that there
+is no need for this guesswork. By carefully evaluating the ability of the anchor
+points to localize the robot on the taught trajectory, we will be able to remove
+the unnecessary ones while still guaranteeing a certain tolerance to error
+during the \textit{repeat} phase. Instead of choosing at what frequency the
+environment is mapped, the operator will now have to wonder what tolerance to
+error he needs, which is a more natural decision to make given a certain
+application.
 
 
 \section{PROBLEM DEFINITION}
 
-In our current implementation of the Teach and Repeat paradigm, the maps we use to repeat a
-trajectory contains anchor points, transformations to go from one anchor to another, as well as
-recorded commands for the whole trajectory. This paper, however, is focused on how to improve the
-size of the underlying topometric map, without consideration for the list of commands.
+As in \cite{Sprunk13} our, implementation of the Teach and Repeat paradigm uses
+maps that contain anchor points, transformations to go from one anchor to
+another, as well as recorded commands for the whole trajectory. This paper is
+focused on improving the number of anchor points that are needed to reliably
+repeat the taught trajectory. We will focus on the underlying topometric map,
+which is a graph where the nodes are the anchor points (which are point clouds
+in our case), and the edges are the transformations between neighboring anchor
+points.
 
 We begin with an unoptimized topometric map, containing $N$, a set of $i$
-interconnected nodes named $n_1, n_2, ..., n_{i}$, each of the $n_x$ representing
-a point cloud. The taught map also contains the transformations to go from the
-frame of one node to another, named $\mat{T}_1, \mat{T}_2,..
-\mat{T}_{i-1}$.
-$\prescript{y}{x}{\mat{T}}$ is the transformation from frame $x$ to $y$ and is
-shorthand for $\mat{T}_y \mat{T}_{y-1}...\mat{T}_{x+1} \mat{T}_x$ 
+interconnected nodes named $n_1, n_2, ..., n_{i}$, each of the $n_x$
+representing a point cloud. The transformations are named $\mat{T}_1,
+\mat{T}_2,.. \mat{T}_{i-1}$. $\prescript{y}{x}{\mat{T}}$ is the transformation
+from frame $x$ to $y$ and is shorthand for $\mat{T}_y
+\mat{T}_{y-1}...\mat{T}_{x+1} \mat{T}_x$
 
 The nodes in $N$ are in fact anchor points to our teach an
 repeat implementation. They are point clouds in this case, but could be any mean
@@ -156,111 +167,18 @@ induced error. $u$ and $v$ are the parameters of an ellipsoid defined like so:
 
 \begin{align}
   \begin{split}
-x = a \cos u \sin v \\
-y = b \cos u \cos b \\
-z = c \cos v \\
+x &= a \cos u \sin v \\
+y &= b \cos u \cos b \\
+z &= c \cos v \\
 \end{split}
 \end{align}
-
-Our algorithm goes like this: 
 
 As this is only an approximation, it is important to use the same algorithms
 that are mounted on the robot, such that a successful localization in the
 simulation is likely to be repeated experimentally, and vice versa.
 
-
-
- 
-
-\subsection{Deciding if a reading and anchor point pair can be used for localization}
-\label{approach-deciding-converge}
-
-
-To decide whether the robot can localize itself at a given position on the
-taught trajectory, we will induce an error in the transformation estimate
-between both nodes, and then test if the ICP can successfully recover from that
-error. 
-The intuition behind it is that by inducing increasingly
-large errors, and having the ICP succeed nontheless, we can guarantee an
-increasingly large robustness when going in the field. When the induced error
-becomes large enough, the localisation will fail: the ICP algorithm converges in
-a local minimum, and the result of the ICP will be largely different than the
-induced error.
-
-That is how we can define the \texttt{LOCALISES} predicate more precisely: a
-reading can be robustly localized against a given anchor point if we can induce
-a predetermined level of error to the initial estimate and still localize
-precisely.
-As we are interested in teach and repeat using laser equipment, we should define
-a method $\texttt{ICP}(x_1, x_2, \mat{T}_i)$. 
-Given a point cloud $x_1$, a
-reference point cloud $x_2$, and an initial estimate of the transformation from
-the frame of $x_1$ to the frame of $x_2$, it returns $T_s$ the best transformation
-it could find to go from $x_1$ to $x_2$. 
-We can easily imagine another implementation called $\texttt{MATCHFEATURES}$
-that accomplishes a similar job using analogous inputs.
-
-We also have to decide what kind of error we want to induce to the initial
-estimate to decide if a reference/reading pair is robust enough. 
-If we are not careful enough at this point, we could try to localize under
-unfair errors and discard reference points that are in reality good enough for
-localization.
-On the contrary, simulating localization with an error that is too small will
-make us overconfident about the quality of the generated map.
-
-This decision boils down to deciding how to explore the space of rigid
-transformations $\mathcal{T}$ to simulate localization with a fair sample of it.
-The user should try to explore it in a way that is close the displacement errors
-the robot encounters in real life, but for the sake of this paper we developed a
-way that we feel should be satisfactory for a wide range of applications.
-
-Considering that $\mathcal{T}$ has three dimensions, $x$ the forward error, $y$
-the lateral error, and $z$ the heading error, we build and ellipsoid inside
-$\mathcal{T}$.
-We choose three parameters $a, b, c \in \mathbb{R}$ that are in fact the
-semiaxes of the ellipsoid. $a$ can be though of as the demanded robustness
-against forward errors, $b$ for lateral errors, and $c$ for heading errors.
-In our implementation we used this very common parameterization of an ellipsoid:
-
-\begin{align*}
-x(u,v) &= a \cos u \sin v \\
-y(u,v) &= b \sin u \sin v \\
-z(u,v) &= c \cos v
-\end{align*}
-
-with $u \in [0,2\pi)$ and $v \in [0,\pi]$. \
-For the sake of convenience we can define $\texttt{T}(u,v)$ that returns the
-appropriate transformation matrix given the parameters of the ellipsoid.
-
-Considering this we can simply define $\texttt{LOCALISES}$:
-
-\begin{align}
-\texttt{LOCALISES}&(n_x, n_y, \prescript{y}{x}{ \mat{T} }) \Leftrightarrow  \\
-&\| \texttt{ICP}(n_x, n_y, \texttt{T}(u,v) \prescript{y}{x}{\mat{T}}) - \\ 
-\prescript{y}{x}{ \mat{T} } < \epsilon \|
-\end{align}
-
 Our implementation uses the Frobenius*** norm for this computation, and $\epsilon$
 was set to $0.15$ for our experiments, after some trial and error.
-
-\subsection{Convergence ellipse}
-Given two nodes $n_i$ and $n_j$ in $N$, we can use $n_j$ to generate readings and $n_i$ as an anchor
-point.  We define the concept of a convergence ellipse as the ellipse around $n_j$ where we generate
-readings by inducing error corresponding to the position in the ellipse, the center of the ellipse
-being no induced error. We call the ellipse a convergence ellipse because each generated reading can
-be used for localization using the $n_i$ anchor point, as described in the section
-\ref{approach-deciding-converge} We chose the ellipse because its shape corresponds to the motion
-model of most ground robots. Throughout this paper, we define the ellipse by its semiaxes $a$ and $b$.
-
-Verifying if an ellipse is a convergence ellipse for a pair of nodes can be though of as fitting an
-ellipse inside the convergence bassin seen in figure \ref{convergence_bassin}. This figure
-represents, for a pair nodes $n_i$ and $n_j$, the size of the error after we ran the ICP with a
-certain induced error. We also make the assumption that the bassin of convergence has a reasonable
-shape and does not contain any holes. This assumption allows us to sample the function represented
-on figure \ref{convergence_bassin} only on the edges of the ellipse, and make our algorithm much
-more efficient. It also allows us to make a sparse sampling of the edges of the ellipse: in
-our experiments we sampled 20 points around the ellipse and verified that the corresponding induced
-error can still converge during ICP.
 
 \begin{figure}[thpb]
   \centering
@@ -269,19 +187,18 @@ error can still converge during ICP.
   \label{convergence_bassin}
 \end{figure}
 
-\subsection{Mapping matching readings}
-\label{matching-readings}
-To reduce the size of the topometric map, we need to filter out nodes that are considered to add no
-value to the map. To do so, we check how far appart can a reading and an anchor point be while still
-be usable for localization. More formally, for each node $n_i$, we verify if an ellipse of readings
-of a predetermined size is a convergence ellipse for the anchor point located at $n_{i+2}$,
-$n_{i+3}$... $n_{i+k}$ until we find the node where the readings of the ellipse
-do not converge to
-the anchor point $n_{i+k}$. We assume that the anchor point $n_{i+1}$ is always valid.
+\subsection{Finding the smallest topometric map}
+\label{matching-readings} 
 
-The results of this search are represented as an oriented graph, where an edge from $n_{i}$ to
-$n_{j}$ means that the the ellipse of readings around $n_{j}$ is a convergence ellipse using the
-node $n_i$ as the anchor point. An example graph is represented on figure \ref{graph_unoptimized}.
+We are now ready to compute the smallest topometric map. To do so we iterate on
+the anchor points of the map. For each node $n_i$ we run
+$\texttt{LOCALISES}(n_i,n_j)$ with $j = i + 2$, then $i + 3$... until we find a
+$k$ such that $\texttt{LOCALISES}(n_i, n_k)$ is false.
+
+The results of this search are represented as an oriented graph, where an edge
+from $n_{i}$ to $n_{j}$ means that we have $\texttt{LOCALISES}(n_i, n_j)$ An
+example graph is represented on figure \ref{graph_unoptimized}.
+
 
 \begin{figure}[thpb]
   \centering
@@ -290,12 +207,8 @@ node $n_i$ as the anchor point. An example graph is represented on figure \ref{g
   \label{graph_unoptimized}
 \end{figure}
 
-
-\subsection{Smallest topometric map}
-
-To determine the smallest topometric map that still can be used for localization, we need to
-eliminate redundant nodes.  For example, if the anchor point $n_{i+2}$ can be used for localization
-of the readings around the node $n_i$, there is no need to keep the node $n_{i+1}$ in the map.
+After computing the oriented graph, we can finally look for the smallest subset
+of nodes such that we can localize ourself from one end of the map to another.
 
 The graph reprensentation presented in the section \ref{matching-readings} allows to easily solve
 this problem. If each edge on the graph has a cost of 1, the minimal topometric map from the
@@ -442,20 +355,6 @@ An improvement on the current method would be to model the problem as a multi-ob
 problem. Given an initial ellipse size for each node of the graph, reducing the size of the
 ellipse has a cost. The goal is to find the best tradeoff between the length of the shortest path in
 the graph and the the costs of the nodes that are used by that shortest path.
-
-\subsection{Handling rotations}
-
-For the sake of simplicity we did not use rotations when inducing errors to the reading's
-position estimate, before testing the reliability of the localization. To make the optimization
-problem more difficult, while giving the user more ways to guarantee the reliability of the optimized
-maps, we could replace $T$ the space of translations with $R \times T$ the space of rotations and
-translations in function $f$. That way, the user could demand that the generated maps be tolerant to
-a certain error in the orientation of the robot.
-
-Using the whole space of rotations $R$ might be too general, as it is often useful to simplify the pose of a
-ground robot begin a vector $[x, y, \theta]^t$, $\theta$ being the heading. That case could also be
-handled by replacing the tolerance ellipse by an ellipsoid. The supplementary dimension would
-represent the error in heading, or $\Delta \theta$.
 
 \subsection{Reoptimization of the localizability graph}
 
