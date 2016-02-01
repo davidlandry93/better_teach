@@ -44,10 +44,9 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    Map map(vm["map"].as< std::string >());
-
     PointMatcherService<float> pmService;
     pmService.loadConfigFile(vm["icpconfig"].as< std::string >());
+    Map map(vm["map"].as< std::string >(), pmService);
 
     int firstIndex = vm["first"].as< int >();
 
