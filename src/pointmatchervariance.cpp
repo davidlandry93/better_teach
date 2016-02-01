@@ -51,26 +51,34 @@ int main(int argc, char** argv) {
 
     int firstIndex = vm["first"].as< int >();
 
-    std::cout << "distance,mean,stddeviation,samplesize" << std::endl;
+    std::cout << "distance,translationmean,translationstddeviation,rotationmean,rotationstddeviation,samplesize" << std::endl;
 
     std::vector<float> variances;
 
     auto firstCloud = map.begin() + firstIndex;
 
     for(auto it = firstCloud; it < firstCloud + vm["number"].as< int >(); it += 1) {
-        std::vector<float> values;
+        std::vector<float> translationErrors;
+        std::vector<float> rotationErrors;
         Transform tFromReadingToReference = it->getPosition().transFromPose(firstCloud->getPosition());
 
         for(int i = 0; i < N_SAMLE_PER_PAIR; i++) {
             Transform icpResult = pmService.icp(*it, *map.begin(), tFromReadingToReference);
 
-            float new_value = (icpResult.matrix().matrix() - tFromReadingToReference.matrix().matrix()).norm();
-            values.push_back(new_value);
+            Transform error = icpResult * tFromReadingToReference.inverse();
+
+            float translationError = error.translationPart().norm();
+            float rotationError = error.rotationPart().angularDistance(Transform::identity().rotationPart());
+
+            translationErrors.push_back(translationError);
+            rotationErrors.push_back(rotationError);
         }
 
-        std::cout << tFromReadingToReference.translationPart().norm() << ",";
-        std::cout << comp_mean(values) << ",";
-        std::cout << std::sqrt(variance(values)) << ",";
+        std::cout << map.traveledDistanceBetweenAnchorPoints(firstCloud - map.begin(), it - map.begin()) << ",";
+        std::cout << comp_mean(translationErrors) << ",";
+        std::cout << std::sqrt(variance(translationErrors)) << ",";
+        std::cout << comp_mean(rotationErrors) << ",";
+        std::cout << std::sqrt(variance(rotationErrors)) << ",";
         std::cout << N_SAMLE_PER_PAIR << std::endl;
     }
 

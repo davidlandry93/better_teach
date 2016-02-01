@@ -31,6 +31,8 @@ namespace TeachRepeat {
         void correctPositions(PointMatcherService<float>& pointMatcherService);
         void outputAnchorPointsMetadata(std::ostream &ostream);
 
+        float traveledDistanceBetweenAnchorPoints(int from, int to);
+
     private:
         void loadCommands(std::istream &input);
         void loadPositions(std::istream &input);

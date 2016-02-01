@@ -120,4 +120,16 @@ namespace TeachRepeat {
 
         anchorPoints = newVector;
     }
+
+    float Map::traveledDistanceBetweenAnchorPoints(int from, int to) {
+        float traveledDistance = 0.0;
+        for(int i = from; i < to; i++) {
+            Transform transformToNeighbor = anchorPoints[i + 1].getPosition().transFromPose(anchorPoints[i].getPosition());
+            float distanceBetweenNeighbors = transformToNeighbor.translationPart().norm();
+
+            traveledDistance += distanceBetweenNeighbors;
+        }
+        return traveledDistance;
+    }
+
 } //namespace TeachRepeat
