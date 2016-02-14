@@ -17,7 +17,11 @@ namespace TeachRepeat {
                 localizabilityGraph->anchorPointLocalizesPoint(i, pointIndex);
             }
 
-            std::cout << "Point no " << i << ": " << localizablePointClouds.size() << std::endl;
+            std::cout << "Point no " << i << ": ";
+            for(auto i = localizablePointClouds.begin(); i < localizablePointClouds.end(); i++) {
+                std::cout << *i << ", ";
+            }
+            std::cout << std::endl;
         }
 
         std::list<int> optimalSetOfAnchors = localizabilityGraph->optimalSetOfAnchorPoints();
@@ -28,11 +32,27 @@ namespace TeachRepeat {
         std::vector<LocalisedPointCloud>::iterator it = map.begin() + anchorPointIndex;
         LocalisedPointCloud anchorPoint = *it;
 
-        it++;
+        // We assume that the neighboring points are already localized.
         std::vector<int> cloudsThatCanBeLocalized;
+        if(it != map.begin()) {
+            cloudsThatCanBeLocalized.push_back(it - map.begin() - 1);
+        }
+        if(it != map.end()) {
+            cloudsThatCanBeLocalized.push_back(it - map.begin() + 1);
+        }
+
+        it += 2;
+        // Find points that are forward and localized.
         while(it < map.end() &&
                 toleranceEllipseCalculator.readingCanBeLocalizedByAnchorPoint(*it, anchorPoint)) {
             cloudsThatCanBeLocalized.push_back(it++ - map.begin());
+        }
+
+        // Find point that are behind and localized.
+        it = map.begin() + anchorPointIndex - 2;
+        while(it >= map.begin() &&
+                toleranceEllipseCalculator.readingCanBeLocalizedByAnchorPoint(*it, anchorPoint)) {
+            cloudsThatCanBeLocalized.push_back(it-- - map.begin());
         }
 
         return cloudsThatCanBeLocalized;
