@@ -4,6 +4,7 @@
 #include <exception>
 #include <string>
 #include <vector>
+#include <tuple>
 #include <Eigen/Geometry>
 
 #include "pointmatcher/PointMatcher.h"
@@ -20,7 +21,7 @@ namespace TeachRepeat {
 
     public:
         ConvergenceDistanceFunction(LocalisedPointCloud &reading, LocalisedPointCloud &reference, PointMatcherService<T>& pointMatcherService);
-        float operator()(Transform inducedError);
+        std::tuple<T,T> operator()(Transform inducedError);
 
     private:
         static int nCalls;
@@ -45,7 +46,7 @@ namespace TeachRepeat {
     }
 
     template <typename T>
-    float ConvergenceDistanceFunction<T>::operator()(Transform inducedError) {
+    std::tuple<T,T> ConvergenceDistanceFunction<T>::operator()(Transform inducedError) {
         Transform preTransform = inducedError * tFromReadingToRef;
         Transform icpResult = pointMatcherService.icp(reading, reference, preTransform);
 
@@ -58,7 +59,14 @@ namespace TeachRepeat {
         // std::cout << "Vector " << (icpResult.translationPart() - tFromReadingToRef.translationPart()).norm();
         // std::cout << "Frobenius " << (icpResult.matrix().matrix() - tFromReadingToRef.matrix().matrix()).norm() << std::endl;
 
-        return (icpResult.matrix().matrix() - tFromReadingToRef.matrix().matrix()).norm();
+        auto result = std::make_tuple(
+                (icpResult.translationPart() - tFromReadingToRef.translationPart()).norm(),
+                icpResult.rotationPart().angularDistance(tFromReadingToRef.rotationPart())
+        );
+
+        std::cout << std::get<0>(result) << ", " << std::get<1>(result) << std::endl;
+
+        return result;
     }
 }
 

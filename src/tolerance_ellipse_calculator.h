@@ -4,6 +4,7 @@
 #include <math.h>
 #include <string>
 #include <exception>
+#include <tuple>
 
 #include "pointmatcher/PointMatcher.h"
 #include "localised_point_cloud.h"
@@ -17,14 +18,15 @@ namespace TeachRepeat {
         typedef typename PointMatcher<T>::ICP ICP;
 
     public:
-        ToleranceEllipseCalculator(Ellipsoid<T> ellipsoid, T maxConvergenceError, PointMatcherService<T> const& pointMatcherService);
+        ToleranceEllipseCalculator(Ellipsoid<T> ellipsoid, T maxTranslationError, T maxRotationError, PointMatcherService<T> const& pointMatcherService);
         bool readingCanBeLocalizedByAnchorPoint(LocalisedPointCloud& reading, LocalisedPointCloud& anchorPoint);
 
     private:
         static const int N_SEGMENTS = 5;
 
         Ellipsoid<T> toleranceEllipsoid;
-        T maxConvergenceError;
+        T maxTranslationError;
+        T maxRotationError;
         PointMatcherService<T> pointMatcherService;
 
         void printErrors(std::vector<T> errors);
@@ -33,8 +35,9 @@ namespace TeachRepeat {
 
 
     template <class T>
-    ToleranceEllipseCalculator<T>::ToleranceEllipseCalculator(Ellipsoid<T> ellipse, T maxConvergenceError, PointMatcherService<T> const& pointMatcherService) :
-            toleranceEllipsoid(ellipse), maxConvergenceError(maxConvergenceError), pointMatcherService(pointMatcherService) {
+    ToleranceEllipseCalculator<T>::ToleranceEllipseCalculator(Ellipsoid<T> ellipse, T maxTranslationError, T maxRotationError, PointMatcherService<T> const& pointMatcherService) :
+            toleranceEllipsoid(ellipse), maxTranslationError(maxTranslationError),
+            maxRotationError(maxRotationError), pointMatcherService(pointMatcherService) {
         this->pointMatcherService = pointMatcherService;
     }
 
@@ -58,9 +61,12 @@ namespace TeachRepeat {
 
                 Transform inducedError(inducedTranslationVector, inducedRotationQuaternion);
 
-                T convergenceDistance = f(inducedError);
+                std::tuple<T,T> convergenceDistance = f(inducedError);
 
-                if(convergenceDistance > maxConvergenceError) return false;
+                std::cout << "Induced error: " << pointOnEllipse.getX() << ", " << pointOnEllipse.getY() << ", " << pointOnEllipse.getZ() << std::endl;
+
+                if(std::get<0>(convergenceDistance) > maxTranslationError ||
+                        std::get<1>(convergenceDistance) > maxRotationError) return false;
             }
         }
 

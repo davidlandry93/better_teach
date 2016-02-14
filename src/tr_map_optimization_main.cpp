@@ -37,6 +37,8 @@ int main(int argc, char** argv) {
             ("semimajor,a", po::value< float >(), "The tolerance to forward error")
             ("semiminor,b", po::value< float >(), "The tolerance to lateral error")
             ("rotation,c", po::value< float >(), "To tolerance to rotation")
+            ("maxTranslationError,e", po::value< float >(), "Max translation error to converge")
+            ("maxRotationError,r", po::value< float >(), "Max rotation error to converge (in rad)")
             ("icp,i", po::value< std::string >(), "Path to the ICP config file")
             ("map,m", po::value< std::string >(), "Path to the teach and repeat map")
             ("help,h", "Produce a help message");
@@ -65,7 +67,8 @@ int main(int argc, char** argv) {
     std::cout << "semimajor (a): " << vm["semimajor"].as<float>() << std::endl;
     std::cout << "semiminor (b): " << vm["semiminor"].as<float>() << std::endl;
     std::cout << "rotation (c): " << vm["rotation"].as<float>() << std::endl;
-    std::cout << "epsilon: " << MAX_ERROR_TO_CONVERGE << std::endl;
+    std::cout << "epsilon (e): " << vm["maxTranslationError"].as<float>() << std::endl;
+    std::cout << "beta (r): " << vm["maxRotationError"].as<float>() << std::endl;
 
     std::cout << "Initializing map..." << std::endl;
     Map map(vm["map"].as< std::string >(), pmService);
@@ -77,7 +80,7 @@ int main(int argc, char** argv) {
 
     Ellipsoid<float> toleranceEllipsoid = Ellipsoid<float>(vm["semimajor"].as<float>(), vm["semiminor"].as<float>(), vm["rotation"].as<float>());
 
-    ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipsoid, MAX_ERROR_TO_CONVERGE, pmService);
+    ToleranceEllipseCalculator<float> toleranceEllipseCalculator(toleranceEllipsoid, vm["maxTranslationError"].as<float>(), vm["maxRotationError"].as<float>(), pmService);
     MapOptimizer optimizer(toleranceEllipseCalculator);
 
     std::cout << "Map initialization ended on " << pt::to_iso_extended_string(pt::second_clock::local_time())<< std::endl;
