@@ -35,14 +35,14 @@ if __name__ == '__main__':
     (traveledDistance, translationError,
      translationVar, rotationError, rotationVar, _) = zip(*data)
 
-    fig1 = plt.figure()
-    translationBars = plt.errorbar(traveledDistance, translationError, translationVar)
-    plt.xlabel('Travelled distance (m)')
-    plt.ylabel('Localization error (m)')
+    f, axesarray = plt.subplots(2, sharex=True)
 
-    fig2 = plt.figure()
+    transError = axesarray[0].errorbar(traveledDistance, translationError, translationVar)
+    rotError = axesarray[1].errorbar(traveledDistance, rotationError, rotationVar)
+
+    axesarray[0].set_ylabel('Translation error (m)')
+    axesarray[1].set_ylabel('Rotation error (rad)')
+
     plt.xlabel('Travelled distance (m)')
-    plt.ylabel('Localization error (rad)')
-    rotationBars = plt.errorbar(traveledDistance, rotationError, rotationVar)
 
     plt.show()

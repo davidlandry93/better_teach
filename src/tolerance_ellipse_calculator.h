@@ -63,8 +63,6 @@ namespace TeachRepeat {
 
                 std::tuple<T,T> convergenceDistance = f(inducedError);
 
-                std::cout << "Induced error: " << pointOnEllipse.getX() << ", " << pointOnEllipse.getY() << ", " << pointOnEllipse.getZ() << std::endl;
-
                 if(std::get<0>(convergenceDistance) > maxTranslationError ||
                         std::get<1>(convergenceDistance) > maxRotationError) return false;
             }

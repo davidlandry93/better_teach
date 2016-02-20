@@ -64,8 +64,6 @@ namespace TeachRepeat {
                 icpResult.rotationPart().angularDistance(tFromReadingToRef.rotationPart())
         );
 
-        std::cout << std::get<0>(result) << ", " << std::get<1>(result) << std::endl;
-
         return result;
     }
 }

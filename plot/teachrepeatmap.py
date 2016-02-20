@@ -34,12 +34,14 @@ if __name__ == '__main__':
 
     xs, ys = zip(*optimizedPoses)
     plt.scatter(xs, ys, s=50.0, color='red')
+    plt.axis('equal')
 
     xs, ys = zip(*correctedPoses)
     plt.scatter(xs,ys,marker='*')
+    plt.axis('equal')
 
     plt.legend(['Anchor points of the optimized map', 'Anchor points of the original map'])
     plt.xlabel('Position of the anchor point (m)')
     plt.ylabel('Position of the anchor point (m)')
-    
+ 
     plt.show()
