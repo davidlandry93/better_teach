@@ -34,9 +34,6 @@ namespace TeachRepeat {
 
         // We assume that the neighboring points are already localized.
         std::vector<int> cloudsThatCanBeLocalized;
-        if(it != map.begin()) {
-            cloudsThatCanBeLocalized.push_back(it - map.begin() - 1);
-        }
         if(it != map.end() - 1) {
             cloudsThatCanBeLocalized.push_back(it - map.begin() + 1);
         }
@@ -46,13 +43,6 @@ namespace TeachRepeat {
         while(it < map.end() &&
                 toleranceEllipseCalculator.readingCanBeLocalizedByAnchorPoint(*it, anchorPoint)) {
             cloudsThatCanBeLocalized.push_back(it++ - map.begin());
-        }
-
-        // Find point that are behind and localized.
-        it = map.begin() + anchorPointIndex - 2;
-        while(it >= map.begin() &&
-                toleranceEllipseCalculator.readingCanBeLocalizedByAnchorPoint(*it, anchorPoint)) {
-            cloudsThatCanBeLocalized.push_back(it-- - map.begin());
         }
 
         return cloudsThatCanBeLocalized;
