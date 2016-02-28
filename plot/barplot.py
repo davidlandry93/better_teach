@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import csv
 import argparse
@@ -40,9 +40,9 @@ if __name__ == '__main__':
     transError = axesarray[0].errorbar(traveledDistance, translationError, translationVar)
     rotError = axesarray[1].errorbar(traveledDistance, rotationError, rotationVar)
 
-    axesarray[0].set_ylabel('Translation error (m)')
-    axesarray[1].set_ylabel('Rotation error (rad)')
+    axesarray[0].set_ylabel('Translation error $e_{t,p}$ (m)', fontsize=16)
+    axesarray[1].set_ylabel('Rotation error $e_{r,p}$ (rad)', fontsize=16)
 
-    plt.xlabel('Travelled distance (m)')
+    plt.xlabel('Travelled distance (m)', fontsize=16)
 
     plt.show()

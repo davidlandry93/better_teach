@@ -22,7 +22,6 @@ def poses_of_csv(csvFile):
     return poses
 
 if __name__ == '__main__':
-
     correctedFile = open(CORRECTED_FILE)
     correctedPoses = poses_of_csv(correctedFile)
     correctedFile.close()
@@ -40,8 +39,8 @@ if __name__ == '__main__':
     plt.scatter(xs,ys,marker='*')
     plt.axis('equal')
 
-    plt.legend(['Anchor points of the optimized map', 'Anchor points of the original map'])
-    plt.xlabel('Position of the anchor point (m)')
-    plt.ylabel('Position of the anchor point (m)')
+    plt.legend(['Nodes of the optimized map', 'Nodes of the original map'])
+    plt.xlabel('Position of the node (m)', fontsize=16)
+    plt.ylabel('Position of the node (m)', fontsize=16)
  
     plt.show()

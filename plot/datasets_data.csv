@@ -1,0 +1,7 @@
+name,n_of_nodes,avg_distance_between_nodes,std_deviation_between_nodes,size (mb)
+terasse, 304, ,,,
+terasse (optimized),,
+forest, 61, ,,,
+forest (optimized),,
+hallway, 116, ,,,
+hallway (optimized),,

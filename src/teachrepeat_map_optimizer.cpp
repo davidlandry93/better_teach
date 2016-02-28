@@ -37,7 +37,7 @@ namespace TeachRepeat {
         if(it != map.begin()) {
             cloudsThatCanBeLocalized.push_back(it - map.begin() - 1);
         }
-        if(it != map.end()) {
+        if(it != map.end() - 1) {
             cloudsThatCanBeLocalized.push_back(it - map.begin() + 1);
         }
 
